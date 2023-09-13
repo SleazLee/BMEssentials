@@ -1,0 +1,109 @@
+name: BMEssentials
+version: 1.0
+api-version: '1.20'
+main: at.sleazlee.bmessentials.BMEssentials
+author: SleazLee
+description: One plugin to rule them all!
+
+softdepend: [HuskHomes, HuskTowns, Vault]
+
+commands:
+  bme:
+    description: Reloads the BMEssentials plugin.
+    usage: /bme
+
+  tpshop:
+    description: Sends the player to a shop of their choosing.
+    usage: /tpshop
+
+  wild:
+    description: Teleports the player to a random server with a random world.
+    usage: /wild
+
+  rtp:
+    description: Teleports the player to a random server with a random world.
+    usage: /rtp
+
+  randomtp:
+    description: Teleports the player to a random server with a random world.
+    usage: /randomtp
+
+  randomteleport:
+    description: Teleports the player to a random server with a random world.
+    usage: /randomteleport
+
+  firstjoinmessage:
+    description: Sends repeating action bar messages to the player.
+    usage: /firstjoinmessage
+
+  trash:
+    description: Opens a trash chest.
+    usage: /trash
+
+  disposal:
+    description: Opens a trash chest.
+    usage: /disposal
+
+  bungeetell:
+    description: Sends a message to all players on the network.
+    usage: /bungeetell
+
+  adminvote:
+    description: Sends a testvote to the player given.
+    usage: /adminvote <playername>
+
+  map:
+    description: Sends the player a link to the server map.
+    usage: /map
+
+  maps:
+    description: Sends the player a link to the server map.
+    usage: /maps
+
+  springsheal:
+    description: Heals the player.
+    usage: /springsheal
+
+  playtime:
+    description: Shows the player their current Playtime.
+    usage: /playtime
+
+  lag:
+    description: Displays general performance info.
+    usage: /lag
+
+  bmdiscord:
+    description: Gives the player a discord link.
+    usage: /bmdiscord
+
+  vot:
+    description: Shows Spawn Only Vot message.
+    usage: /vot
+
+  voting:
+    description: Shows Spawn Only Vot message.
+    usage: /voting
+
+  mcmmoboost:
+    description: gives a mcmmo boost to a player.
+    usage: /mcmmobonus <playername>
+
+  diamondcatch:
+    description: gives a random ammount of diamonds to a player.
+    usage: /diamondcatch <playername>
+
+  autoban:
+    description: Bans the player for hacking.
+    usage: /autoban <playername>
+
+  unmute:
+    description: Unmutes a player.
+    usage: /unmute <playername>
+
+  donation:
+    description: Give a selected player the selected donation package.
+    usage: /donation <playername> <donationpackage>
+
+  bmlands:
+    description: Admin command associated with changing a lands name and ranking up.
+    usage: /bmlands
