@@ -14,7 +14,7 @@ commands:
 
   tpshop:
     description: Sends the player to a shop of their choosing.
-    usage: /tpshop
+    usage: /tpshop <###>
 
   wild:
     description: Teleports the player to a random server with a random world.
@@ -50,7 +50,7 @@ commands:
 
   adminvote:
     description: Sends a testvote to the player given.
-    usage: /adminvote <playername>
+    usage: /adminvote <player>
 
   map:
     description: Sends the player a link to the server map.
@@ -86,23 +86,23 @@ commands:
 
   mcmmoboost:
     description: gives a mcmmo boost to a player.
-    usage: /mcmmobonus <playername>
+    usage: /mcmmobonus <player>
 
   diamondcatch:
     description: gives a random ammount of diamonds to a player.
-    usage: /diamondcatch <playername>
+    usage: /diamondcatch <player>
 
   autoban:
     description: Bans the player for hacking.
-    usage: /autoban <playername>
+    usage: /autoban <player>
 
   unmute:
     description: Unmutes a player.
-    usage: /unmute <playername>
+    usage: /unmute <player>
 
   donation:
     description: Give a selected player the selected donation package.
-    usage: /donation <playername> <donationpackage>
+    usage: /donation <player> <package>
 
   bmlands:
     description: Admin command associated with changing a lands name and ranking up.
