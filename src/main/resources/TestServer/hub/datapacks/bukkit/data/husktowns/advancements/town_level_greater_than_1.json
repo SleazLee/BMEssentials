@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "Level Up",
+    "description": "Level up your town to Level 2",
+    "icon": {
+      "item": "minecraft:experience_bottle"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:user_in_town_is_true"
+}

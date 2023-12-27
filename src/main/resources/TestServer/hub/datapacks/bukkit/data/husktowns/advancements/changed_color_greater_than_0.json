@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "Painting The Town Red, Green \u0026 Blue",
+    "description": "Change your town\u0027s color",
+    "icon": {
+      "item": "minecraft:painting"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:town_has_bio_is_true"
+}

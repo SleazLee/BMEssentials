@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "Now You\u0027re Just Bragging",
+    "description": "Level up your town to Level 20",
+    "icon": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:town_level_greater_than_14"
+}

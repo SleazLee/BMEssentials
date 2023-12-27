@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "Fallen Kingdom",
+    "description": "Have at least 15 unique players leave your town",
+    "icon": {
+      "item": "minecraft:wither_skeleton_skull"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:town_members_greater_than_1"
+}
