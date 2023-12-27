@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "Bustling Community",
+    "description": "Have 16 members in your town",
+    "icon": {
+      "item": "minecraft:creeper_head"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:town_members_greater_than_7"
+}

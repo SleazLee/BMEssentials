@@ -1,0 +1,120 @@
+[12:35:02] [ServerMain/WARN]: [oshi.driver.windows.perfmon.PerfmonDisabled] Invalid registry value type detected for PerfOS counters. Should be REG_DWORD. Ignoring: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PerfOS\Performance\Disable Performance Counters.
+[12:35:07] [ServerMain/INFO]: Environment: Environment[accountsHost=https://api.mojang.com, sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[12:35:08] [ServerMain/INFO]: Loaded 1174 recipes
+[12:35:08] [ServerMain/INFO]: Loaded 1298 advancements
+[12:35:09] [Server thread/INFO]: Starting minecraft server version 1.20.2
+[12:35:09] [Server thread/INFO]: Loading properties
+[12:35:09] [Server thread/INFO]: This server is running Purpur version git-Purpur-2095 (MC: 1.20.2) (Implementing API version 1.20.2-R0.1-SNAPSHOT) (Git: 4f12f5d on HEAD)
+[12:35:09] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[12:35:09] [Server thread/INFO]: Using 4 threads for Netty based IO
+[12:35:09] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using 1 I/O threads, 8 worker threads, and gen parallelism of 8 threads
+[12:35:09] [Server thread/WARN]: [Pufferfish] SIMD operations are available for your server, but are not configured!
+[12:35:09] [Server thread/WARN]: [Pufferfish] To enable additional optimizations, add "--add-modules=jdk.incubator.vector" to your startup flags, BEFORE the "-jar".
+[12:35:09] [Server thread/WARN]: [Pufferfish] If you have already added this flag, then SIMD operations are not supported on your JVM or CPU.
+[12:35:09] [Server thread/WARN]: [Pufferfish] Debug: Java: 17.0.9, test run: true
+[12:35:10] [Server thread/INFO]: Default game type: SURVIVAL
+[12:35:10] [Server thread/INFO]: Generating keypair
+[12:35:10] [Server thread/INFO]: Starting Minecraft server on *:25565
+[12:35:10] [Server thread/INFO]: Using default channel type
+[12:35:10] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[12:35:10] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[12:35:10] [Server thread/INFO]: [spark] Loading server plugin spark v1.10.58
+[12:35:10] [Server thread/INFO]: [PlugManX] Loading server plugin PlugManX v2.3.6
+[12:35:10] [Server thread/INFO]: [BMEssentials] Loading server plugin BMEssentials v1.0
+[12:35:10] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[12:35:10] [Server thread/INFO]: [PlugManX] Enabling PlugManX v2.3.6
+[12:35:10] [Server thread/WARN]: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[12:35:10] [Server thread/WARN]: It seems like you're running on paper.
+[12:35:10] [Server thread/WARN]: This may cause issues.
+[12:35:10] [Server thread/WARN]: If you encounter any issues, please join my discord: https://discord.gg/dBhfCzdZxq
+[12:35:10] [Server thread/WARN]: Or create an issue on GitHub: https://github.com/TheBlackEntity/PlugMan
+[12:35:10] [Server thread/WARN]: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[12:35:10] [Server thread/INFO]: Preparing level "hub"
+[12:35:10] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[12:35:11] [Server thread/INFO]: Time elapsed: 354 ms
+[12:35:11] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
+[12:35:11] [Server thread/INFO]: Time elapsed: 13 ms
+[12:35:11] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[12:35:11] [Server thread/INFO]: Time elapsed: 10 ms
+[12:35:11] [Server thread/INFO]: [spark] Enabling spark v1.10.58
+[12:35:12] [Server thread/INFO]: [spark] Using Paper ServerTickStartEvent for tick monitoring
+[12:35:12] [Server thread/INFO]: [spark] Starting background profiler...
+[12:35:12] [Server thread/INFO]: [spark] The async-profiler engine is not supported for your os/arch (windows11/amd64), so the built-in Java engine will be used instead.
+[12:35:12] [Server thread/INFO]: [BMEssentials] Enabling BMEssentials v1.0
+[12:35:13] [Server thread/INFO]: 
+[12:35:13] [Server thread/INFO]:   ____  __  __ ______
+[12:35:13] [Server thread/INFO]:  |  _ \|  \/  |  ____|
+[12:35:13] [Server thread/INFO]:  | |_) | \  / | |__
+[12:35:13] [Server thread/INFO]:  |  _ <| |\/| |  __|
+[12:35:13] [Server thread/INFO]:  | |_) | |  | | |____
+[12:35:13] [Server thread/INFO]:  |____/|_|  |_|______|
+[12:35:13] [Server thread/INFO]: 
+[12:35:13] [Server thread/INFO]:  
+[12:35:13] [Server thread/INFO]:  - Enabled TPShop
+[12:35:13] [Server thread/ERROR]: [BMEssentials] Failed to register events for class at.sleazlee.bmessentials.votesystem.BMVote because com/vexsoftware/votifier/model/VotifierEvent does not exist.
+[12:35:13] [Server thread/WARN]: [BMEssentials] Default vote.yml not found in resources!
+[12:35:13] [Server thread/INFO]:  - Enabled Vote Systems
+[12:35:13] [Server thread/ERROR]: [BMEssentials] Failed to register events for class at.sleazlee.bmessentials.wild.NoFallDamage because net/william278/huskhomes/event/TeleportEvent does not exist.
+[12:35:13] [Server thread/INFO]:  - Enabled BMWild
+[12:35:13] [Server thread/INFO]:  - Enabled Spawn Systems
+[12:35:13] [Server thread/INFO]:  - Enabled All Common Commands
+[12:35:13] [Server thread/INFO]:  - Enabled Trash System
+[12:35:13] [Server thread/INFO]:  - Enabled BungeeTell System
+[12:35:13] [Server thread/INFO]:  - Enabled Maps
+[12:35:13] [Server thread/INFO]:  - Enabled Ban/Mute Systems
+[12:35:13] [Server thread/INFO]:  - Enabled Donation Systems
+[12:35:13] [Server thread/ERROR]: [BMEssentials] Failed to register events for class at.sleazlee.bmessentials.LandsBonus.BonusMethods because net/william278/husktowns/events/MemberLeaveEvent does not exist.
+[12:35:13] [Server thread/ERROR]: Error occurred while enabling BMEssentials v1.0 (Is it up to date?)
+java.lang.NoClassDefFoundError: net/milkbowl/vault/permission/Permission
+	at at.sleazlee.bmessentials.LandsBonus.BonusMethods.setupPermissions(BonusMethods.java:30) ~[bmessentials.jar:?]
+	at at.sleazlee.bmessentials.BMEssentials.onEnable(BMEssentials.java:185) ~[bmessentials.jar:?]
+	at org.bukkit.plugin.java.JavaPlugin.setEnabled(JavaPlugin.java:281) ~[purpur-api-1.20.2-R0.1-SNAPSHOT.jar:?]
+	at io.papermc.paper.plugin.manager.PaperPluginInstanceManager.enablePlugin(PaperPluginInstanceManager.java:190) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at io.papermc.paper.plugin.manager.PaperPluginManagerImpl.enablePlugin(PaperPluginManagerImpl.java:104) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at org.bukkit.plugin.SimplePluginManager.enablePlugin(SimplePluginManager.java:507) ~[purpur-api-1.20.2-R0.1-SNAPSHOT.jar:?]
+	at org.bukkit.craftbukkit.v1_20_R2.CraftServer.enablePlugin(CraftServer.java:660) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at org.bukkit.craftbukkit.v1_20_R2.CraftServer.enablePlugins(CraftServer.java:571) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at net.minecraft.server.MinecraftServer.loadWorld0(MinecraftServer.java:632) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at net.minecraft.server.MinecraftServer.loadLevel(MinecraftServer.java:429) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at net.minecraft.server.dedicated.DedicatedServer.initServer(DedicatedServer.java:345) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at net.minecraft.server.MinecraftServer.runServer(MinecraftServer.java:1102) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:320) ~[purpur-1.20.2.jar:git-Purpur-2095]
+	at java.lang.Thread.run(Thread.java:842) ~[?:?]
+Caused by: java.lang.ClassNotFoundException: net.milkbowl.vault.permission.Permission
+	at org.bukkit.plugin.java.PluginClassLoader.loadClass0(PluginClassLoader.java:199) ~[purpur-api-1.20.2-R0.1-SNAPSHOT.jar:?]
+	at org.bukkit.plugin.java.PluginClassLoader.loadClass(PluginClassLoader.java:166) ~[purpur-api-1.20.2-R0.1-SNAPSHOT.jar:?]
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:520) ~[?:?]
+	... 14 more
+[12:35:13] [Server thread/INFO]: [BMEssentials] Disabling BMEssentials v1.0
+[12:35:13] [Server thread/INFO]: [BMEssentials] Disabling BMEssentials...
+[12:35:13] [Server thread/INFO]: [BMEssentials] BMEssentials has been disabled!
+[12:35:13] [Server thread/INFO]: Running delayed init tasks
+[12:35:13] [Server thread/INFO]: Done (4.214s)! For help, type "help"
+[12:43:48] [Server thread/INFO]: Stopping the server
+[12:43:48] [Server thread/INFO]: Stopping server
+[12:43:48] [Server thread/INFO]: [PlugManX] Disabling PlugManX v2.3.6
+[12:43:48] [Server thread/INFO]: [spark] Disabling spark v1.10.58
+[12:43:48] [Server thread/INFO]: Saving players
+[12:43:48] [Server thread/INFO]: Saving worlds
+[12:43:48] [Server thread/INFO]: Saving chunks for level 'ServerLevel[hub]'/minecraft:overworld
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'hub'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'hub'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'hub'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Saved 2 block chunks, 39 entity chunks, 0 poi chunks in world 'hub' in 0.01s
+[12:43:48] [Server thread/INFO]: ThreadedAnvilChunkStorage (hub): All chunks are saved
+[12:43:48] [Server thread/INFO]: Saving chunks for level 'ServerLevel[hub_nether]'/minecraft:the_nether
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'hub_nether'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'hub_nether'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'hub_nether'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 15 entity chunks, 0 poi chunks in world 'hub_nether' in 0.00s
+[12:43:48] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[12:43:48] [Server thread/INFO]: Saving chunks for level 'ServerLevel[hub_the_end]'/minecraft:the_end
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Waiting 60s for chunk system to halt for world 'hub_the_end'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Halted chunk system for world 'hub_the_end'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Saving all chunkholders for world 'hub_the_end'
+[12:43:48] [Server thread/INFO]: [ChunkHolderManager] Saved 0 block chunks, 10 entity chunks, 0 poi chunks in world 'hub_the_end' in 0.00s
+[12:43:48] [Server thread/INFO]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[12:43:48] [Server thread/INFO]: ThreadedAnvilChunkStorage: All dimensions are saved
+[12:43:48] [Server thread/INFO]: Flushing Chunk IO
+[12:43:48] [Server thread/INFO]: Closing Thread Pool
+[12:43:48] [Server thread/INFO]: Closing Server

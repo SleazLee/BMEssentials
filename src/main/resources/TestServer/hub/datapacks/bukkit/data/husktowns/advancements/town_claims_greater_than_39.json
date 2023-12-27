@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "City Folk",
+    "description": "Claim 40 chunks of land for your town",
+    "icon": {
+      "item": "minecraft:gray_concrete"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:town_claims_greater_than_17"
+}

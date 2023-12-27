@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "The Empire Business",
+    "description": "Claim 80 chunks of land for your town",
+    "icon": {
+      "item": "minecraft:beacon"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:town_claims_greater_than_39"
+}

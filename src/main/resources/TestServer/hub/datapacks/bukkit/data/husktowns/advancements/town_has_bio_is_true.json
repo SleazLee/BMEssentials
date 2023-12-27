@@ -1,0 +1,21 @@
+{
+  "criteria": {
+    "husktowns_completed": {
+      "trigger": "minecraft:impossible",
+      "conditions": {}
+    }
+  },
+  "display": {
+    "title": "A Brief History",
+    "description": "Set a bio for your town",
+    "icon": {
+      "item": "minecraft:book"
+    },
+    "background": "minecraft:textures/block/granite.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "husktowns:user_in_town_is_true"
+}
