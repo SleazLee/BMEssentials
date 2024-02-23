@@ -26,6 +26,7 @@ import at.sleazlee.bmessentials.wild.WildTabCompleter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BMEssentials extends JavaPlugin {
@@ -33,6 +34,10 @@ public class BMEssentials extends JavaPlugin {
     private FileConfiguration config = getConfig();
     private HuskHomesAPIHook huskHomesAPIHook;
     private DatabaseManager dbManager;
+
+    public static BMEssentials getInstance() {
+        return getPlugin(BMEssentials.class);
+    }
 
     @Override
     public void onEnable() {
