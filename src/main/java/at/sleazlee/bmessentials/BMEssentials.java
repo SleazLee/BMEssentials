@@ -1,5 +1,7 @@
 package at.sleazlee.bmessentials;
 
+import at.sleazlee.bmessentials.AltarSystem.AltarManager;
+import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.LandsBonus.BonusCommand;
 import at.sleazlee.bmessentials.LandsBonus.BonusMethods;
 import at.sleazlee.bmessentials.Punish.AutoBanCommand;
@@ -113,9 +115,9 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("mcmmoboost").setExecutor(new McMMOBoost(this));
             this.getCommand("diamondcatch").setExecutor(new DiamondCatch(this));
 
-            //AltarManager altarManager = new AltarManager(this);
-            //getServer().getPluginManager().registerEvents(altarManager, this);
-            //altarManager.startHealingSpringsAmbient();
+            AltarManager altarManager = new AltarManager(this);
+            getServer().getPluginManager().registerEvents(altarManager, this);
+            HealingSprings.startHealingSpringsAmbient(this);
 
             //Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Spawn Systems");
