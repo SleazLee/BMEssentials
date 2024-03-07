@@ -25,30 +25,11 @@
 
 package at.sleazlee.bmessentials.trophyroom.smartinventory;
 
-import at.sleazlee.bmessentials.trophyroom.smartinventory.InventoryContents;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.InventoryOpener;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.InventoryProvider;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.Page;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.SmartHolder;
+import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.event.PgTickEvent;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.listener.InventoryClickListener;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.listener.InventoryCloseListener;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.listener.InventoryDragListener;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.listener.InventoryOpenListener;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.listener.PlayerQuitListener;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.listener.PluginDisableListener;
+import at.sleazlee.bmessentials.trophyroom.smartinventory.listener.*;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.opener.ChestInventoryOpener;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -57,6 +38,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * a class that manages all smart inventories.
@@ -268,7 +255,7 @@ public interface SmartInventory {
    */
   default void stopTick(@NotNull final UUID uniqueId) {
     this.getTask(uniqueId).ifPresent(runnable -> {
-      Bukkit.getScheduler().cancelTask(runnable.getTaskId());
+      Bukkit.getGlobalRegionScheduler().cancelTasks(BMEssentials.getInstance());
       this.removeTask(uniqueId);
     });
   }
@@ -292,11 +279,7 @@ public interface SmartInventory {
       }
     };
     this.setTask(uniqueId, task);
-    if (page.async()) {
-      task.runTaskTimerAsynchronously(this.getPlugin(), page.startDelay(), page.tick());
-    } else {
-      task.runTaskTimer(this.getPlugin(), page.startDelay(), page.tick());
-    }
+      Scheduler.runTimer(task, page.startDelay(), page.tick());
   }
 
   /**

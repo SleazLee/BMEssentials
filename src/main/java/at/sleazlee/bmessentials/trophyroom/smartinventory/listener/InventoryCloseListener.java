@@ -25,16 +25,17 @@
 
 package at.sleazlee.bmessentials.trophyroom.smartinventory.listener;
 
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.SmartHolder;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.event.PgCloseEvent;
-import java.util.UUID;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * a class that represents inventory close listeners.
@@ -65,7 +66,7 @@ public final class InventoryCloseListener implements Listener {
     final var close = new PgCloseEvent(smartHolder.getContents(), event);
     page.accept(close);
     if (!page.canClose(close)) {
-      Bukkit.getScheduler().runTask(smartHolder.getPlugin(), () ->
+      Scheduler.run(() ->
         event.getPlayer().openInventory(inventory));
       return;
     }

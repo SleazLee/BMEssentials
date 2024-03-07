@@ -25,10 +25,10 @@
 
 package at.sleazlee.bmessentials.trophyroom.smartinventory.event;
 
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.InventoryContents;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.event.abs.BottomClickEvent;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -64,8 +64,7 @@ public final class PgBottomClickEvent implements BottomClickEvent {
 
   @Override
   public void close() {
-    Bukkit.getScheduler().runTask(this.plugin, () ->
-      this.contents.page().close(this.contents.player()));
+    Scheduler.run(() -> this.contents.page().close(this.contents.player()));
   }
 
   @NotNull

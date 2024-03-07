@@ -25,19 +25,20 @@
 
 package at.sleazlee.bmessentials.trophyroom.smartinventory.event;
 
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.Icon;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.InventoryContents;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.event.abs.DragEvent;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.DragType;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * a class that represents icon drag events.
@@ -106,7 +107,7 @@ public final class IcDragEvent implements DragEvent {
 
   @Override
   public void close() {
-    Bukkit.getScheduler().runTask(this.plugin, () ->
+    Scheduler.run(() ->
       this.contents.page().close(this.contents.player()));
   }
 

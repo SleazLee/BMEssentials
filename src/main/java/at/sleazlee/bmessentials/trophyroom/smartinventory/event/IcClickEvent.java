@@ -25,12 +25,11 @@
 
 package at.sleazlee.bmessentials.trophyroom.smartinventory.event;
 
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.Icon;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.InventoryContents;
 import at.sleazlee.bmessentials.trophyroom.smartinventory.event.abs.ClickEvent;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Bukkit;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -38,6 +37,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 /**
  * a class that represents icon click events.
@@ -122,7 +123,7 @@ public final class IcClickEvent implements ClickEvent {
 
   @Override
   public void close() {
-    Bukkit.getScheduler().runTask(this.plugin, () ->
+    Scheduler.run(() ->
       this.contents.page().close(this.contents.player()));
   }
 
