@@ -95,7 +95,7 @@ systems:
     enabled: true
 
   # Enables the trash system.
-  bmtrash:
+  containers:
     enabled: true
 
   # Enables the bungeetell system.

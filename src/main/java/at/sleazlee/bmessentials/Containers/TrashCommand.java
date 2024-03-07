@@ -1,4 +1,4 @@
-package at.sleazlee.bmessentials.trash;
+package at.sleazlee.bmessentials.Containers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

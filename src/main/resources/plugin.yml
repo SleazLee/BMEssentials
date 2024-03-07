@@ -40,10 +40,66 @@ commands:
   trash:
     description: Opens a trash chest.
     usage: /trash
+    aliases:
+      - disposal
 
-  disposal:
-    description: Opens a trash chest.
-    usage: /disposal
+  craft:
+    description: Open crafting table GUI
+    usage: /craft
+    permission: bm.containers.craft
+    aliases:
+      - crafting
+      - craftingtable
+      - workbench
+
+  enderchest:
+    description: Open a player enderchest GUI
+    usage: /enderchest
+    permission: bm.containers.enderchest
+    aliases:
+      - ec
+      - echest
+
+  cartography:
+    description: Opens a cartography GUI
+    usage: /cartography
+    permission: bm.containers.cartography
+    aliases:
+      - cartographytable
+
+  loom:
+    description: Opens a loom GUI
+    usage: /loom
+    permission: bm.containers.loom
+
+  stonecutter:
+    description: Opens a stonecutter GUI
+    usage: /stonecutter
+    permission: bm.containers.stonecutter
+
+  smithing:
+    description: Opens a smithing GUI
+    usage: /smithing
+    permission: bm.containers.smithing
+    aliases:
+      - smithingtable
+      - smith
+
+  grindstone:
+    description: Opens a grindstone GUI
+    usage: /grindstone
+    permission: bm.containers.grindstone
+    aliases:
+      - grstone
+      - gstone
+
+  anvil:
+    description: Opens a anvil GUI
+    usage: /anvil
+    permission: bm.containers.anvil
+    aliases:
+      - openanvil
+      - anv
 
   bungeetell:
     description: Sends a message to all players on the network.
@@ -108,4 +164,4 @@ commands:
   trophyroom:
     aliases: [trophies, trophy]
     description: Opens a players Trophy Room.
-    usage: /trophies <player>
+    usage: /trophyroom <player>

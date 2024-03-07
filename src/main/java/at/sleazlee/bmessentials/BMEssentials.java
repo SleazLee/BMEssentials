@@ -2,6 +2,7 @@ package at.sleazlee.bmessentials;
 
 import at.sleazlee.bmessentials.AltarSystem.AltarManager;
 import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
+import at.sleazlee.bmessentials.Containers.*;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
@@ -13,12 +14,13 @@ import at.sleazlee.bmessentials.maps.MapCommand;
 import at.sleazlee.bmessentials.maps.MapTabCompleter;
 import at.sleazlee.bmessentials.tpshop.TPShopCommand;
 import at.sleazlee.bmessentials.tpshop.TPShopTabCompleter;
-import at.sleazlee.bmessentials.trash.TrashCommand;
 import at.sleazlee.bmessentials.trophyroom.commands.TrophyCommand;
 import at.sleazlee.bmessentials.trophyroom.data.Data;
 import at.sleazlee.bmessentials.trophyroom.db.Database;
 import at.sleazlee.bmessentials.trophyroom.listeners.PlayerListener;
 import at.sleazlee.bmessentials.trophyroom.menu.TrophyRoomMenu;
+import at.sleazlee.bmessentials.trophyroom.smartinventory.SmartInventory;
+import at.sleazlee.bmessentials.trophyroom.smartinventory.manager.BasicSmartInventory;
 import at.sleazlee.bmessentials.trophyroom.util.PlaceHolderApiHook;
 import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
@@ -26,8 +28,6 @@ import at.sleazlee.bmessentials.wild.BMWildCommand;
 import at.sleazlee.bmessentials.wild.NoFallDamage;
 import at.sleazlee.bmessentials.wild.WildTabCompleter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.SmartInventory;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.manager.BasicSmartInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -141,10 +141,35 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled All Common Commands");
         }
 
-        // Trash System
-        if (config.getBoolean("systems.bmtrash.enabled")) {
+        // Virtual Containers System
+        if (config.getBoolean("systems.containers.enabled")) {
+
+            //trash
             this.getCommand("trash").setExecutor(new TrashCommand());
-            this.getCommand("disposal").setExecutor(new TrashCommand());
+
+            //Crafting Table
+            this.getCommand("craft").setExecutor(new CraftCommand());
+
+            //Ender Chest
+            this.getCommand("enderchest").setExecutor(new eChestCommand());
+
+            //Cartography Table
+            this.getCommand("cartography").setExecutor(new cartographyTableCommand());
+
+            //Loom
+            this.getCommand("loom").setExecutor(new LoomCommand());
+
+            //Stone Cutter
+            this.getCommand("stonecutter").setExecutor(new StoneCutterCommand());
+
+            //Smithing Table
+            this.getCommand("smithing").setExecutor(new SmithingTableCommand());
+
+            //Grindstone
+            this.getCommand("grindstone").setExecutor(new GrindStoneCommand());
+
+            //Anvil
+            this.getCommand("anvil").setExecutor(new AnvilCommand());
 
             //Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Trash System");
