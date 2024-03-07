@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.SpawnSystems;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -12,7 +13,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,12 +75,7 @@ public class HealCommand implements CommandExecutor {
 			processedPlayers.add(playerName);
 
 			// Schedule a task to remove playerName from the list after 10 seconds
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					processedPlayers.remove(playerName);
-				}
-			}.runTaskLater(plugin, 15 * 20); // 15 seconds in ticks
+			Scheduler.runLater(() -> processedPlayers.remove(playerName), 15 * 20);
 		} else {
 			// Player name was found, do nothing
 

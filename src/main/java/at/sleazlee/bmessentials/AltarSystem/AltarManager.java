@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.AltarSystem;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -156,7 +157,7 @@ public class AltarManager implements Listener {
 		floatingItem.setPickupDelay(Integer.MAX_VALUE);
 
 		// Remove the floating item after 1 second.
-		Bukkit.getScheduler().runTaskLater(plugin, floatingItem::remove, 80L);
+		Scheduler.runLater(floatingItem::remove, 80L);
 	}
 
 	private void giveRandomReward(Player player) {

@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.AltarSystem;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -8,14 +9,13 @@ import static at.sleazlee.bmessentials.art.Art.createDustOptions;
 
 public class HealingSprings {
 
-    private int taskId;
     private static boolean altarActivated = false;
     private String activeHexColor = "#32CA65";
     private static double theta = 0; // Class-level variable to keep track of the current angle
 
 
     public static void startHealingSpringsAmbient(BMEssentials plugin) {
-        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+        Scheduler.runTimer(() -> {
             if (!altarActivated) {
                 spawnParticleAtAltar(Particle.FIREWORKS_SPARK, false);
             } else {
@@ -48,10 +48,6 @@ public class HealingSprings {
         }
     }
 
-    public void stopHealingSpringsAmbient() {
-        Bukkit.getScheduler().cancelTask(taskId);
-    }
-
     // Call this method when the altar is activated
     public static void activateHealingSpringsAltar() {
         altarActivated = true;
@@ -72,7 +68,7 @@ public class HealingSprings {
         // Step 2: Create a beam of particles from the Lectern to the Spore Blossom
         for (int i = 0; i <= 10; i++) {
             final int finalI = i;
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Scheduler.runLater(() -> {
                 double y = center.getY() - 1.0 + (0.15 * finalI);
                 world.spawnParticle(Particle.REDSTONE, center.getX(), y, center.getZ(), 0, 0, 0, 0, createDustOptions("#32CA65"));
             }, i * 2L);
@@ -85,7 +81,7 @@ public class HealingSprings {
         }
 
         // Step 4: Play additional ambient sounds after a short delay
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        Scheduler.runLater(() -> {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 Location adjustedCenter = center.clone().add(0.0, 0.4, 0.0);
                 onlinePlayer.playSound(adjustedCenter, Sound.BLOCK_AMETHYST_CLUSTER_FALL, SoundCategory.AMBIENT, 2.0f, 0.3f);
@@ -95,7 +91,7 @@ public class HealingSprings {
         // Step 5: Create particles that come down from the Spore Blossom
         for (int i = 0; i <= 12; i++) {
             final int finalI = i;
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Scheduler.runLater(() -> {
                 double y = center.getY() + 0.6 - (0.05 * finalI);
                 world.spawnParticle(Particle.REDSTONE, center.getX(), y, center.getZ(), 0, 0, 0, 0, createDustOptions("#32bbca"));
             }, 50L + i * 2L);
@@ -104,7 +100,7 @@ public class HealingSprings {
         // Step 6: Create particles that form a sphere
         for (int i = 0; i <= 10; i++) {
             final double r = i * 0.03;
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Scheduler.runLater(() -> {
                 for (double theta = 0; theta <= 2 * Math.PI; theta += Math.PI / 10) {
                     for (double phi = 0; phi <= Math.PI; phi += Math.PI / 10) {
                         double x = r * Math.sin(phi) * Math.cos(theta);
@@ -117,19 +113,17 @@ public class HealingSprings {
         }
 
         // Step 7: Play sound when the sphere is complete
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        Scheduler.runLater(() -> {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.playSound(center, Sound.BLOCK_CONDUIT_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 0.3f);
             }
         }, 100L);
 
         // Step 8: Show the reward item
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-           AltarManager.showItemAnimation(plugin, center, world);
-        }, 100L);
+        Scheduler.runLater(() -> AltarManager.showItemAnimation(plugin, center, world), 100L);
 
         // Step 9: Create a puff of smoke and play a sound when the item disappears
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        Scheduler.runLater(() -> {
             world.spawnParticle(Particle.SMOKE_NORMAL, center, 10, 0.2, 0.2, 0.2, 0.05);
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.playSound(center, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.AMBIENT, 0.2f, 1.0f);

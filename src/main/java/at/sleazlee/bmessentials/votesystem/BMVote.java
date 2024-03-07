@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.votesystem;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.art.Art;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import org.bukkit.*;
@@ -14,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.io.IOException;
@@ -172,12 +172,8 @@ public class BMVote implements Listener, CommandExecutor {
                 // Execute the reward commands
                 for (int i = 0; i < voteCount; i++) {
 
-                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            givePrize(player.getName());
-                        }
-                    }, 40L); // Delay in ticks, 20 ticks = 1 second
+                    Scheduler.runLater(() -> givePrize(player.getName()), 40L); // 40 ticks delay
+
 
                 }
             }
@@ -293,8 +289,8 @@ public class BMVote implements Listener, CommandExecutor {
         double radius = plugin.getConfig().getDouble("systems.votesystem.particles.radius");
         Location location = player.getLocation();
 
-        BukkitScheduler scheduler = plugin.getServer().getScheduler();
-        int taskId = scheduler.scheduleSyncRepeatingTask(plugin, new Runnable() {
+        // Create a new task for the repeating particle effect
+        Scheduler.Task particleTask = Scheduler.runTimer(new Runnable() {
             double y = radius; // Start at the top of the sphere
 
             @Override
@@ -314,15 +310,14 @@ public class BMVote implements Listener, CommandExecutor {
             }
         }, 0L, 1L); // Start immediately and repeat every tick (20 ticks = 1 second)
 
-        // Cancel the task after 3 seconds (60 ticks)
-        scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                scheduler.cancelTask(taskId);
+        // Schedule the cancellation after 3 seconds (60 ticks)
+        Scheduler.runLater(() -> {
+            // Check if the task is still running and cancel if so
+            if (particleTask != null) {
+                particleTask.cancel();
             }
-        }, 20L);
+        }, 20L); // Adjust the delay here to match your needs, 60 ticks for 3 seconds as per original requirement
     }
-
 
 
 }

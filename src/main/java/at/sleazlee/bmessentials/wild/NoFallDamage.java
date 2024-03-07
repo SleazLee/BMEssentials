@@ -1,5 +1,6 @@
 package at.sleazlee.bmessentials.wild;
 
+import at.sleazlee.bmessentials.Scheduler;
 import lombok.Getter;
 import net.william278.huskhomes.event.TeleportEvent;
 import org.bukkit.Bukkit;
@@ -37,9 +38,7 @@ public class NoFallDamage implements Listener {
 
             // Adjust the delay based on how long you expect the fall to last
             // Here I set it to 20 seconds as an example
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                fallDisabled.remove(uuid);
-            }, 240L);  // 400 ticks = 20 seconds
+            Scheduler.runLater(() -> fallDisabled.remove(uuid), 240L); // 240 ticks = 12 seconds
         }
     }
 
@@ -50,9 +49,7 @@ public class NoFallDamage implements Listener {
         fallDisabled.add(event.getPlayer().getUniqueId());
 
         // You could add the same delay here, or adjust it based on how long you expect the rest of the fall to last
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            fallDisabled.remove(event.getPlayer().getUniqueId());
-        }, 240L);
+        Scheduler.runLater(() -> fallDisabled.remove(event.getPlayer().getUniqueId()), 240L);
     }
 
     @EventHandler

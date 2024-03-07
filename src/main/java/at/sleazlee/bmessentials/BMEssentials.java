@@ -2,16 +2,10 @@ package at.sleazlee.bmessentials;
 
 import at.sleazlee.bmessentials.AltarSystem.AltarManager;
 import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
-import at.sleazlee.bmessentials.LandsBonus.BonusCommand;
-import at.sleazlee.bmessentials.LandsBonus.BonusMethods;
-import at.sleazlee.bmessentials.Punish.AutoBanCommand;
-import at.sleazlee.bmessentials.Punish.BungeeMutePlayer;
-import at.sleazlee.bmessentials.Punish.UnMuteCommand;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
-import at.sleazlee.bmessentials.bmefunctions.DatabaseManager;
 import at.sleazlee.bmessentials.bmefunctions.DonationCommand;
 import at.sleazlee.bmessentials.bungeetell.BungeeTellCommand;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
@@ -20,22 +14,34 @@ import at.sleazlee.bmessentials.maps.MapTabCompleter;
 import at.sleazlee.bmessentials.tpshop.TPShopCommand;
 import at.sleazlee.bmessentials.tpshop.TPShopTabCompleter;
 import at.sleazlee.bmessentials.trash.TrashCommand;
+import at.sleazlee.bmessentials.trophyroom.commands.TrophyCommand;
+import at.sleazlee.bmessentials.trophyroom.data.Data;
+import at.sleazlee.bmessentials.trophyroom.db.Database;
+import at.sleazlee.bmessentials.trophyroom.listeners.PlayerListener;
+import at.sleazlee.bmessentials.trophyroom.menu.TrophyRoomMenu;
+import at.sleazlee.bmessentials.trophyroom.util.PlaceHolderApiHook;
 import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.BMWildCommand;
 import at.sleazlee.bmessentials.wild.NoFallDamage;
 import at.sleazlee.bmessentials.wild.WildTabCompleter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import at.sleazlee.bmessentials.trophyroom.smartinventory.SmartInventory;
+import at.sleazlee.bmessentials.trophyroom.smartinventory.manager.BasicSmartInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.sql.SQLException;
 
 public class BMEssentials extends JavaPlugin {
 
     private FileConfiguration config = getConfig();
+    private final SmartInventory inventory = new BasicSmartInventory(this);
     private HuskHomesAPIHook huskHomesAPIHook;
-    private DatabaseManager dbManager;
+//    private DatabaseManager dbManager;
+    private static BMEssentials main;
 
     public static BMEssentials getInstance() {
         return getPlugin(BMEssentials.class);
@@ -44,22 +50,24 @@ public class BMEssentials extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        main = this;
+
         // Creates a new config.yml if it doesn't exist, copies from your resource.
         this.saveDefaultConfig();
 
-        // Establish the database connection
-        try {
-            dbManager = new DatabaseManager(this);
-            getLogger().info("[BMEssentials] MySQL Connection established!");
-
-            // Create Databases if they are not already created.
-            dbManager.createDatabaseTables();
-
-
-        } catch (Exception e) {
-            getLogger().severe("Failed to establish MySQL connection: " + e.getMessage());
-            getServer().getPluginManager().disablePlugin(this);
-        }
+//        // Establish the database connection
+//        try {
+//            dbManager = new DatabaseManager(this);
+//            getLogger().info("[BMEssentials] MySQL Connection established!");
+//
+//            // Create Databases if they are not already created.
+//            dbManager.createDatabaseTables();
+//
+//
+//        } catch (Exception e) {
+//            getLogger().severe("Failed to establish MySQL connection: " + e.getMessage());
+//            getServer().getPluginManager().disablePlugin(this);
+//        }
 
         //Art at the beginning.
         String[] startArt = Art.startupArt().split("\n");
@@ -163,18 +171,18 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Maps");
         }
 
-        // Ban/Mute System
-        if (config.getBoolean("systems.punishments.enabled")) {
-
-            this.getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:mute", new BungeeMutePlayer(this));
-            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:autoban");
-
-            this.getCommand("autoban").setExecutor(new AutoBanCommand(this));
-            this.getCommand("unmute").setExecutor(new UnMuteCommand());
-
-            //Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Ban/Mute Systems");
-        }
+//        // Ban/Mute System
+//        if (config.getBoolean("systems.punishments.enabled")) {
+//
+//            this.getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:mute", new BungeeMutePlayer(this));
+//            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:autoban");
+//
+//            this.getCommand("autoban").setExecutor(new AutoBanCommand(this));
+//            this.getCommand("unmute").setExecutor(new UnMuteCommand());
+//
+//            //Add the system enabled message.
+//            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Ban/Mute Systems");
+//        }
 
         // Donation System
         if (config.getBoolean("systems.donations.enabled")) {
@@ -185,15 +193,34 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Donation Systems");
         }
 
-        // Town Bonus System
-        if (config.getBoolean("systems.townbonus.enabled")) {
-            getServer().getPluginManager().registerEvents(new BonusMethods(this), this);
-            BonusMethods.setupPermissions();
-            this.getCommand("bmlands").setExecutor(new BonusCommand(this));
+        // Trophy System
+        if (config.getBoolean("systems.trophies.enabled")) {
+            Database database = new Database("plugins/BMessentials/");
+            this.inventory.init();
+
+            try {
+                Data data = new Data();
+                data.setMenu(new TrophyRoomMenu(this.inventory));
+            } catch (JsonProcessingException | SQLException var2) {
+                var2.printStackTrace();
+            }
+
+
+            Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+            this.getCommand("trophyroom").setExecutor(new TrophyCommand());
+
+            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                (new PlaceHolderApiHook()).register();
+                System.out.println("Registered PlaceholderAPI placeholders!");
+            }
+
+            this.getCommand("trophyroom").setExecutor(new TrophyCommand());
 
             //Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Town Bonus Systems");
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Trophy Systems");
         }
+
+
 
 
 
@@ -211,14 +238,17 @@ public class BMEssentials extends JavaPlugin {
         // Log a message to indicate the plugin is being disabled
         getLogger().info("Disabling BMEssentials...");
 
-        // Close the database connection pool
-        if (dbManager != null) {
-            dbManager.close();
-            getLogger().info("Database connection closed successfully.");
-        }
+//        // Close the database connection pool
+//        if (dbManager != null) {
+//            dbManager.close();
+//            getLogger().info("Database connection closed successfully.");
+//        }
 
         // Log a message to indicate the plugin has been successfully disabled
         getLogger().info("BMEssentials has been disabled!");
     }
 
+    public static BMEssentials getMain() {
+        return main;
+    }
 }

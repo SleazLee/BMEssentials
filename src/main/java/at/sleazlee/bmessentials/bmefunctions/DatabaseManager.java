@@ -1,9 +1,9 @@
 package at.sleazlee.bmessentials.bmefunctions;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.Bukkit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,7 +38,7 @@ public class DatabaseManager {
 	}
 
 	public static void asyncSetString(BMEssentials plugin, String tableName, String keyColumnName, String uuidValue, String targetColumn, String value) {
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		Scheduler.run(() -> {
 			try (Connection connection = getConnection();
 				 PreparedStatement statement = connection.prepareStatement(
 						 "INSERT INTO " + tableName + " (" + keyColumnName + ", " + targetColumn + ") VALUES (?, ?) ON DUPLICATE KEY UPDATE " + targetColumn + " = ?")) {
@@ -53,7 +53,7 @@ public class DatabaseManager {
 	}
 
 	public static void asyncGetString(BMEssentials plugin, String tableName, String keyColumnName, String uuidValue, String targetColumn, Consumer<String> callback) {
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		Scheduler.run(() -> {
 			try (Connection connection = getConnection();
 				 PreparedStatement statement = connection.prepareStatement(
 						 "SELECT " + targetColumn + " FROM " + tableName + " WHERE " + keyColumnName + " = ?")) {
@@ -61,7 +61,7 @@ public class DatabaseManager {
 				ResultSet resultSet = statement.executeQuery();
 				if (resultSet.next()) {
 					String result = resultSet.getString(targetColumn);
-					Bukkit.getScheduler().runTask(plugin, () -> callback.accept(result));
+					Scheduler.run(() -> callback.accept(result));
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();

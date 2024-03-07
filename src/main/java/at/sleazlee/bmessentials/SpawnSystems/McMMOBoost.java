@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.SpawnSystems;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -137,7 +138,7 @@ public class McMMOBoost implements CommandExecutor {
 
 		// sets the permission
 		String setCommandBuilder = "lp user " + playerName + " permission settemp "+ permission + " true " + hour + "h" + min +"m";
-		Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+		Scheduler.runLater(new Runnable() {
 			@Override
 			public void run() {
 				Bukkit.dispatchCommand(console, setCommandBuilder);

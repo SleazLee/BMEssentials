@@ -1,9 +1,10 @@
 name: BMEssentials
-version: 1.0
+version: 2.0
 api-version: '1.20'
 main: at.sleazlee.bmessentials.BMEssentials
 author: SleazLee
 description: One plugin to rule them all!
+folia-supported: true
 
 softdepend: [HuskHomes, HuskTowns, Vault]
 
@@ -104,6 +105,7 @@ commands:
     description: Give a selected player the selected donation package.
     usage: /donation <player> <package>
 
-  bmlands:
-    description: Admin command associated with changing a lands name and ranking up.
-    usage: /bmlands
+  trophyroom:
+    aliases: [trophies, trophy]
+    description: Opens a players Trophy Room.
+    usage: /trophies <player>

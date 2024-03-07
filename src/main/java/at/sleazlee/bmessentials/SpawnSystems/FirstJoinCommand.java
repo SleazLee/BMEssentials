@@ -1,15 +1,14 @@
 package at.sleazlee.bmessentials.SpawnSystems;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,7 @@ import java.util.UUID;
 
 public class FirstJoinCommand implements CommandExecutor {
 
-    private final Map<UUID, BukkitTask> tasks = new HashMap<>();
+    private final Map<UUID, Scheduler.Task> tasks = new HashMap<>();
     private final BMEssentials plugin;
 
     public FirstJoinCommand(BMEssentials plugin) {
@@ -39,7 +38,7 @@ public class FirstJoinCommand implements CommandExecutor {
             return true;
         }
 
-        BukkitTask task = Bukkit.getScheduler().runTaskTimer(this.plugin, new Runnable() {
+        Scheduler.Task task = Scheduler.runTimer(new Runnable() {
             private int count = 0;
 
             @Override
