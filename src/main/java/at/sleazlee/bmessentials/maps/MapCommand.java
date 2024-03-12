@@ -59,10 +59,7 @@ public class MapCommand implements CommandExecutor {
 		String mapLink = "";
 
 		switch (district.toLowerCase()) {
-			case "wildd":
-			case "wilda":
-			case "wildc":
-			case "wildb":
+			case "blockminer":
 				createMapLink(district.toLowerCase(), player);
 				break;
 			default:
@@ -94,6 +91,7 @@ public class MapCommand implements CommandExecutor {
 
 		// Get the X and Z coordinates
 		int x = (int) location.getX();
+		int y = (int) location.getY();
 		int z = (int) location.getZ();
 
 
@@ -101,7 +99,9 @@ public class MapCommand implements CommandExecutor {
 			mapLink = "https://blockminer.net/map/" + districtName;
 
 		} else {
-			mapLink = "https://blockminer.net/map/" + districtName + "#" + worldName + ";flat;" + x + ",64," + z + ";6";
+			mapLink = "https://blockminer.net/map/#" + worldName + ":" + x + ":" + y + ":" + z + ":150:0:0:0:0:perspective";
+			//
+			// https://blockminer.net/map/#world:X:Y:Z:150:0:0:0:0:perspective
 		}
 
 		TextComponent baseText = new TextComponent("§a§lMaps §7Here's the link: §2");
