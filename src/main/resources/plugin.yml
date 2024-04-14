@@ -133,14 +133,6 @@ commands:
     description: Gives the player a discord link.
     usage: /bmdiscord
 
-  vot:
-    description: Shows Spawn Only Vot message.
-    usage: /vot
-
-  voting:
-    description: Shows Spawn Only Vot message.
-    usage: /voting
-
   mcmmoboost:
     description: gives a mcmmo boost to a player.
     usage: /mcmmobonus <player>
@@ -165,3 +157,9 @@ commands:
     aliases: [trophies, trophy]
     description: Opens a players Trophy Room.
     usage: /trophyroom <player>
+
+  vot:
+    aliases:
+      - voting
+    description: Voting system for time and weather.
+    usage: /vot <day|night|clear|rain|thunder>

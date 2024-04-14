@@ -5,6 +5,7 @@ import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.Containers.*;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
+import at.sleazlee.bmessentials.vot.vot;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
 import at.sleazlee.bmessentials.bmefunctions.DonationCommand;
@@ -118,8 +119,6 @@ public class BMEssentials extends JavaPlugin {
         if (config.getBoolean("systems.spawnsystems.enabled")) {
             this.getCommand("firstjoinmessage").setExecutor(new FirstJoinCommand(this));
             this.getCommand("springsheal").setExecutor(new HealCommand(this));
-            this.getCommand("vot").setExecutor(new SpawnOnlyCommands());
-            this.getCommand("voting").setExecutor(new SpawnOnlyCommands());
             this.getCommand("mcmmoboost").setExecutor(new McMMOBoost(this));
             this.getCommand("diamondcatch").setExecutor(new DiamondCatch(this));
 
@@ -244,6 +243,17 @@ public class BMEssentials extends JavaPlugin {
             //Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Trophy Systems");
         }
+
+        // Vot System
+        if (config.getBoolean("systems.Vot.enabled")) {
+
+            this.getCommand("vot").setExecutor(new vot.VoteCommand());
+
+            //Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
+        }
+
+
 
 
 

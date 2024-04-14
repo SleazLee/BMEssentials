@@ -61,3 +61,47 @@ public final class Scheduler {
         }
     }
 }
+
+// if BukkitRunnable:
+//Looks like this:
+
+//        new BukkitRunnable() {
+//      @Override
+//       public void run() {
+//        voteInProgress = false;
+//
+//        if (yesVotes > noVotes) {
+//        Bukkit.broadcastMessage(ChatColor.GREEN + "The vote to change " + voteOption + " has passed. Changing now...");
+//        executeChange(voteOption);
+//        } else {
+//        Bukkit.broadcastMessage(ChatColor.RED + "The vote to change " + voteOption + " has failed. No change will occur.");
+//        }
+//
+//        // Start cooldown for all players
+//        startCooldown();
+//
+//        // Clear voted players
+//        votedPlayers.clear();
+//        }
+//        }.runTaskLater(this, 60 * 20); // 60 seconds
+//        }
+
+//Translate to this:
+
+//      runLater(() -> {
+//        voteInProgress = false;
+//
+//        if (yesVotes > noVotes) {
+//        Bukkit.broadcastMessage(ChatColor.GREEN + "The vote to change " + voteOption + " has passed. Changing now...");
+//        executeChange(voteOption);
+//        } else {
+//        Bukkit.broadcastMessage(ChatColor.RED + "The vote to change " + voteOption + " has failed. No change will occur.");
+//        }
+//
+//        // Start cooldown for all players
+//        startCooldown();
+//
+//        // Clear voted players
+//        votedPlayers.clear();
+//        }, 20 * 60); // 60 seconds
+//        }

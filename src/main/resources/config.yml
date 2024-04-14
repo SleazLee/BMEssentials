@@ -120,3 +120,7 @@ systems:
   # Enables the Trophies system.
   trophies:
     enabled: true
+
+  # Enables the vot time/weather system.
+  Vot:
+    enabled: true
