@@ -162,4 +162,4 @@ commands:
     aliases:
       - voting
     description: Voting system for time and weather.
-    usage: /vot <day|night|clear|rain|thunder>
+    usage: /vot <day|night|clear|rain|thunder|yes|no>
