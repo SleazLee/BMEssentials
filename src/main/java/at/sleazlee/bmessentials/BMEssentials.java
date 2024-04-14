@@ -5,7 +5,7 @@ import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.Containers.*;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
-import at.sleazlee.bmessentials.vot.vot;
+import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
 import at.sleazlee.bmessentials.bmefunctions.DonationCommand;
@@ -245,11 +245,8 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Vot System
-        if (config.getBoolean("systems.Vot.enabled")) {
-
-            this.getCommand("vot").setExecutor(new vot.VoteCommand());
-
-            //Add the system enabled message.
+        if (getConfig().getBoolean("systems.Vot.enabled")) {
+            getCommand("vot").setExecutor(new at.sleazlee.bmessentials.vot.VoteCommand());
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
         }
 
