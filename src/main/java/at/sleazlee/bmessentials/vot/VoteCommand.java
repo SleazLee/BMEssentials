@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.vot;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -22,6 +23,7 @@ public class VoteCommand implements CommandExecutor {
     private static int yesVotes = 0;
     private static int noVotes = 0;
     private static String voteOption;
+    private Scheduler.Task actionBarTask;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -82,30 +84,47 @@ public class VoteCommand implements CommandExecutor {
     private void startVote(String option, Player initiator) {
         voteInProgress = true;
         voteOption = option;
-        yesVotes = 0;
+        yesVotes = 1; // Initiator's vote counts as yes
         noVotes = 0;
         votedPlayers.clear();
+        votedPlayers.add(initiator); // Add initiator to the voted list
 
         Bukkit.broadcastMessage(formatMessage("A vote to change " + option + " has started! Vote yes or no with /vot yes or /vot no.", true));
-        Bukkit.broadcastMessage(ChatColor.YELLOW + initiator.getName() + ChatColor.GREEN + " started the vote.");
+        Bukkit.broadcastMessage(ChatColor.YELLOW + initiator.getName() + ChatColor.GREEN + " started the vote and voted YES.");
 
-        runLater(() -> {
-            voteInProgress = false;
-
-            if (yesVotes > noVotes) {
-                Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has passed. Changing now...", true));
-                executeChange(voteOption);
-            } else {
-                Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has failed. No change will occur.", false));
-            }
-
-            // Start cooldown for all players
-            startCooldown();
-
-            // Clear voted players
-            votedPlayers.clear();
-        }, 20 * 60); // 60 seconds
+        checkAndExecuteVote(); // Check if immediate execution is possible
     }
+
+    private void checkAndExecuteVote() {
+        if (Bukkit.getOnlinePlayers().size() == 1 && yesVotes == 1) {
+            // Only one player online and they initiated the vote
+            Bukkit.broadcastMessage(formatMessage("As the only player online, your vote to change " + voteOption + " passes automatically.", true));
+            executeChange(voteOption);
+
+            voteInProgress = false;
+            startCooldown();
+            votedPlayers.clear();
+            clearActionBar(); // Clear the action bar
+        } else {
+            // Schedule the normal end of the voting period using Scheduler
+            Scheduler.runLater(() -> {
+                voteInProgress = false;
+                clearActionBar(); // Clear the action bar
+
+                if (yesVotes > noVotes) {
+                    Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has passed. Changing now...", true));
+                    executeChange(voteOption);
+                } else {
+                    Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has failed. No change will occur.", false));
+                }
+
+                startCooldown();
+                votedPlayers.clear();
+            }, 20 * 60); // 60 seconds
+        }
+    }
+
+
 
     private void updateVoteProgress() {
         int totalVotes = yesVotes + noVotes;
@@ -115,8 +134,23 @@ public class VoteCommand implements CommandExecutor {
         String progressBar = ChatColor.GREEN + StringUtils.repeat("█", yesPercentage) +
                 ChatColor.RED + StringUtils.repeat("█", noPercentage);
 
+        if (actionBarTask != null) {
+            actionBarTask.cancel(); // Cancel previous task if it exists
+        }
+
+        actionBarTask = Scheduler.runTimer(() -> {
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                online.sendActionBar(progressBar);
+            }
+        }, 0L, 20L); // Update action bar every second
+    }
+
+    private void clearActionBar() {
+        if (actionBarTask != null) {
+            actionBarTask.cancel();
+        }
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.sendActionBar(progressBar);
+            online.sendActionBar(""); // Clear the action bar
         }
     }
 
@@ -161,27 +195,36 @@ public class VoteCommand implements CommandExecutor {
     }
 
     private void smoothTimeChange(World world, long targetTime) {
+        // Ensure that this function only operates in valid world contexts
+        if (world.getEnvironment() == World.Environment.NETHER || world.getEnvironment() == World.Environment.THE_END) {
+            return; // Skip time change in Nether or The End as they do not have a day/night cycle
+        }
+
         long currentTime = world.getTime();
         long difference = (targetTime - currentTime) % 24000;
         if (difference < 0) {
-            difference += 24000; // ensure positive difference
+            difference += 24000; // Ensure positive difference
         }
-        int transitionTime = 200; // total time in ticks to complete the transition (10 seconds)
+
+        int transitionTime = 200; // Total time in ticks to complete the transition (10 seconds)
         long step = difference / (transitionTime / 5); // Adjust the step since we're updating less frequently
 
-        new BukkitRunnable() {
-            long ticksPassed = 0;
+        final Scheduler.Task[] smoothTimeTask = new Scheduler.Task[1]; // Array to hold the task reference
 
-            @Override
-            public void run() {
-                if (ticksPassed >= transitionTime) {
-                    this.cancel();
+        smoothTimeTask[0] = Scheduler.runTimer(() -> {
+            if (smoothTimeTask[0] != null) {
+                if (world.getTime() + step > targetTime) {
+                    world.setTime(targetTime);
+                    smoothTimeTask[0].cancel(); // Stop the task once we reach the target time
                 } else {
                     world.setTime(world.getTime() + step);
-                    ticksPassed += 5;
                 }
             }
-        }.runTaskTimer(BMEssentials.getInstance(), 0L, 5L); // Update every 5 ticks
+        }, 0L, 1L); // Schedule the task to run every 1 ticks
     }
+
+
+
+
 
 }
