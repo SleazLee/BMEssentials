@@ -40,6 +40,9 @@ public final class Scheduler {
         return isFolia;
     }
 
+    public static void cancelCurrentTask() {
+    }
+
     public static class Task {
 
         private Object foliaTask;

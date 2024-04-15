@@ -12,8 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static at.sleazlee.bmessentials.Scheduler.runLater;
 
@@ -24,6 +26,7 @@ public class VoteCommand implements CommandExecutor {
     private static int noVotes = 0;
     private static String voteOption;
     private Scheduler.Task actionBarTask;
+    private HashMap<UUID, Long> lastVoteTime = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -79,21 +82,52 @@ public class VoteCommand implements CommandExecutor {
         }
         votedPlayers.add(player);
         updateVoteProgress();
+
+        // Check if all online players have voted
+        if (votedPlayers.size() >= Bukkit.getOnlinePlayers().size()) {
+            finalizeVote();
+        }
     }
 
+    private void finalizeVote() {
+        voteInProgress = false;
+        clearActionBar(); // Clear the action bar
+
+        if (yesVotes > noVotes) {
+            Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has passed. Changing now...", true));
+            executeChange(voteOption);
+        } else {
+            Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has failed. No change will occur.", false));
+        }
+
+        startCooldown();
+        votedPlayers.clear();
+    }
+
+
+
     private void startVote(String option, Player initiator) {
+        long currentTime = System.currentTimeMillis();
+        if (lastVoteTime.containsKey(initiator.getUniqueId()) &&
+                currentTime - lastVoteTime.get(initiator.getUniqueId()) < 15 * 60 * 1000) {
+            initiator.sendMessage(formatMessage("You are still in a cooldown period.", false));
+            return;
+        }
+
+        lastVoteTime.put(initiator.getUniqueId(), currentTime);
         voteInProgress = true;
         voteOption = option;
-        yesVotes = 1; // Initiator's vote counts as yes
+        yesVotes = 1;
         noVotes = 0;
         votedPlayers.clear();
-        votedPlayers.add(initiator); // Add initiator to the voted list
+        votedPlayers.add(initiator);
 
         Bukkit.broadcastMessage(formatMessage("A vote to change " + option + " has started! Vote yes or no with /vot yes or /vot no.", true));
         Bukkit.broadcastMessage(ChatColor.YELLOW + initiator.getName() + ChatColor.GREEN + " started the vote and voted YES.");
 
-        checkAndExecuteVote(); // Check if immediate execution is possible
+        checkAndExecuteVote();
     }
+
 
     private void checkAndExecuteVote() {
         if (Bukkit.getOnlinePlayers().size() == 1 && yesVotes == 1) {
@@ -156,22 +190,23 @@ public class VoteCommand implements CommandExecutor {
 
     private void executeChange(String option) {
         for (World world : Bukkit.getWorlds()) {
-            if (option.equals("day")) {
-                smoothTimeChange(world, 1000); // Time for day start
-            } else if (option.equals("night")) {
-                smoothTimeChange(world, 13000); // Time for night start
-            } else if (option.equals("clear")) {
-                world.setStorm(false);
-                world.setThundering(false);
-            } else if (option.equals("rain")) {
-                world.setStorm(true);
-                world.setThundering(false);
-            } else if (option.equals("thunder")) {
-                world.setStorm(true);
-                world.setThundering(true);
-            }
+            Scheduler.run(() -> {
+                if (option.equals("clear")) {
+                    world.setStorm(false);
+                    world.setThundering(false);
+                } else if (option.equals("rain")) {
+                    world.setStorm(true);
+                    world.setThundering(false);
+                } else if (option.equals("thunder")) {
+                    world.setStorm(true);
+                    world.setThundering(true);
+                } else {
+                    smoothTimeChange(world, option.equals("day") ? 1000 : 13000);
+                }
+            });
         }
     }
+
 
     private void startCooldown() {
         long cooldownDuration = 15 * 60 * 20L; // 15 minutes in ticks
@@ -195,33 +230,48 @@ public class VoteCommand implements CommandExecutor {
     }
 
     private void smoothTimeChange(World world, long targetTime) {
-        // Ensure that this function only operates in valid world contexts
         if (world.getEnvironment() == World.Environment.NETHER || world.getEnvironment() == World.Environment.THE_END) {
-            return; // Skip time change in Nether or The End as they do not have a day/night cycle
+            return; // Skip time change in these environments as they don't have a day/night cycle.
         }
+
+        final long step = 10; // Increment step
+        final long periodTicks = 1L; // Update every tick
 
         long currentTime = world.getTime();
-        long difference = (targetTime - currentTime) % 24000;
-        if (difference < 0) {
-            difference += 24000; // Ensure positive difference
-        }
+        long targetAdjustedTime = (targetTime + 24000) % 24000; // Normalize the target time within a day's cycle
+        long difference = (targetAdjustedTime - currentTime + 24000) % 24000;
+        if (difference == 0) return;
 
-        int transitionTime = 200; // Total time in ticks to complete the transition (10 seconds)
-        long step = difference / (transitionTime / 5); // Adjust the step since we're updating less frequently
+        // Use an array to hold the Task reference so it can be accessed inside the Runnable
+        final Scheduler.Task[] taskHolder = new Scheduler.Task[1];
 
-        final Scheduler.Task[] smoothTimeTask = new Scheduler.Task[1]; // Array to hold the task reference
+        taskHolder[0] = Scheduler.runTimer(new Runnable() {
+            long newTime = currentTime;
 
-        smoothTimeTask[0] = Scheduler.runTimer(() -> {
-            if (smoothTimeTask[0] != null) {
-                if (world.getTime() + step > targetTime) {
-                    world.setTime(targetTime);
-                    smoothTimeTask[0].cancel(); // Stop the task once we reach the target time
-                } else {
-                    world.setTime(world.getTime() + step);
+            @Override
+            public void run() {
+                newTime = (newTime + step) % 24000; // Update time in a circular manner within the day
+                world.setTime(newTime);
+
+                // Check if the new time has reached or surpassed the target time
+                if ((step > 0 && newTime >= targetTime) || (step < 0 && newTime <= targetTime)) {
+                    world.setTime(targetTime); // Correct any overshoot by setting exactly the target time
+                    if (taskHolder[0] != null) {
+                        taskHolder[0].cancel(); // Cancel this task using the reference
+                    }
                 }
             }
-        }, 0L, 1L); // Schedule the task to run every 1 ticks
+        }, 0L, periodTicks);
     }
+
+
+
+
+
+
+
+
+
 
 
 
