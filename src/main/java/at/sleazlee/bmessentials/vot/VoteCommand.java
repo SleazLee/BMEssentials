@@ -191,21 +191,30 @@ public class VoteCommand implements CommandExecutor {
     private void executeChange(String option) {
         for (World world : Bukkit.getWorlds()) {
             Scheduler.run(() -> {
-                if (option.equals("clear")) {
-                    world.setStorm(false);
-                    world.setThundering(false);
-                } else if (option.equals("rain")) {
-                    world.setStorm(true);
-                    world.setThundering(false);
-                } else if (option.equals("thunder")) {
-                    world.setStorm(true);
-                    world.setThundering(true);
-                } else {
-                    smoothTimeChange(world, option.equals("day") ? 1000 : 13000);
+                switch (option) {
+                    case "clear":
+                        world.setStorm(false);
+                        world.setThundering(false);
+                        break;
+                    case "rain":
+                        world.setStorm(true);
+                        world.setThundering(false);
+                        break;
+                    case "thunder":
+                        world.setStorm(true);
+                        world.setThundering(true);
+                        break;
+                    case "day":
+                        smoothTimeChange(world, 1000); // Roughly sunrise time
+                        break;
+                    case "night":
+                        smoothTimeChange(world, 15000); // Roughly sunset time
+                        break;
                 }
             });
         }
     }
+
 
 
     private void startCooldown() {
@@ -231,38 +240,41 @@ public class VoteCommand implements CommandExecutor {
 
     private void smoothTimeChange(World world, long targetTime) {
         if (world.getEnvironment() == World.Environment.NETHER || world.getEnvironment() == World.Environment.THE_END) {
-            return; // Skip time change in these environments as they don't have a day/night cycle.
+            return;
         }
 
-        final long step = 10; // Increment step
+        final long step = 20; // Slightly faster step to speed up time change
         final long periodTicks = 1L; // Update every tick
 
         long currentTime = world.getTime();
-        long targetAdjustedTime = (targetTime + 24000) % 24000; // Normalize the target time within a day's cycle
-        long difference = (targetAdjustedTime - currentTime + 24000) % 24000;
-        if (difference == 0) return;
+        long targetAdjustedTime = targetTime;
 
-        // Use an array to hold the Task reference so it can be accessed inside the Runnable
+        if (currentTime > targetAdjustedTime) {
+            targetAdjustedTime += 24000; // Adjust for full day cycle if needed
+        }
+
         final Scheduler.Task[] taskHolder = new Scheduler.Task[1];
 
+        long finalTargetAdjustedTime = targetAdjustedTime;
         taskHolder[0] = Scheduler.runTimer(new Runnable() {
             long newTime = currentTime;
 
             @Override
             public void run() {
-                newTime = (newTime + step) % 24000; // Update time in a circular manner within the day
+                newTime = (newTime + step) % 24000;
                 world.setTime(newTime);
 
-                // Check if the new time has reached or surpassed the target time
-                if ((step > 0 && newTime >= targetTime) || (step < 0 && newTime <= targetTime)) {
-                    world.setTime(targetTime); // Correct any overshoot by setting exactly the target time
+                if (newTime >= finalTargetAdjustedTime % 24000) {
+                    world.setTime(targetTime); // Set exactly the target time, adjusted for any day wrap-around
                     if (taskHolder[0] != null) {
-                        taskHolder[0].cancel(); // Cancel this task using the reference
+                        taskHolder[0].cancel();
                     }
                 }
             }
         }, 0L, periodTicks);
     }
+
+
 
 
 
