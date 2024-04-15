@@ -11,6 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.apache.commons.lang3.StringUtils;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +30,8 @@ public class VoteCommand implements CommandExecutor {
     private static String voteOption;
     private Scheduler.Task actionBarTask;
     private HashMap<UUID, Long> lastVoteTime = new HashMap<>();
+    private BossBar bossBar;
+    private Scheduler.Task scheduledVoteEndTask;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -92,6 +97,9 @@ public class VoteCommand implements CommandExecutor {
     private void finalizeVote() {
         voteInProgress = false;
         clearActionBar(); // Clear the action bar
+        if (bossBar != null) {
+            bossBar.removeAll();
+        }
 
         if (yesVotes > noVotes) {
             Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has passed. Changing now...", true));
@@ -102,6 +110,11 @@ public class VoteCommand implements CommandExecutor {
 
         startCooldown();
         votedPlayers.clear();
+
+        // Also cancel the scheduled task here for good measure
+        if (scheduledVoteEndTask != null) {
+            scheduledVoteEndTask.cancel();
+        }
     }
 
 
@@ -117,16 +130,30 @@ public class VoteCommand implements CommandExecutor {
         lastVoteTime.put(initiator.getUniqueId(), currentTime);
         voteInProgress = true;
         voteOption = option;
-        yesVotes = 1;
+        yesVotes = 1; // Initiator votes yes by default
         noVotes = 0;
         votedPlayers.clear();
         votedPlayers.add(initiator);
 
-        Bukkit.broadcastMessage(formatMessage("A vote to change " + option + " has started! Vote yes or no with /vot yes or /vot no.", true));
+        Bukkit.broadcastMessage(formatMessage("A vote to change " + option + " has started! Vote yes or no with /vot yes or vot no.", true));
         Bukkit.broadcastMessage(ChatColor.YELLOW + initiator.getName() + ChatColor.GREEN + " started the vote and voted YES.");
 
-        checkAndExecuteVote();
+        // Initialize the BossBar for voting
+        if (bossBar != null) {
+            bossBar.removeAll();
+        }
+        bossBar = Bukkit.createBossBar(formatMessage("&7&lPlace vote for &e&l" + option + "&7&l! &8&l| &7&lEnds in &e&l60s", true), BarColor.BLUE, BarStyle.SEGMENTED_20);
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            bossBar.addPlayer(online);
+        }
+        bossBar.setProgress(1.0);
+
+        // Start the vote ending countdown
+        Scheduler.runLater(() -> {
+            finalizeVote();
+        }, 20 * 60); // Ends in 60 seconds (20 ticks per second)
     }
+
 
 
     private void checkAndExecuteVote() {
@@ -135,25 +162,24 @@ public class VoteCommand implements CommandExecutor {
             Bukkit.broadcastMessage(formatMessage("As the only player online, your vote to change " + voteOption + " passes automatically.", true));
             executeChange(voteOption);
 
-            voteInProgress = false;
-            startCooldown();
-            votedPlayers.clear();
-            clearActionBar(); // Clear the action bar
+            // Cancel scheduled task if it exists
+            if (scheduledVoteEndTask != null) {
+                scheduledVoteEndTask.cancel();
+            }
+
+            finalizeVote();
         } else {
-            // Schedule the normal end of the voting period using Scheduler
-            Scheduler.runLater(() -> {
-                voteInProgress = false;
-                clearActionBar(); // Clear the action bar
+            // Cancel any previous scheduled task if it exists
+            if (scheduledVoteEndTask != null) {
+                scheduledVoteEndTask.cancel();
+            }
 
-                if (yesVotes > noVotes) {
-                    Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has passed. Changing now...", true));
-                    executeChange(voteOption);
-                } else {
-                    Bukkit.broadcastMessage(formatMessage("The vote to change " + voteOption + " has failed. No change will occur.", false));
+            // Schedule the normal end of the voting period using custom Scheduler
+            scheduledVoteEndTask = Scheduler.runLater(() -> {
+                // Check if the vote is still in progress before finalizing
+                if (voteInProgress) {
+                    finalizeVote();
                 }
-
-                startCooldown();
-                votedPlayers.clear();
             }, 20 * 60); // 60 seconds
         }
     }
@@ -162,11 +188,11 @@ public class VoteCommand implements CommandExecutor {
 
     private void updateVoteProgress() {
         int totalVotes = yesVotes + noVotes;
-        int yesPercentage = totalVotes > 0 ? (yesVotes * 10) / totalVotes : 0;
-        int noPercentage = 10 - yesPercentage;
+        int yesPercentage = totalVotes > 0 ? (yesVotes * 100) / totalVotes : 0;
+        int noPercentage = 100 - yesPercentage;
 
-        String progressBar = ChatColor.GREEN + StringUtils.repeat("█", yesPercentage) +
-                ChatColor.RED + StringUtils.repeat("█", noPercentage);
+        String progressBar = ChatColor.GREEN + StringUtils.repeat("●", yesPercentage / 10) +
+                ChatColor.RED + StringUtils.repeat("●", noPercentage / 10);
 
         if (actionBarTask != null) {
             actionBarTask.cancel(); // Cancel previous task if it exists
@@ -178,6 +204,7 @@ public class VoteCommand implements CommandExecutor {
             }
         }, 0L, 20L); // Update action bar every second
     }
+
 
     private void clearActionBar() {
         if (actionBarTask != null) {

@@ -57,10 +57,11 @@ public final class Scheduler {
         }
 
         public void cancel() {
-            if (foliaTask != null)
+            if (foliaTask != null) {
                 ((ScheduledTask) foliaTask).cancel();
-            else
+            } else if (bukkitTask != null) {
                 bukkitTask.cancel();
+            }
         }
     }
 }
