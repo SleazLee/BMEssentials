@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static at.sleazlee.bmessentials.Scheduler.runLater;
 
@@ -135,7 +136,7 @@ public class VoteCommand implements CommandExecutor {
         votedPlayers.clear();
         votedPlayers.add(initiator);
 
-        Bukkit.broadcastMessage(formatMessage("A vote to change " + option + " has started! Vote yes or no with /vot yes or vot no.", true));
+        Bukkit.broadcastMessage(formatMessage("A vote to change " + option + " has started! Vote yes or no with /vot yes or no.", true));
         Bukkit.broadcastMessage(ChatColor.YELLOW + initiator.getName() + ChatColor.GREEN + " started the vote and voted YES.");
 
         // Initialize the BossBar for voting
@@ -149,10 +150,17 @@ public class VoteCommand implements CommandExecutor {
         bossBar.setProgress(1.0);
 
         // Start the vote ending countdown
-        Scheduler.runLater(() -> {
-            finalizeVote();
-        }, 20 * 60); // Ends in 60 seconds (20 ticks per second)
+        final int voteDurationSeconds = 60;
+        scheduledVoteEndTask = Scheduler.runTimer(() -> {
+            double progressDecrement = 1.0 / voteDurationSeconds;
+            double currentProgress = bossBar.getProgress() - progressDecrement;
+            bossBar.setProgress(Math.max(0, currentProgress));  // Ensure progress doesn't go below 0
+            if (currentProgress <= 0) {
+                finalizeVote();  // Automatically finalize vote when boss bar is empty
+            }
+        }, 20L, 20L); // Update every second (20 ticks per second)
     }
+
 
 
 
@@ -267,53 +275,41 @@ public class VoteCommand implements CommandExecutor {
 
     private void smoothTimeChange(World world, long targetTime) {
         if (world.getEnvironment() == World.Environment.NETHER || world.getEnvironment() == World.Environment.THE_END) {
-            return;
+            return; // No day/night cycle in these environments
         }
 
-        final long step = 20; // Slightly faster step to speed up time change
-        final long periodTicks = 1L; // Update every tick
+        AtomicLong currentTime = new AtomicLong(world.getTime());
+        long totalTicksToAdd;
 
-        long currentTime = world.getTime();
-        long targetAdjustedTime = targetTime;
-
-        if (currentTime > targetAdjustedTime) {
-            targetAdjustedTime += 24000; // Adjust for full day cycle if needed
+        if (targetTime < currentTime.get()) {
+            // Calculate the additional ticks needed to pass through midnight
+            totalTicksToAdd = (24000 - currentTime.get()) + targetTime;
+        } else {
+            totalTicksToAdd = targetTime - currentTime.get();
         }
+
+        // Calculate the number of actual ticks this change should be spread across
+        final long maxRealTimeTicks = 200; // 10 seconds at 20 ticks per second
+        final long baseline = 24000 / maxRealTimeTicks; // Calculate step size per real tick
+
+        long steps = (totalTicksToAdd + baseline - 1) / baseline; // This rounds up the division
+
+        final long step = totalTicksToAdd / steps; // Number of game ticks to add each real tick
 
         final Scheduler.Task[] taskHolder = new Scheduler.Task[1];
 
-        long finalTargetAdjustedTime = targetAdjustedTime;
-        taskHolder[0] = Scheduler.runTimer(new Runnable() {
-            long newTime = currentTime;
+        taskHolder[0] = Scheduler.runTimer(() -> {
+            long newCurrentTime = (currentTime.get() + step) % 24000;
+            currentTime.set(newCurrentTime);
+            world.setTime(newCurrentTime);
 
-            @Override
-            public void run() {
-                newTime = (newTime + step) % 24000;
-                world.setTime(newTime);
-
-                if (newTime >= finalTargetAdjustedTime % 24000) {
-                    world.setTime(targetTime); // Set exactly the target time, adjusted for any day wrap-around
-                    if (taskHolder[0] != null) {
-                        taskHolder[0].cancel();
-                    }
+            if (Math.abs(newCurrentTime - targetTime) < step || newCurrentTime == targetTime) {
+                world.setTime(targetTime); // Correct any overshoot
+                if (taskHolder[0] != null) {
+                    taskHolder[0].cancel();
                 }
             }
-        }, 0L, periodTicks);
+        }, 0L, 1L); // Update every real tick
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
