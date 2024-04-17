@@ -30,7 +30,7 @@ public class VoteCommand implements CommandExecutor {
     private static int noVotes = 0;
     private static String voteOption;
     private Scheduler.Task actionBarTask;
-    private HashMap<UUID, Long> lastVoteTime = new HashMap<>();
+    private static long lastVoteTime = 0;  // Global last vote time
     private BossBar bossBar;
     private Scheduler.Task scheduledVoteEndTask;
 
@@ -122,13 +122,12 @@ public class VoteCommand implements CommandExecutor {
 
     private void startVote(String option, Player initiator) {
         long currentTime = System.currentTimeMillis();
-        if (lastVoteTime.containsKey(initiator.getUniqueId()) &&
-                currentTime - lastVoteTime.get(initiator.getUniqueId()) < 15 * 60 * 1000) {
-            initiator.sendMessage(formatMessage("You are still in a cooldown period.", false));
+        if (currentTime - lastVoteTime < 15 * 60 * 1000) {
+            initiator.sendMessage(formatMessage("A global cooldown is currently in effect.", false));
             return;
         }
 
-        lastVoteTime.put(initiator.getUniqueId(), currentTime);
+        lastVoteTime = currentTime;  // Set the last vote time to now for the global cooldown
         voteInProgress = true;
         voteOption = option;
         yesVotes = 1; // Initiator votes yes by default
@@ -136,14 +135,14 @@ public class VoteCommand implements CommandExecutor {
         votedPlayers.clear();
         votedPlayers.add(initiator);
 
-        Bukkit.broadcastMessage(formatMessage("A vote to change " + option + " has started! Vote yes or no with /vot yes or no.", true));
+        Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "A vote to change " + option.toUpperCase() + " has started! Vote yes or no with /vot yes or no."));
         Bukkit.broadcastMessage(ChatColor.YELLOW + initiator.getName() + ChatColor.GREEN + " started the vote and voted YES.");
 
         // Initialize the BossBar for voting
         if (bossBar != null) {
             bossBar.removeAll();
         }
-        bossBar = Bukkit.createBossBar(formatMessage("&7&lPlace vote for &e&l" + option + "&7&l! &8&l| &7&lEnds in &e&l60s", true), BarColor.BLUE, BarStyle.SEGMENTED_20);
+        bossBar = Bukkit.createBossBar(ChatColor.translateAlternateColorCodes('&', "&7&lPlace vote for &e&l" + option.toUpperCase() + "&7&l! &8| &7&lEnds in &e&l60s"), BarColor.BLUE, BarStyle.SEGMENTED_20);
         for (Player online : Bukkit.getOnlinePlayers()) {
             bossBar.addPlayer(online);
         }
@@ -151,16 +150,24 @@ public class VoteCommand implements CommandExecutor {
 
         // Start the vote ending countdown
         final int voteDurationSeconds = 60;
+        AtomicLong timeLeft = new AtomicLong(voteDurationSeconds); // Keep track of the time left
         scheduledVoteEndTask = Scheduler.runTimer(() -> {
             double progressDecrement = 1.0 / voteDurationSeconds;
             double currentProgress = bossBar.getProgress() - progressDecrement;
             bossBar.setProgress(Math.max(0, currentProgress));  // Ensure progress doesn't go below 0
+
+            // Update the BossBar title with the countdown
+            long secsLeft = timeLeft.decrementAndGet();
+            bossBar.setTitle(ChatColor.translateAlternateColorCodes('&', "&7&lPlace vote for &e&l" + option.toUpperCase() + "&7&l! &8| &7&lEnds in &e&l" + secsLeft + "s"));
+
             if (currentProgress <= 0) {
                 finalizeVote();  // Automatically finalize vote when boss bar is empty
             }
         }, 20L, 20L); // Update every second (20 ticks per second)
-    }
 
+        // Start updating the action bar immediately
+        updateVoteProgress();
+    }
 
 
 
@@ -253,15 +260,10 @@ public class VoteCommand implements CommandExecutor {
 
 
     private void startCooldown() {
-        long cooldownDuration = 15 * 60 * 20L; // 15 minutes in ticks
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            votedPlayers.add(player);
-            player.sendMessage(formatMessage("Vote cooldown started. You cannot initiate a new vote for 15 minutes.", false));
-        }
-
-        // Cooldown mechanism (simulated with a delay to accept new votes)
+        lastVoteTime = System.currentTimeMillis();  // Set the cooldown starting now
+        long cooldownDuration = 15 * 60 * 1000; // 15 minutes in milliseconds
         runLater(() -> {
-            votedPlayers.clear(); // Reset the cooldown after 15 minutes
+            // Optional: Add a notification that the cooldown has ended, if needed
         }, cooldownDuration);
     }
 
