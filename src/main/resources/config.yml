@@ -124,3 +124,7 @@ systems:
   # Enables the vot time/weather system.
   Vot:
     enabled: true
+
+  # Enables the Rankup System
+  Rankup:
+    enabled: true
