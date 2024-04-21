@@ -33,6 +33,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import net.milkbowl.vault.economy.Economy;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+import at.sleazlee.bmessentials.rankup.RankUpManager;
 
 import java.sql.SQLException;
 
@@ -43,6 +47,7 @@ public class BMEssentials extends JavaPlugin {
     private HuskHomesAPIHook huskHomesAPIHook;
 //    private DatabaseManager dbManager;
     private static BMEssentials main;
+    private RankUpManager rankUpManager;
 
     public static BMEssentials getInstance() {
         return getPlugin(BMEssentials.class);
@@ -250,9 +255,17 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
         }
 
+        // RankUp System
+        if (getConfig().getBoolean("systems.Rankup.enabled")) {
 
+            if (!setupEconomy()) {
+                getLogger().severe("Disabled due to no Vault dependency found!");
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
 
-
+            this.rankUpManager = new RankUpManager(this, getEconomyService());
+        }
 
 
 
@@ -282,5 +295,21 @@ public class BMEssentials extends JavaPlugin {
 
     public static BMEssentials getMain() {
         return main;
+    }
+
+    private boolean setupEconomy() {
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        return rsp.getProvider() != null;
+    }
+
+    private Economy getEconomyService() {
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return null;
+        }
+        return rsp.getProvider();
     }
 }
