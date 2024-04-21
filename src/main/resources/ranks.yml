@@ -1,0 +1,39 @@
+# Ranks Configuration File
+
+chains:
+  warrior_path:
+    novice_warrior:
+      next_rank: apprentice_warrior
+      requirements:
+        balance: 100
+        mcmmo_power_level: 20
+      messages:
+        personal: "You successfully ranked up to Apprentice Warrior!"
+        broadcast: "Congratulate %player% on ranking up to Apprentice Warrior!"
+        deny: "Sorry, but you need at least $100 and a Power Level of 20 to rank up!"
+    apprentice_warrior:
+      next_rank: master_warrior
+      requirements:
+        balance: 500
+        mcmmo_power_level: 50
+      messages:
+        personal: "You successfully ranked up to Master Warrior!"
+        broadcast: "Congratulate %player% on ranking up to Master Warrior!"
+        deny: "Sorry, but you need at least $500 and a Power Level of 50 to rank up!"
+    master_warrior:
+      next_rank: none  # Indicates this is the top rank in this chain
+      requirements:
+        balance: 1000
+        mcmmo_power_level: 100
+      messages:
+        personal: "You have reached the highest rank: Master Warrior!"
+        broadcast: "Celebrate as %player% achieves the highest rank of Master Warrior!"
+        deny: "Sorry, but you need at least $1000 and a Power Level of 100 to become a Master Warrior!"
+
+  mage_path:
+    novice_mage:
+      next_rank: apprentice_mage
+      # Continue similar to the warrior_path
+    # Additional ranks...
+
+# Add other paths as needed

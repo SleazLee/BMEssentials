@@ -6,7 +6,7 @@ author: SleazLee
 description: One plugin to rule them all!
 folia-supported: true
 
-softdepend: [HuskHomes, HuskTowns, Vault]
+softdepend: [HuskHomes, HuskTowns, Vault, PlaceholderAPI]
 
 commands:
   bme:
@@ -170,8 +170,18 @@ commands:
     permission: bmessentials.adminvot
     permission-message: You do not have permission to use this command.
 
+  rankup:
+    description: Rank up to the next level if conditions are met.
+    usage: /rankup
+    permission: rankup.use
+    permission-message: You do not have permission to perform this command.
+
 
 permissions:
   bmessentials.adminvot:
     description: Allows use of the /adminvot command to bypass vote cooldowns.
     default: op
+
+  rankup.use:
+    description: Allows the user to attempt to rank up.
+    default: true
