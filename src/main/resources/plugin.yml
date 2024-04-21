@@ -163,3 +163,15 @@ commands:
       - voting
     description: Voting system for time and weather.
     usage: /vot <day|night|clear|rain|thunder|yes|no>
+
+  adminvot:
+    description: Allows admins to initiate a vote without cooldown.
+    usage: /adminvot <day|night|clear|rain|thunder>
+    permission: bmessentials.adminvot
+    permission-message: You do not have permission to use this command.
+
+
+permissions:
+  bmessentials.adminvot:
+    description: Allows use of the /adminvot command to bypass vote cooldowns.
+    default: op
