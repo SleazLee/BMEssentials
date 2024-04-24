@@ -37,6 +37,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import at.sleazlee.bmessentials.rankup.RankUpManager;
+import net.milkbowl.vault.economy.Economy;
 
 import java.sql.SQLException;
 
@@ -48,6 +49,7 @@ public class BMEssentials extends JavaPlugin {
 //    private DatabaseManager dbManager;
     private static BMEssentials main;
     private RankUpManager rankUpManager;
+    private Economy economy = null;
 
     public static BMEssentials getInstance() {
         return getPlugin(BMEssentials.class);
@@ -298,12 +300,21 @@ public class BMEssentials extends JavaPlugin {
     }
 
     private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            getLogger().info("Vault (plugin) is not installed.");
             return false;
         }
-        return rsp.getProvider() != null;
+
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            getLogger().info("No economy provider found via Vault.");
+            return false;
+        }
+
+        economy = rsp.getProvider();
+        return economy != null;
     }
+
 
     private Economy getEconomyService() {
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
