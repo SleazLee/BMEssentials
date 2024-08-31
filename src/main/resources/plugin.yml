@@ -6,6 +6,7 @@ author: SleazLee
 description: One plugin to rule them all!
 folia-supported: true
 
+loadbefore: [Lands]
 depend: [Vault]
 softdepend: [HuskHomes, PlaceholderAPI]
 

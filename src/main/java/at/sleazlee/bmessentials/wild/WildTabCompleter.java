@@ -14,7 +14,7 @@ public class WildTabCompleter implements TabCompleter {
         if (args.length == 1) {
             List<String> completions = new ArrayList<>();
             completions.add("1.19");
-            completions.add("1.20");
+            completions.add("1.21");
             completions.add("all");
             return completions;
         }

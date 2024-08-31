@@ -26,8 +26,8 @@ public class BMWildCommand implements CommandExecutor {
                     String version = args[0];
                     if (version.equals("1.19")) {
                         randomLocation(player, "1.19");
-                    } else if (version.equals("1.20")) {
-                        randomLocation(player, "1.20");
+                    } else if (version.equals("1.21")) {
+                        randomLocation(player, "1.21");
                     } else {
                         // Invalid version argument
                         player.sendMessage("§c§lWild §cInvalid version argument. §fTry /wild [version]");
@@ -56,8 +56,8 @@ public class BMWildCommand implements CommandExecutor {
                     lower = 612;
                     upper = 19867;
                     break;
-                // 1.20
-                case "1.20":
+                // 1.21
+                case "1.21":
                     lower = 20580;
                     upper = 29595;
                     break;
@@ -75,7 +75,7 @@ public class BMWildCommand implements CommandExecutor {
                     lower = 612;
                     upper = 19867;
                     break;
-                // 1.20
+                // 1.21
                 case 2:
                     lower = 20580;
                     upper = 29595;
