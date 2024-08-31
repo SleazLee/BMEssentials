@@ -63,20 +63,6 @@ public class BMEssentials extends JavaPlugin {
         // Creates a new config.yml if it doesn't exist, copies from your resource.
         this.saveDefaultConfig();
 
-//        // Establish the database connection
-//        try {
-//            dbManager = new DatabaseManager(this);
-//            getLogger().info("[BMEssentials] MySQL Connection established!");
-//
-//            // Create Databases if they are not already created.
-//            dbManager.createDatabaseTables();
-//
-//
-//        } catch (Exception e) {
-//            getLogger().severe("Failed to establish MySQL connection: " + e.getMessage());
-//            getServer().getPluginManager().disablePlugin(this);
-//        }
-
         //Art at the beginning.
         String[] startArt = Art.startupArt().split("\n");
         for (String line : startArt) {

@@ -68,7 +68,7 @@ public class TrophyCommand implements CommandExecutor, TabExecutor {
                             this.add("§8§n----------------------");
                         }
                     };
-                    ItemStackBuilder builder = (ItemStackBuilder)((ItemStackBuilder)((ItemStackBuilder)ItemStackBuilder.from(Material.NETHER_STAR).name("&7new trophy", true)).lore(lore)).glow(Enchantment.LUCK);
+                    ItemStackBuilder builder = (ItemStackBuilder)((ItemStackBuilder)((ItemStackBuilder)ItemStackBuilder.from(Material.NETHER_STAR).name("&7new trophy", true)).lore(lore)).glow(Enchantment.LUCK_OF_THE_SEA);
 
                     try {
                         data.addTrophy(id, new Trophy(id, builder.itemStack()));

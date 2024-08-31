@@ -1,12 +1,13 @@
 name: BMEssentials
 version: 2.0
-api-version: '1.20'
+api-version: '1.21'
 main: at.sleazlee.bmessentials.BMEssentials
 author: SleazLee
 description: One plugin to rule them all!
 folia-supported: true
 
-softdepend: [HuskHomes, HuskTowns, Vault, PlaceholderAPI]
+depend: [Vault]
+softdepend: [HuskHomes, PlaceholderAPI]
 
 commands:
   bme:

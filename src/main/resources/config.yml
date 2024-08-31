@@ -9,13 +9,6 @@
 
 serverName: "blockminer"
 
-MySQL:
-  host: Host
-  port: Port
-  user: Username
-  password: Password
-  database: DatabaseName
-
 #The start of a list of Systems.
 systems:
 
@@ -43,9 +36,9 @@ systems:
   bmwild:
     enabled: true
 
-  # Enables spawn only systems.  (Default: false)
+  # Enables spawn only systems.
   spawnsystems:
-    enabled: false
+    enabled: true
 
     mcmmoboost:
       # Chance to get a McMMO Boost at all. (Default 0.33, this means 33% chance)

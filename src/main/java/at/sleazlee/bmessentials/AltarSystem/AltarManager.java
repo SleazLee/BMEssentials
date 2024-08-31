@@ -48,7 +48,7 @@ public class AltarManager implements Listener {
 			double x = altarsSection.getDouble(altarName + ".x");
 			double y = altarsSection.getDouble(altarName + ".y");
 			double z = altarsSection.getDouble(altarName + ".z");
-			altarLocations.put(altarName, new Location(Bukkit.getWorld("hub"), x, y, z));
+			altarLocations.put(altarName, new Location(Bukkit.getWorld("world"), x, y, z));
 
 			// Assuming you have tokens named like "HealingSpringsToken", "WishingWellToken", etc.
 			altarTokens.put(altarName, altarName + "Token");

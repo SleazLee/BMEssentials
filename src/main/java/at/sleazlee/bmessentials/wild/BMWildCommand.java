@@ -101,31 +101,28 @@ public class BMWildCommand implements CommandExecutor {
             z = lower + (random.nextGaussian() * (upper - lower));
         }
 
-        String serverName, worldName;
+        String serverName = "blockminer";
+        String worldName = "world";
 
         double newx, newz;
 
-        int i = random.nextInt(0,80);
+        int i = random.nextInt(0,2);
+
+
+
+
 
         if (i > 60) {
-            serverName = "wilda";
-            worldName = "Wilda";
             newx = x * 1;
             newz = z * -1;
         } else if (i >= 39) {
-            serverName = "wildb";
-            worldName = "Wildb";
             newx = x * 1;
             newz = z * 1;
         } else if (i > 20) {
-            serverName = "wildc";
-            worldName = "Wildc";
             newx = x * -1;
             newz = z * 1;
         }
         else {
-            serverName = "wildd";
-            worldName = "Wildd";
             newx = x * -1;
             newz = z * -1;
         }

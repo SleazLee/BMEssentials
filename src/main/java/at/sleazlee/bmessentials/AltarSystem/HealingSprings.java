@@ -17,18 +17,18 @@ public class HealingSprings {
     public static void startHealingSpringsAmbient(BMEssentials plugin) {
         Scheduler.runTimer(() -> {
             if (!altarActivated) {
-                spawnParticleAtAltar(Particle.FIREWORKS_SPARK, false);
+                spawnParticleAtAltar(Particle.FIREWORK, false);
             } else {
-                spawnParticleAtAltar(Particle.FIREWORKS_SPARK, true);
+                spawnParticleAtAltar(Particle.FIREWORK, true);
             }
         }, 0L, 3L); // Reduced delay for faster animation
     }
 
     private static void spawnParticleAtAltar(Particle particle, boolean active) {
-        World world = Bukkit.getWorld("hub");
-        double x = -246.5; // Centered on the block
+        World world = Bukkit.getWorld("world");
+        double x = 201.5; // Centered on the block
         double y = 61.8;
-        double z = -107.5; // Centered on the block
+        double z = 164.5; // Centered on the block
         double radius = 0.8;
 
         double dx = radius * Math.sin(theta);
@@ -60,7 +60,7 @@ public class HealingSprings {
 
     static void playHealingSpringsAnimation(BMEssentials plugin, Location location) {
         World world = location.getWorld();
-        Location center = new Location(world, -246.5, 63, -107.5);
+        Location center = new Location(world, 201.5, 63, 164.5);
 
         // Step 1: Activate the Healing Springs Altar
         activateHealingSpringsAltar();
@@ -70,7 +70,7 @@ public class HealingSprings {
             final int finalI = i;
             Scheduler.runLater(() -> {
                 double y = center.getY() - 1.0 + (0.15 * finalI);
-                world.spawnParticle(Particle.REDSTONE, center.getX(), y, center.getZ(), 0, 0, 0, 0, createDustOptions("#32CA65"));
+                world.spawnParticle(Particle.DUST, center.getX(), y, center.getZ(), 0, 0, 0, 0, createDustOptions("#32CA65"));
             }, i * 2L);
         }
 
@@ -93,7 +93,7 @@ public class HealingSprings {
             final int finalI = i;
             Scheduler.runLater(() -> {
                 double y = center.getY() + 0.6 - (0.05 * finalI);
-                world.spawnParticle(Particle.REDSTONE, center.getX(), y, center.getZ(), 0, 0, 0, 0, createDustOptions("#32bbca"));
+                world.spawnParticle(Particle.DUST, center.getX(), y, center.getZ(), 0, 0, 0, 0, createDustOptions("#32bbca"));
             }, 50L + i * 2L);
         }
 
@@ -106,7 +106,7 @@ public class HealingSprings {
                         double x = r * Math.sin(phi) * Math.cos(theta);
                         double y = r * Math.sin(phi) * Math.sin(theta);
                         double z = r * Math.cos(phi);
-                        world.spawnParticle(Particle.REDSTONE, center.getX() + x, center.getY() + y, center.getZ() + z, 0, 0, 0, 0, createDustOptions("#FFFFFF"));
+                        world.spawnParticle(Particle.DUST, center.getX() + x, center.getY() + y, center.getZ() + z, 0, 0, 0, 0, createDustOptions("#FFFFFF"));
                     }
                 }
             }, 80L + i * 2L);
@@ -124,7 +124,7 @@ public class HealingSprings {
 
         // Step 9: Create a puff of smoke and play a sound when the item disappears
         Scheduler.runLater(() -> {
-            world.spawnParticle(Particle.SMOKE_NORMAL, center, 10, 0.2, 0.2, 0.2, 0.05);
+            world.spawnParticle(Particle.SMOKE, center, 10, 0.2, 0.2, 0.2, 0.05);
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.playSound(center, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.AMBIENT, 0.2f, 1.0f);
                 deactivateHealingSpringsAltar();

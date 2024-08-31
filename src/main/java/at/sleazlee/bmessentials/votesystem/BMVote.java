@@ -12,6 +12,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.Particle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -24,6 +25,8 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
+
+import static org.bukkit.Particle.*;
 
 public class BMVote implements Listener, CommandExecutor {
     private final BMEssentials plugin;
@@ -285,7 +288,7 @@ public class BMVote implements Listener, CommandExecutor {
     }
 
     public void spawnFallingParticleSphere(Player player, String hexCode) {
-        Particle.DustOptions dustOptions = Art.createDustOptions(hexCode);
+        DustOptions dustOptions = Art.createDustOptions(hexCode);
         double radius = plugin.getConfig().getDouble("systems.votesystem.particles.radius");
         Location location = player.getLocation();
 
@@ -304,9 +307,9 @@ public class BMVote implements Listener, CommandExecutor {
                     Location particleLocation = location.clone().add(x, 0, z);
 
                     // Spawn the particle
-                    particleLocation.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 0, dustOptions);
+                    particleLocation.getWorld().spawnParticle(DUST, particleLocation, 1, 0, 0, 0, dustOptions);
                 }
-                y -= radius / (8); // Lower the y-coordinate each tick
+                y -= radius / 8; // Lower the y-coordinate each tick
             }
         }, 0L, 1L); // Start immediately and repeat every tick (20 ticks = 1 second)
 
@@ -316,8 +319,9 @@ public class BMVote implements Listener, CommandExecutor {
             if (particleTask != null) {
                 particleTask.cancel();
             }
-        }, 20L); // Adjust the delay here to match your needs, 60 ticks for 3 seconds as per original requirement
+        }, 60L); // Adjust the delay here to match your needs, 60 ticks for 3 seconds as per original requirement
     }
+
 
 
 }
