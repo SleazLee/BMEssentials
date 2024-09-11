@@ -68,10 +68,10 @@ public class TrophyCommand implements CommandExecutor, TabExecutor {
                             this.add("§8§n----------------------");
                         }
                     };
-                    ItemStackBuilder builder = (ItemStackBuilder)((ItemStackBuilder)((ItemStackBuilder)ItemStackBuilder.from(Material.NETHER_STAR).name("&7new trophy", true)).lore(lore)).glow(Enchantment.LUCK_OF_THE_SEA);
+                    ItemStackBuilder builder = (ItemStackBuilder)((ItemStackBuilder)((ItemStackBuilder)ItemStackBuilder.from(Material.NETHER_STAR).setName("&7new trophy", true)).setLore(lore)).addGlowEffect(Enchantment.LUCK_OF_THE_SEA);
 
                     try {
-                        data.addTrophy(id, new Trophy(id, builder.itemStack()));
+                        data.addTrophy(id, new Trophy(id, builder.getItemStack()));
                         sender.sendMessage("§7Successfully created a new trophy §a" + id + "§7, edit yourself inside trophies table in the database.");
                     } catch (JsonProcessingException | SQLException var14) {
                         sender.sendMessage("§cSomething went wrong with the database!");

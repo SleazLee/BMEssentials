@@ -13,13 +13,15 @@ public class ItemStackJson {
 
     public static ItemStack fromJSON(String json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-        };
-        HashMap<String, Object> o = (HashMap)mapper.readValue(json, typeRef);
-        return ItemStackUtil.from(o).isPresent() ? (ItemStack)ItemStackUtil.from(o).get() : null;
+        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
+        HashMap<String, Object> o = mapper.readValue(json, typeRef);
+
+        // Assuming a new method 'deserialize' or similar exists to replace 'from'
+        return ItemStackUtil.deserialize(o).orElse(null);
     }
 
     public static String toJson(ItemStack stack) throws JsonProcessingException {
-        return (new ObjectMapper()).writerWithDefaultPrettyPrinter().writeValueAsString(ItemStackUtil.to(stack));
+        // Assuming a new method 'serialize' or similar exists to replace 'to'
+        return new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(ItemStackUtil.serialize(stack));
     }
 }

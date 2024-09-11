@@ -25,8 +25,8 @@ public class MenuProvider implements InventoryProvider {
     private String ownerUUID;
 
     public MenuProvider(String ownerUUID) {
-        this.borderItem = ((ItemStackBuilder)ItemStackBuilder.from(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1)).name("&7", true)).itemStack();
-        this.closeMenuItem = ((ItemStackBuilder)ItemStackBuilder.from(new ItemStack(Material.RED_STAINED_GLASS_PANE, 1)).name("&c&lClose", true)).itemStack();
+        this.borderItem = ((ItemStackBuilder)ItemStackBuilder.from(new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1)).setName("&7", true)).getItemStack();
+        this.closeMenuItem = ((ItemStackBuilder)ItemStackBuilder.from(new ItemStack(Material.RED_STAINED_GLASS_PANE, 1)).setName("&c&lClose", true)).getItemStack();
         this.borderSlots = new ArrayList();
         this.closeMenuSlot = SlotPos.of(0, 8);
         this.borderSlots.add(SlotPos.of(0, 0));

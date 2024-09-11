@@ -100,7 +100,7 @@ systems:
     enabled: true
 
     # Map links
-    default: "https://blockminer.net/map/spawn"
+    default: "https://blockminer.net/map/"
 
   # Enables the Ban/Mute system.
   punishments:

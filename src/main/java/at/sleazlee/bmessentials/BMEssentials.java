@@ -10,7 +10,6 @@ import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
 import at.sleazlee.bmessentials.bmefunctions.DonationCommand;
 import at.sleazlee.bmessentials.bungeetell.BungeeTellCommand;
-import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
 import at.sleazlee.bmessentials.maps.MapCommand;
 import at.sleazlee.bmessentials.maps.MapTabCompleter;
 import at.sleazlee.bmessentials.tpshop.TPShopCommand;
@@ -45,7 +44,6 @@ public class BMEssentials extends JavaPlugin {
 
     private FileConfiguration config = getConfig();
     private final SmartInventory inventory = new BasicSmartInventory(this);
-    private HuskHomesAPIHook huskHomesAPIHook;
 //    private DatabaseManager dbManager;
     private static BMEssentials main;
     private RankUpManager rankUpManager;
@@ -99,10 +97,6 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("randomtp").setTabCompleter(new WildTabCompleter());
             this.getCommand("randomteleport").setExecutor(new BMWildCommand());
             this.getCommand("randomteleport").setTabCompleter(new WildTabCompleter());
-
-            if (Bukkit.getPluginManager().getPlugin("HuskHomes") != null) {
-                this.huskHomesAPIHook = new HuskHomesAPIHook();
-            }
 
             //Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled BMWild");
