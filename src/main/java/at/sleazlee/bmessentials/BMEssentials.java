@@ -5,6 +5,10 @@ import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.Containers.*;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
+import at.sleazlee.bmessentials.trophyroom.TrophyCommand;
+import at.sleazlee.bmessentials.trophyroom.TrophyDatabase;
+import at.sleazlee.bmessentials.trophyroom.TrophyMenu;
+import at.sleazlee.bmessentials.trophyroom.TrophyRoomPlaceholderExpansion;
 import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
@@ -14,14 +18,6 @@ import at.sleazlee.bmessentials.maps.MapCommand;
 import at.sleazlee.bmessentials.maps.MapTabCompleter;
 import at.sleazlee.bmessentials.tpshop.TPShopCommand;
 import at.sleazlee.bmessentials.tpshop.TPShopTabCompleter;
-import at.sleazlee.bmessentials.trophyroom.commands.TrophyCommand;
-import at.sleazlee.bmessentials.trophyroom.data.Data;
-import at.sleazlee.bmessentials.trophyroom.db.Database;
-import at.sleazlee.bmessentials.trophyroom.listeners.PlayerListener;
-import at.sleazlee.bmessentials.trophyroom.menu.TrophyRoomMenu;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.SmartInventory;
-import at.sleazlee.bmessentials.trophyroom.smartinventory.manager.BasicSmartInventory;
-import at.sleazlee.bmessentials.trophyroom.util.PlaceHolderApiHook;
 import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.BMWildCommand;
@@ -43,12 +39,13 @@ import java.sql.SQLException;
 public class BMEssentials extends JavaPlugin {
 
     private FileConfiguration config = getConfig();
-    private final SmartInventory inventory = new BasicSmartInventory(this);
-//    private DatabaseManager dbManager;
     private static BMEssentials main;
     private RankUpManager rankUpManager;
     private Economy economy = null;
+    private TrophyDatabase trophiesDB;
+    private TrophyMenu trophyGUI;
 
+    // This is a getPlugin class made for the Scheduler
     public static BMEssentials getInstance() {
         return getPlugin(BMEssentials.class);
     }
@@ -206,26 +203,36 @@ public class BMEssentials extends JavaPlugin {
 
         // Trophy System
         if (config.getBoolean("systems.trophies.enabled")) {
-            Database database = new Database("plugins/BMessentials/");
-            this.inventory.init();
-
-            try {
-                Data data = new Data();
-                data.setMenu(new TrophyRoomMenu(this.inventory));
-            } catch (JsonProcessingException | SQLException var2) {
-                var2.printStackTrace();
+            // Ensure the plugin's data folder exists
+            if (!getDataFolder().exists()) {
+                getDataFolder().mkdirs();
             }
 
+            // Initialize the trophiesDB
+            trophiesDB = new TrophyDatabase(this);
 
-            Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
-            this.getCommand("trophyroom").setExecutor(new TrophyCommand());
+            // Initialize the menu system
+            trophyGUI = new TrophyMenu(this, trophiesDB);
 
+            // Register the command executor
+            getCommand("trophy").setExecutor(new TrophyCommand(this, trophiesDB, trophyGUI));
+
+            // Register PlaceholderAPI expansion
             if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-                (new PlaceHolderApiHook()).register();
-                System.out.println("Registered PlaceholderAPI placeholders!");
+                new TrophyRoomPlaceholderExpansion(this, trophiesDB).register();
+            } else {
+                getLogger().warning("PlaceholderAPI not found. Placeholders will not be available.");
             }
 
-            this.getCommand("trophyroom").setExecutor(new TrophyCommand());
+
+
+
+
+
+
+
+
+
 
             //Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Trophy Systems");
@@ -265,11 +272,10 @@ public class BMEssentials extends JavaPlugin {
         // Log a message to indicate the plugin is being disabled
         getLogger().info("Disabling BMEssentials...");
 
-//        // Close the database connection pool
-//        if (dbManager != null) {
-//            dbManager.close();
-//            getLogger().info("Database connection closed successfully.");
-//        }
+        // Close the Trophies Database Connection
+        if (trophiesDB != null) {
+            trophiesDB.close();
+        }
 
         // Log a message to indicate the plugin has been successfully disabled
         getLogger().info("BMEssentials has been disabled!");

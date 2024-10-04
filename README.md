@@ -12,10 +12,10 @@
 ## >> Overview
 **BMEssentials** is a feature-rich Spigot plugin designed to enhance the BM experience. Developed by **SleazLee**, this plugin aims to be the one-stop solution for the Blockminer network cluster.
 
-- **Version**: `1.0`  
-- **API Version**: `1.20`  
+- **Version**: `2.0`  
+- **API Version**: `1.21`  
 - **Author**: `SleazLee`  
-- **Soft Dependencies**: `HuskHomes, HuskTowns, Vault`
+- **Soft Dependencies**: `HuskTowns, Vault`
 
 ## >> Features
 ### Core Systems
@@ -34,7 +34,6 @@
 - Maps: Map-related commands with tab completion.
 - Punishments: Ban and mute systems with BungeeCord support.
 - Donations: Donation-related commands.
-- Town Bonus: Lands bonus system with permissions setup.
 
 ## >> Commands
 ### TPShop

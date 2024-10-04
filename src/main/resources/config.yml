@@ -12,7 +12,6 @@ serverName: "blockminer"
 #The start of a list of Systems.
 systems:
 
-
   discord:
     # link to the discord
     link: "https://discord.gg/NGx7DzFZAE"
