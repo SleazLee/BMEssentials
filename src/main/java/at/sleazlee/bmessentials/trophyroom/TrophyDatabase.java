@@ -40,7 +40,6 @@ public class TrophyDatabase {
             // Path to the .db file in the plugin's folder
             String url = "jdbc:sqlite:" + plugin.getDataFolder() + "/TrophyRooms.db";
             connection = DriverManager.getConnection(url);
-            plugin.getLogger().info("Connected to SQLite database.");
         } catch (SQLException e) {
             plugin.getLogger().severe("Could not connect to SQLite database: " + e.getMessage());
         }
@@ -91,7 +90,6 @@ public class TrophyDatabase {
                     "Item TEXT" +
                     ");");
 
-            plugin.getLogger().info("Tables have been created or verified.");
         } catch (SQLException e) {
             plugin.getLogger().severe("Error creating tables: " + e.getMessage());
         }

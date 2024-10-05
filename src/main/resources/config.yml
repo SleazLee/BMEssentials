@@ -106,11 +106,11 @@ systems:
     enabled: true
 
   # Enables the Donation system.
-  donations:
+  Donations:
     enabled: true
 
   # Enables the Trophies system.
-  trophies:
+  Trophies:
     enabled: true
 
   # Enables the vot time/weather system.
@@ -119,4 +119,12 @@ systems:
 
   # Enables the Rankup System
   Rankup:
+    enabled: true
+
+  # Enables the Migrator System
+  Migrator:
+    enabled: false
+
+  # Enables the Command Queue System
+  CommandQueue:
     enabled: true

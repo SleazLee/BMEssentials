@@ -161,10 +161,11 @@ commands:
     usage: /trophyroom <player>
 
   vot:
-    aliases:
-      - voting
-    description: Voting system for time and weather.
-    usage: /vot <day|night|clear|rain|thunder|yes|no>
+    description: Initiates a vote or casts a vote for changing time or weather.
+    usage: /vot <day|night|clear|rain|thunder|yes|no|reset>
+    aliases: [ vote ]
+    permission: bmessentials.vot.use
+    permission-message: '&cYou do not have permission to use this command.'
 
   adminvot:
     description: Allows admins to initiate a vote without cooldown.
@@ -178,12 +179,48 @@ commands:
     permission: rankup.use
     permission-message: You do not have permission to perform this command.
 
+  migrateinventories:
+    description: Migrates player inventories.
+    usage: /migrateinventories
+    permission: inventorymigrator.admin
+
+  resetmigration:
+    description: Resets the migration database.
+    usage: /resetmigration
+    permission: inventorymigrator.admin
+
+  retrieveinventory:
+    description: Retrieves your migrated inventory.
+    usage: /retrieveinventory
+    permission: inventorymigrator.retrieve
+
+  commandqueue:
+    description: Runs the command queue
+    usage: /commandqueue run <player/console>
+
+
 
 permissions:
-  bmessentials.adminvot:
-    description: Allows use of the /adminvot command to bypass vote cooldowns.
-    default: op
+  bmessentials.vot.use:
+    description: Allows the player to use the /vot command to start and participate in votes.
+    default: true
+
+  bmessentials.vot.reset:
+     description: Allows the player to reset or finalize an ongoing vote using /vot reset.
+     default: op
+
+  bmessentials.vot.bypasscooldown:
+     description: Allows the player to bypass the vote initiation cooldown.
+     default: op
 
   rankup.use:
     description: Allows the user to attempt to rank up.
+    default: true
+
+  inventorymigrator.admin:
+    description: Allows execution of admin commands.
+    default: op
+
+  inventorymigrator.retrieve:
+    description: Allows players to retrieve their migrated inventory.
     default: true

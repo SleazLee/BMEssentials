@@ -2,54 +2,72 @@ package at.sleazlee.bmessentials;
 
 import at.sleazlee.bmessentials.AltarSystem.AltarManager;
 import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
+import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
+import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.Containers.*;
+import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
-import at.sleazlee.bmessentials.trophyroom.TrophyCommand;
-import at.sleazlee.bmessentials.trophyroom.TrophyDatabase;
-import at.sleazlee.bmessentials.trophyroom.TrophyMenu;
-import at.sleazlee.bmessentials.trophyroom.TrophyRoomPlaceholderExpansion;
-import at.sleazlee.bmessentials.vot.VoteCommand;
-import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
-import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
-import at.sleazlee.bmessentials.bmefunctions.DonationCommand;
+import at.sleazlee.bmessentials.rankup.RankUpManager;
+import at.sleazlee.bmessentials.trophyroom.*;
+import at.sleazlee.bmessentials.vot.*;
+import at.sleazlee.bmessentials.bmefunctions.*;
 import at.sleazlee.bmessentials.bungeetell.BungeeTellCommand;
-import at.sleazlee.bmessentials.maps.MapCommand;
-import at.sleazlee.bmessentials.maps.MapTabCompleter;
-import at.sleazlee.bmessentials.tpshop.TPShopCommand;
-import at.sleazlee.bmessentials.tpshop.TPShopTabCompleter;
-import at.sleazlee.bmessentials.votesystem.BMVote;
-import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
-import at.sleazlee.bmessentials.wild.BMWildCommand;
-import at.sleazlee.bmessentials.wild.NoFallDamage;
-import at.sleazlee.bmessentials.wild.WildTabCompleter;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import at.sleazlee.bmessentials.maps.*;
+import at.sleazlee.bmessentials.tpshop.*;
+import at.sleazlee.bmessentials.votesystem.*;
+import at.sleazlee.bmessentials.wild.*;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import at.sleazlee.bmessentials.rankup.RankUpManager;
-import net.milkbowl.vault.economy.Economy;
 
 import java.sql.SQLException;
 
+/**
+ * The main class for the BMEssentials plugin, which extends JavaPlugin.
+ * This class initializes and manages various systems within the plugin,
+ * such as TPShop, Vote System, Wild System, Spawn Systems, and more.
+ */
 public class BMEssentials extends JavaPlugin {
 
+    /** The plugin configuration. */
     private FileConfiguration config = getConfig();
+
+    /** The main instance of the plugin. */
     private static BMEssentials main;
+
+    /** The RankUpManager for handling rank-up functionality. */
     private RankUpManager rankUpManager;
+
+    /** The economy service provider. */
     private Economy economy = null;
+
+    /** The database for the trophy system. */
     private TrophyDatabase trophiesDB;
+
+    /** The menu GUI for the trophy system. */
     private TrophyMenu trophyGUI;
 
-    // This is a getPlugin class made for the Scheduler
+    /** The manager for the migrator system. */
+    private MigratorManager migratorManager;
+
+    private CommandQueueManager queueManager;
+
+    /**
+     * Gets the instance of the main plugin class.
+     *
+     * @return the plugin instance
+     */
     public static BMEssentials getInstance() {
         return getPlugin(BMEssentials.class);
     }
 
+    /**
+     * Called when the plugin is enabled. Initializes various systems based on the configuration.
+     */
     @Override
     public void onEnable() {
 
@@ -58,18 +76,18 @@ public class BMEssentials extends JavaPlugin {
         // Creates a new config.yml if it doesn't exist, copies from your resource.
         this.saveDefaultConfig();
 
-        //Art at the beginning.
+        // Art at the beginning.
         String[] startArt = Art.startupArt().split("\n");
         for (String line : startArt) {
             getServer().getConsoleSender().sendMessage(ChatColor.AQUA + line);
         }
 
-        // TpShop
+        // TPShop System
         if (config.getBoolean("systems.tpshop.enabled")) {
             this.getCommand("tpshop").setExecutor(new TPShopCommand());
             this.getCommand("tpshop").setTabCompleter(new TPShopTabCompleter());
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled TPShop");
         }
 
@@ -78,7 +96,7 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("adminvote").setExecutor(new BMVote(this));
             this.getCommand("adminvote").setTabCompleter(new TestVoteTabCompleter());
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vote Systems");
         }
 
@@ -95,7 +113,7 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("randomteleport").setExecutor(new BMWildCommand());
             this.getCommand("randomteleport").setTabCompleter(new WildTabCompleter());
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled BMWild");
         }
 
@@ -110,7 +128,7 @@ public class BMEssentials extends JavaPlugin {
             getServer().getPluginManager().registerEvents(altarManager, this);
             HealingSprings.startHealingSpringsAmbient(this);
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Spawn Systems");
         }
 
@@ -120,41 +138,41 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("lag").setExecutor(new CommonCommands(this));
             this.getCommand("bmdiscord").setExecutor(new CommonCommands(this));
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled All Common Commands");
         }
 
         // Virtual Containers System
         if (config.getBoolean("systems.containers.enabled")) {
 
-            //trash
+            // Trash
             this.getCommand("trash").setExecutor(new TrashCommand());
 
-            //Crafting Table
+            // Crafting Table
             this.getCommand("craft").setExecutor(new CraftCommand());
 
-            //Ender Chest
+            // Ender Chest
             this.getCommand("enderchest").setExecutor(new eChestCommand());
 
-            //Cartography Table
+            // Cartography Table
             this.getCommand("cartography").setExecutor(new cartographyTableCommand());
 
-            //Loom
+            // Loom
             this.getCommand("loom").setExecutor(new LoomCommand());
 
-            //Stone Cutter
+            // Stone Cutter
             this.getCommand("stonecutter").setExecutor(new StoneCutterCommand());
 
-            //Smithing Table
+            // Smithing Table
             this.getCommand("smithing").setExecutor(new SmithingTableCommand());
 
-            //Grindstone
+            // Grindstone
             this.getCommand("grindstone").setExecutor(new GrindStoneCommand());
 
-            //Anvil
+            // Anvil
             this.getCommand("anvil").setExecutor(new AnvilCommand());
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Trash System");
         }
 
@@ -163,7 +181,7 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("bungeetell").setExecutor(new BungeeTellCommand(this));
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:bungeetell");
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled BungeeTell System");
         }
 
@@ -175,40 +193,27 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("maps").setExecutor(new MapCommand(this));
             this.getCommand("maps").setTabCompleter(new MapTabCompleter());
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Maps");
         }
 
-//        // Ban/Mute System
-//        if (config.getBoolean("systems.punishments.enabled")) {
-//
-//            this.getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:mute", new BungeeMutePlayer(this));
-//            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:autoban");
-//
-//            this.getCommand("autoban").setExecutor(new AutoBanCommand(this));
-//            this.getCommand("unmute").setExecutor(new UnMuteCommand());
-//
-//            //Add the system enabled message.
-//            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Ban/Mute Systems");
-//        }
-
         // Donation System
-        if (config.getBoolean("systems.donations.enabled")) {
+        if (config.getBoolean("systems.Donations.enabled")) {
 
             this.getCommand("donation").setExecutor(new DonationCommand(this));
 
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Donation Systems");
         }
 
         // Trophy System
-        if (config.getBoolean("systems.trophies.enabled")) {
+        if (config.getBoolean("systems.Trophies.enabled")) {
             // Ensure the plugin's data folder exists
             if (!getDataFolder().exists()) {
                 getDataFolder().mkdirs();
             }
 
-            // Initialize the trophiesDB
+            // Initialize the trophies database
             trophiesDB = new TrophyDatabase(this);
 
             // Initialize the menu system
@@ -223,24 +228,37 @@ public class BMEssentials extends JavaPlugin {
             } else {
                 getLogger().warning("PlaceholderAPI not found. Placeholders will not be available.");
             }
-
-
-
-
-
-
-
-
-
-
-
-            //Add the system enabled message.
+            // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Trophy Systems");
         }
 
+        // Migrator System
+        if (config.getBoolean("systems.Migrator.enabled")) {
+            migratorManager = new MigratorManager(this);
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Migrator System");
+        }
+
+        // CommandQueue System
+        if (config.getBoolean("systems.CommandQueue.enabled")) {
+
+            this.queueManager = new CommandQueueManager(this);
+
+            // Register command executor
+            this.getCommand("commandqueue").setExecutor(new CommandQueueCommandExecutor(this, queueManager));
+
+            // Load commands from CommandQueue.yml
+            queueManager.loadCommands();
+
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the CommandQueue System");
+        }
+
+
         // Vot System
-        if (getConfig().getBoolean("systems.Vot.enabled")) {
-            getCommand("vot").setExecutor(new at.sleazlee.bmessentials.vot.VoteCommand());
+        if (getConfig().getBoolean("systems.Vot.enabled", true)) {
+            getCommand("vot").setExecutor(new VoteCommand());
+            getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
         }
 
@@ -256,17 +274,16 @@ public class BMEssentials extends JavaPlugin {
             this.rankUpManager = new RankUpManager(this, getEconomyService());
         }
 
-
-
-
-
-
-        //Finally enables the reload system.
+        // Finally enables the reload system.
         this.getCommand("bme").setExecutor(new BMECommandExecutor(this));
-        //Finish the message at the very end and show it
+
+        // Finish the message at the very end and show it
         getServer().getConsoleSender().sendMessage("\n §b" + ChatColor.AQUA + " BMEssentials was successfully" + ChatColor.GREEN + " Enabled" + ChatColor.AQUA + "!" + "\n §b");
     }
 
+    /**
+     * Called when the plugin is disabled. Performs cleanup tasks.
+     */
     @Override
     public void onDisable() {
         // Log a message to indicate the plugin is being disabled
@@ -277,14 +294,29 @@ public class BMEssentials extends JavaPlugin {
             trophiesDB.close();
         }
 
+        // Close the Player Migration Database Connection
+        if (migratorManager != null) {
+            migratorManager.shutdown();
+        }
+
         // Log a message to indicate the plugin has been successfully disabled
         getLogger().info("BMEssentials has been disabled!");
     }
 
+    /**
+     * Gets the main instance of the plugin.
+     *
+     * @return the main instance of BMEssentials
+     */
     public static BMEssentials getMain() {
         return main;
     }
 
+    /**
+     * Sets up the economy service using Vault.
+     *
+     * @return true if the economy service was successfully set up, false otherwise
+     */
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             getLogger().info("Vault (plugin) is not installed.");
@@ -301,7 +333,11 @@ public class BMEssentials extends JavaPlugin {
         return economy != null;
     }
 
-
+    /**
+     * Retrieves the economy service provider.
+     *
+     * @return the Economy provider, or null if not found
+     */
     private Economy getEconomyService() {
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
