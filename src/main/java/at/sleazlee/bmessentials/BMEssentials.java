@@ -9,7 +9,6 @@ import at.sleazlee.bmessentials.HelpMenus.HelpMenus;
 import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
-import at.sleazlee.bmessentials.rankup.RankUpManager;
 import at.sleazlee.bmessentials.trophyroom.*;
 import at.sleazlee.bmessentials.vot.*;
 import at.sleazlee.bmessentials.bmefunctions.*;
@@ -24,8 +23,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.sql.SQLException;
 
 /**
  * The main class for the BMEssentials plugin, which extends JavaPlugin.
