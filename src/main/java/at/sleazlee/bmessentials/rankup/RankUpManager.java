@@ -7,125 +7,213 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
 /**
  * Manages rank-up functionalities and command execution.
  */
 public class RankUpManager implements CommandExecutor {
-    private JavaPlugin plugin;
-    private Economy economy;
-    private FileConfiguration ranksConfig;
-    private File ranksFile;
+    private final JavaPlugin plugin;
+    public final Economy economy; // Made public for ConfigurationLoader access
+    private final Permission permission;
+    private final ConfigurationLoader configLoader;
+    private final MessageHandler messageHandler;
+    private final Map<String, Rank> ranks;
 
-    public RankUpManager(JavaPlugin plugin, Economy economy) {
+    /**
+     * Initializes the RankUpManager.
+     *
+     * @param plugin The main plugin instance.
+     */
+    public RankUpManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.economy = economy;
-        initializeConfig();
-        plugin.getCommand("rankup").setExecutor(this);
-    }
-
-    private void initializeConfig() {
-        ranksFile = new File(plugin.getDataFolder(), "ranks.yml");
-        if (!ranksFile.exists()) {
-            ranksFile.getParentFile().mkdirs();
-            plugin.saveResource("ranks.yml", false);
+        this.economy = setupEconomy();
+        this.permission = setupPermissions();
+        if (this.economy == null) {
+            plugin.getLogger().severe("Economy plugin not found! Disabling RankUpManager.");
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+            throw new IllegalStateException("Economy plugin not found!");
         }
-        ranksConfig = YamlConfiguration.loadConfiguration(ranksFile);
+        if (this.permission == null) {
+            plugin.getLogger().severe("Permission plugin not found! Disabling RankUpManager.");
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+            throw new IllegalStateException("Permission plugin not found!");
+        }
+        this.configLoader = new ConfigurationLoader(plugin);
+        this.messageHandler = new MessageHandler();
+        this.ranks = configLoader.loadRanks();
+        plugin.getCommand("rankup").setExecutor(this);
+        plugin.getLogger().info("RankUpManager initialized successfully with " + ranks.size() + " ranks.");
     }
 
+    /**
+     * Handles the /rankup command.
+     *
+     * @param sender  The command sender.
+     * @param command The command being executed.
+     * @param label   The command label.
+     * @param args    Command arguments.
+     * @return True if the command was handled, false otherwise.
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // Ensure the command is run by a player
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "This command can only be run by a player.");
             return true;
         }
 
         Player player = (Player) sender;
+
+        // Check for necessary permission
         if (!player.hasPermission("rankup.use")) {
             player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
 
-        String currentRank = getCurrentRank(player);
-        if (currentRank == null) {
+        // Retrieve current rank
+        String currentRankKey = getCurrentRank(player);
+        if (currentRankKey == null) {
             player.sendMessage(ChatColor.RED + "Your current rank could not be determined.");
+            plugin.getLogger().warning("Player " + player.getName() + " has no primary group.");
             return true;
         }
 
-        String nextRank = ranksConfig.getString("ranks." + currentRank + ".next_rank");
-        if (nextRank == null) {
+        Rank currentRank = ranks.get(currentRankKey);
+        if (currentRank == null) {
+            player.sendMessage(ChatColor.RED + "Your current rank is invalid.");
+            plugin.getLogger().warning("Invalid current rank for player " + player.getName() + ": " + currentRankKey);
+            return true;
+        }
+
+        // Retrieve next rank
+        String nextRankKey = currentRank.getNextRank();
+        if (nextRankKey == null || nextRankKey.equalsIgnoreCase("none")) {
             player.sendMessage(ChatColor.RED + "You have reached the highest rank.");
             return true;
         }
 
-        double cost = ranksConfig.getDouble("ranks." + currentRank + ".requirements.balance");
-        int requiredPowerLevel = ranksConfig.getInt("ranks." + currentRank + ".requirements.mcmmo_power_level");
-
-        if (!checkEconomyCondition(player, cost) || !checkMcMMOCondition(player, requiredPowerLevel)) {
-            String denyMessage = ranksConfig.getString("ranks." + currentRank + ".messages.deny");
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', denyMessage));
+        Rank nextRank = ranks.get(nextRankKey);
+        if (nextRank == null) {
+            player.sendMessage(ChatColor.RED + "The next rank is not configured properly.");
+            plugin.getLogger().warning("Next rank not found in config: " + nextRankKey);
             return true;
         }
 
-        economy.withdrawPlayer(player, cost);
-        setPlayerRank(player, nextRank);
-        String personalMessage = ranksConfig.getString("ranks." + currentRank + ".messages.personal");
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', personalMessage));
+        // Check requirements
+        List<String> unmetRequirements = new ArrayList<>();
+        for (Requirement requirement : currentRank.getRequirements()) {
+            if (!requirement.isMet(player)) {
+                unmetRequirements.add(requirement.getDenyMessage());
+            }
+        }
 
-        String broadcastMessage = ranksConfig.getString("ranks." + currentRank + ".messages.broadcast").replace("%player%", player.getName());
-        plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', broadcastMessage));
+        if (!unmetRequirements.isEmpty()) {
+            // Send deny messages
+            for (String denyMsg : unmetRequirements) {
+                String formattedDenyMsg = messageHandler.formatMessage(denyMsg, player);
+                player.sendMessage(formattedDenyMsg);
+            }
+            return true;
+        }
+
+        // Perform rank up
+        performRankUp(player, currentRank, nextRank);
 
         return true;
     }
 
+    /**
+     * Performs the rank-up process for the player.
+     *
+     * @param player      The player to rank up.
+     * @param currentRank The player's current rank.
+     * @param nextRank    The rank to assign to the player.
+     */
+    private void performRankUp(Player player, Rank currentRank, Rank nextRank) {
+        // Deduct economy cost if applicable
+        double cost = currentRank.getBalance();
+        if (cost > 0) {
+            boolean success = economy.withdrawPlayer(player, cost).transactionSuccess();
+            if (!success) {
+                player.sendMessage(ChatColor.RED + "Failed to deduct the required balance for rank up.");
+                plugin.getLogger().warning("Economy withdrawal failed for player " + player.getName() + " for rank " + nextRank.getName());
+                return;
+            }
+        }
+
+        // Set the player's new rank
+        setPlayerRank(player, currentRank.getName(), nextRank.getName());
+
+        // Send personal message
+        String personalMessage = currentRank.getPersonalMessage();
+        if (personalMessage != null && !personalMessage.isEmpty()) {
+            personalMessage = messageHandler.formatMessage(personalMessage, player);
+            player.sendMessage(personalMessage);
+        }
+
+        // Broadcast message
+        String broadcastMessage = currentRank.getBroadcastMessage();
+        if (broadcastMessage != null && !broadcastMessage.isEmpty()) {
+            broadcastMessage = messageHandler.formatMessage(broadcastMessage, player);
+            plugin.getServer().broadcastMessage(broadcastMessage);
+        }
+
+        plugin.getLogger().info("Player " + player.getName() + " ranked up from " + currentRank.getName() + " to " + nextRank.getName());
+    }
+
+    /**
+     * Sets the player's rank using the permission plugin.
+     *
+     * @param player      The player to set the rank for.
+     * @param currentRank The player's current rank.
+     * @param nextRank    The rank to set.
+     */
+    private void setPlayerRank(Player player, String currentRank, String nextRank) {
+        permission.playerRemoveGroup(null, player, currentRank);
+        permission.playerAddGroup(null, player, nextRank);
+    }
+
+    /**
+     * Retrieves the player's current primary group using Vault permissions.
+     *
+     * @param player The player whose rank is to be retrieved.
+     * @return The current rank key as a string, or null if unable to determine.
+     */
     private String getCurrentRank(Player player) {
-        Permission perms = getPermissions();
-        if (perms == null) {
-            plugin.getLogger().severe("Permissions system is not available!");
+        return permission.getPrimaryGroup(player);
+    }
+
+    /**
+     * Sets up the Economy service via Vault.
+     *
+     * @return The Economy instance, or null if not found.
+     */
+    private Economy setupEconomy() {
+        RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            plugin.getLogger().severe("No Economy plugin found! Ensure Vault and an economy plugin are installed.");
             return null;
         }
-        return perms.getPrimaryGroup(player);
+        return rsp.getProvider();
     }
 
-    private boolean checkEconomyCondition(Player player, double cost) {
-        return economy.has(player, cost);
-    }
-
-    private boolean checkMcMMOCondition(Player player, int requiredLevel) {
-        String powerLevelStr = PlaceholderAPI.setPlaceholders(player, "%mcmmo_power_level%");
-        try {
-            int powerLevel = Integer.parseInt(powerLevelStr);
-            return powerLevel >= requiredLevel;
-        } catch (NumberFormatException e) {
-            plugin.getLogger().warning("Could not parse mcMMO power level: " + powerLevelStr);
-            return false;
-        }
-    }
-
-    private void setPlayerRank(Player player, String nextRank) {
-        Permission perms = getPermissions();
-        if (perms == null) {
-            plugin.getLogger().severe("Permissions system is not available!");
-            return;
-        }
-        String currentRank = getCurrentRank(player);
-        if (currentRank != null && !currentRank.isEmpty()) {
-            perms.playerRemoveGroup(null, player, currentRank);
-        }
-        perms.playerAddGroup(null, player, nextRank);
-    }
-
-    private Permission getPermissions() {
+    /**
+     * Sets up the Permission service via Vault (LuckPerms in this case).
+     *
+     * @return The Permission instance, or null if not found.
+     */
+    private Permission setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = plugin.getServer().getServicesManager().getRegistration(Permission.class);
         if (rsp == null) {
+            plugin.getLogger().severe("No Permission plugin found! Ensure Vault and LuckPerms are installed.");
             return null;
         }
         return rsp.getProvider();
