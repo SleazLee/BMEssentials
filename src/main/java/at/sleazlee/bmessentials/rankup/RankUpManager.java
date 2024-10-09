@@ -7,13 +7,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -28,13 +25,14 @@ public class RankUpManager implements CommandExecutor {
     private final Map<String, Rank> ranks;
 
     /**
-     * Initializes the RankUpManager.
+     * Initializes the RankUpManager with the provided plugin and economy instances.
      *
-     * @param plugin The main plugin instance.
+     * @param plugin  The main plugin instance.
+     * @param economy The economy instance from the main class.
      */
-    public RankUpManager(JavaPlugin plugin) {
+    public RankUpManager(JavaPlugin plugin, Economy economy) {
         this.plugin = plugin;
-        this.economy = setupEconomy();
+        this.economy = economy;
         this.permission = setupPermissions();
         if (this.economy == null) {
             plugin.getLogger().severe("Economy plugin not found! Disabling RankUpManager.");
@@ -46,7 +44,7 @@ public class RankUpManager implements CommandExecutor {
             plugin.getServer().getPluginManager().disablePlugin(plugin);
             throw new IllegalStateException("Permission plugin not found!");
         }
-        this.configLoader = new ConfigurationLoader(plugin);
+        this.configLoader = new ConfigurationLoader(plugin, this.economy); // Pass economy if needed
         this.messageHandler = new MessageHandler();
         this.ranks = configLoader.loadRanks();
         plugin.getCommand("rankup").setExecutor(this);
@@ -116,11 +114,19 @@ public class RankUpManager implements CommandExecutor {
         }
 
         if (!unmetRequirements.isEmpty()) {
-            // Send deny messages
+            // Send specific requirements' deny messages
             for (String denyMsg : unmetRequirements) {
                 String formattedDenyMsg = messageHandler.formatMessage(denyMsg, player);
                 player.sendMessage(formattedDenyMsg);
             }
+
+            // Send the general rank deny message
+            String rankDenyMsg = currentRank.getDenyMessage();
+            if (rankDenyMsg != null && !rankDenyMsg.isEmpty()) {
+                String formattedRankDenyMsg = messageHandler.formatMessage(rankDenyMsg, player);
+                player.sendMessage(formattedRankDenyMsg);
+            }
+
             return true;
         }
 
@@ -189,20 +195,6 @@ public class RankUpManager implements CommandExecutor {
      */
     private String getCurrentRank(Player player) {
         return permission.getPrimaryGroup(player);
-    }
-
-    /**
-     * Sets up the Economy service via Vault.
-     *
-     * @return The Economy instance, or null if not found.
-     */
-    private Economy setupEconomy() {
-        RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            plugin.getLogger().severe("No Economy plugin found! Ensure Vault and an economy plugin are installed.");
-            return null;
-        }
-        return rsp.getProvider();
     }
 
     /**

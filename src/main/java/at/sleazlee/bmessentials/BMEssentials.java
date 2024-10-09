@@ -9,6 +9,7 @@ import at.sleazlee.bmessentials.HelpMenus.HelpMenus;
 import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
+import at.sleazlee.bmessentials.rankup.RankUpManager;
 import at.sleazlee.bmessentials.trophyroom.*;
 import at.sleazlee.bmessentials.vot.*;
 import at.sleazlee.bmessentials.bmefunctions.*;
@@ -20,6 +21,7 @@ import at.sleazlee.bmessentials.wild.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -171,7 +173,7 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("anvil").setExecutor(new AnvilCommand());
 
             // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Trash System");
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Virtual Containers System");
         }
 
         // BungeeTell System
@@ -269,7 +271,8 @@ public class BMEssentials extends JavaPlugin {
                 return;
             }
 
-            this.rankUpManager = new RankUpManager(this, getEconomyService());
+            this.rankUpManager = new RankUpManager(this, economy);
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the RankUp System");
         }
 
         // Menu Systems
@@ -308,31 +311,20 @@ public class BMEssentials extends JavaPlugin {
     }
 
     /**
-     * Gets the main instance of the plugin.
-     *
-     * @return the main instance of BMEssentials
-     */
-    public static BMEssentials getMain() {
-        return main;
-    }
-
-    /**
      * Sets up the economy service using Vault.
      *
      * @return true if the economy service was successfully set up, false otherwise
      */
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            getLogger().info("Vault (plugin) is not installed.");
+            getLogger().severe("Vault plugin not found!");
             return false;
         }
-
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
-            getLogger().info("No economy provider found via Vault.");
+            getLogger().severe("No economy provider found via Vault!");
             return false;
         }
-
         economy = rsp.getProvider();
         return economy != null;
     }

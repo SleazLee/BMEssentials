@@ -3,12 +3,13 @@ package at.sleazlee.bmessentials.rankup;
 import java.util.List;
 
 /**
- * Represents a single rank with its requirements and messages.
+ * Represents a single rank with its requirements and associated messages.
  */
 public class Rank {
     private final String name;
     private final String nextRank;
-    private final List<RankUpManager.Requirement> requirements;
+    private final double balance; // Added balance field
+    private final List<Requirement> requirements;
     private final String personalMessage;
     private final String broadcastMessage;
     private final String denyMessage;
@@ -18,14 +19,16 @@ public class Rank {
      *
      * @param name             The name/key of the rank.
      * @param nextRank         The next rank's name/key.
+     * @param balance          The economy balance requirement.
      * @param requirements     The list of requirements for this rank.
      * @param personalMessage  The personal message to send upon successful rank up.
      * @param broadcastMessage The broadcast message to send upon successful rank up.
      * @param denyMessage      The message to send if requirements are not met.
      */
-    public Rank(String name, String nextRank, List<RankUpManager.Requirement> requirements, String personalMessage, String broadcastMessage, String denyMessage) {
+    public Rank(String name, String nextRank, double balance, List<Requirement> requirements, String personalMessage, String broadcastMessage, String denyMessage) {
         this.name = name;
         this.nextRank = nextRank;
+        this.balance = balance;
         this.requirements = requirements;
         this.personalMessage = personalMessage;
         this.broadcastMessage = broadcastMessage;
@@ -40,7 +43,16 @@ public class Rank {
         return nextRank;
     }
 
-    public List<RankUpManager.Requirement> getRequirements() {
+    /**
+     * Gets the economy balance requirement for this rank.
+     *
+     * @return The required balance in the server's economy.
+     */
+    public double getBalance() {
+        return balance;
+    }
+
+    public List<Requirement> getRequirements() {
         return requirements;
     }
 

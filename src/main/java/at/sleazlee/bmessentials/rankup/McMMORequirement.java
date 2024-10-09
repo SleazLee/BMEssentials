@@ -1,7 +1,6 @@
 package at.sleazlee.bmessentials.rankup;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**

@@ -1,8 +1,8 @@
 package at.sleazlee.bmessentials.rankup;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
  * Requirement that checks if a player has met the required playtime.
  */
 public class PlaytimeRequirement implements Requirement {
+    private final JavaPlugin plugin;
     private final int requiredMinutes;
     private final String originalRequirement;
 
@@ -19,7 +20,8 @@ public class PlaytimeRequirement implements Requirement {
      *
      * @param playtimeStr The playtime string from the config (e.g., "30 minutes").
      */
-    public PlaytimeRequirement(String playtimeStr) {
+    public PlaytimeRequirement(JavaPlugin plugin, String playtimeStr) {
+        this.plugin = plugin;
         this.originalRequirement = playtimeStr;
         this.requiredMinutes = parsePlaytime(playtimeStr);
     }
@@ -57,7 +59,7 @@ public class PlaytimeRequirement implements Requirement {
             String unit = matcher.group(2).toLowerCase();
             switch (unit) {
                 case "seconds":
-                    return amount / 60;
+                    return Math.max(1, amount / 60); // At least 1 minute if seconds are provided
                 case "minutes":
                     return amount;
                 case "hours":
@@ -82,7 +84,7 @@ public class PlaytimeRequirement implements Requirement {
         try {
             return Integer.parseInt(playtimeStr);
         } catch (NumberFormatException e) {
-            player.getServer().getLogger().warning("Could not parse playtime minutes for player " + player.getName() + ": " + playtimeStr);
+            plugin.getLogger().warning("Could not parse playtime minutes for player " + player.getName() + ": " + playtimeStr);
             return 0;
         }
     }
