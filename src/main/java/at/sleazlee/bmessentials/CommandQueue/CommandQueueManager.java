@@ -63,7 +63,7 @@ public class CommandQueueManager {
             FileWriter writer = new FileWriter(file);
             writer.write("commands:\n  - say Hello, world!\n");
             writer.close();
-            
+
         } catch (IOException e) {
             plugin.getLogger().severe("Could not create CommandQueue.yml!");
             e.printStackTrace();

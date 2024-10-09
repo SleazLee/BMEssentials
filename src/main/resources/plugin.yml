@@ -198,6 +198,16 @@ commands:
     description: Runs the command queue
     usage: /commandqueue run <player/console>
 
+  book:
+    description: Opens a help book.
+    usage: /book <bookName>
+
+  bookreload:
+    description: Reloads the help books.
+    usage: /bookreload
+    permission: bmessentials.book.reload
+
+
 
 
 permissions:

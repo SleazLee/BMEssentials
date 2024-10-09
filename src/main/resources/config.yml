@@ -128,3 +128,7 @@ systems:
   # Enables the Command Queue System
   CommandQueue:
     enabled: true
+
+  # Enables the Help Menu Systems
+  Menus:
+    enabled: true

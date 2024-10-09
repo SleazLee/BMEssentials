@@ -5,6 +5,7 @@ import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.Containers.*;
+import at.sleazlee.bmessentials.HelpMenus.HelpMenus;
 import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
@@ -272,6 +273,12 @@ public class BMEssentials extends JavaPlugin {
             }
 
             this.rankUpManager = new RankUpManager(this, getEconomyService());
+        }
+
+        // Menu Systems
+        if (config.getBoolean("systems.Menus.enabled")) {
+            new HelpMenus(this);
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Menu System");
         }
 
         // Finally enables the reload system.
