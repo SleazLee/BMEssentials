@@ -83,32 +83,39 @@ public class ConfigurationLoader {
             return null;
         }
 
-        String nextRank = rankSection.getString("next_rank", "none");
-        double balance = rankSection.getDouble("requirements.balance", 0);
-        int mcmmoPowerLevel = rankSection.getInt("requirements.mcmmo_power_level", 0);
-        String playtime = rankSection.getString("requirements.playtime", "");
+        String name = rankSection.getString("name", rankKey);
+        String nextRank = rankSection.getString("next_rank", null);
+        double balance = rankSection.getDouble("balance", 0);
 
-        String personalMessage = rankSection.getString("messages.personal", "");
-        String broadcastMessage = rankSection.getString("messages.broadcast", "");
-        String denyMessage = rankSection.getString("messages.deny", "");
-
+        // Requirements
         List<Requirement> requirements = new ArrayList<>();
+        ConfigurationSection requirementsSection = rankSection.getConfigurationSection("requirements");
+        if (requirementsSection != null) {
+            // MCMMO Power Level Requirement
+            int mcmmoPowerLevel = requirementsSection.getInt("mcmmo_power_level", 0);
+            if (mcmmoPowerLevel > 0) {
+                requirements.add(new McMMORequirement(mcmmoPowerLevel));
+            }
 
-        // Playtime Requirement
-        if (!playtime.isEmpty()) {
-            requirements.add(new PlaytimeRequirement(plugin, playtime));
+            // Add additional requirements as needed
         }
 
-        // Economy Requirement
-        if (balance > 0) {
-            requirements.add(new EconomyRequirement(balance, economy));
-        }
+        // Messages
+        String personalMessage = rankSection.getString("personal_message", "");
+        String broadcastMessage = rankSection.getString("broadcast_message", "");
+        String denyMessage = rankSection.getString("deny_message", "");
 
-        // MCMMO Requirement
-        if (mcmmoPowerLevel > 0) {
-            requirements.add(new McMMORequirement(mcmmoPowerLevel));
-        }
+        // Create Rank object using your original Rank class
+        Rank rank = new Rank(
+                name,
+                nextRank,
+                balance,
+                requirements,
+                personalMessage,
+                broadcastMessage,
+                denyMessage
+        );
 
-        return new Rank(rankKey, nextRank, balance, requirements, personalMessage, broadcastMessage, denyMessage);
+        return rank;
     }
 }
