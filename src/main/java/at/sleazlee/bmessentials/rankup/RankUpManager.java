@@ -1,6 +1,5 @@
 package at.sleazlee.bmessentials.rankup;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.ChatColor;
@@ -145,8 +144,12 @@ public class RankUpManager implements CommandExecutor {
      */
     private void performRankUp(Player player, Rank currentRank, Rank nextRank) {
         // Deduct economy cost if applicable
-        double cost = currentRank.getBalance();
+        double cost = currentRank.getCost();
         if (cost > 0) {
+            if (!economy.has(player, cost)) {
+                player.sendMessage(ChatColor.RED + "You do not have enough money to rank up.");
+                return;
+            }
             boolean success = economy.withdrawPlayer(player, cost).transactionSuccess();
             if (!success) {
                 player.sendMessage(ChatColor.RED + "Failed to deduct the required balance for rank up.");

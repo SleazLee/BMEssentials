@@ -8,7 +8,7 @@ import java.util.List;
 public class Rank {
     private final String name;
     private final String nextRank;
-    private final double balance; // Added balance field
+    private final double cost;
     private final List<Requirement> requirements;
     private final String personalMessage;
     private final String broadcastMessage;
@@ -19,16 +19,16 @@ public class Rank {
      *
      * @param name             The name/key of the rank.
      * @param nextRank         The next rank's name/key.
-     * @param balance          The economy balance requirement.
+     * @param cost             The cost to rank up.
      * @param requirements     The list of requirements for this rank.
      * @param personalMessage  The personal message to send upon successful rank up.
      * @param broadcastMessage The broadcast message to send upon successful rank up.
      * @param denyMessage      The message to send if requirements are not met.
      */
-    public Rank(String name, String nextRank, double balance, List<Requirement> requirements, String personalMessage, String broadcastMessage, String denyMessage) {
+    public Rank(String name, String nextRank, double cost, List<Requirement> requirements, String personalMessage, String broadcastMessage, String denyMessage) {
         this.name = name;
         this.nextRank = nextRank;
-        this.balance = balance;
+        this.cost = cost;
         this.requirements = requirements;
         this.personalMessage = personalMessage;
         this.broadcastMessage = broadcastMessage;
@@ -44,12 +44,12 @@ public class Rank {
     }
 
     /**
-     * Gets the economy balance requirement for this rank.
+     * Gets the cost to rank up.
      *
-     * @return The required balance in the server's economy.
+     * @return The cost in the server's economy.
      */
-    public double getBalance() {
-        return balance;
+    public double getCost() {
+        return cost;
     }
 
     public List<Requirement> getRequirements() {

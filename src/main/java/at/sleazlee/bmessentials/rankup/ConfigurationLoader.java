@@ -57,10 +57,15 @@ public class ConfigurationLoader {
         Map<String, Rank> ranks = new HashMap<>();
         if (config.isConfigurationSection("ranks")) {
             ConfigurationSection ranksSection = config.getConfigurationSection("ranks");
-            for (String rankKey : ranksSection.getKeys(false)) {
-                Rank rank = parseRank(rankKey, ranksSection);
-                if (rank != null) {
-                    ranks.put(rank.getName(), rank);
+            for (String rankChainKey : ranksSection.getKeys(false)) {
+                ConfigurationSection rankChainSection = ranksSection.getConfigurationSection(rankChainKey);
+                if (rankChainSection == null) continue;
+
+                for (String rankKey : rankChainSection.getKeys(false)) {
+                    Rank rank = parseRank(rankKey, rankChainSection);
+                    if (rank != null) {
+                        ranks.put(rank.getName(), rank);
+                    }
                 }
             }
         } else {
@@ -85,7 +90,7 @@ public class ConfigurationLoader {
 
         String name = rankSection.getString("name", rankKey);
         String nextRank = rankSection.getString("next_rank", null);
-        double balance = rankSection.getDouble("balance", 0);
+        double cost = rankSection.getDouble("cost", 0);
 
         // Requirements
         List<Requirement> requirements = new ArrayList<>();
@@ -97,19 +102,37 @@ public class ConfigurationLoader {
                 requirements.add(new McMMORequirement(mcmmoPowerLevel));
             }
 
+            // Economy Balance Requirement
+            double balanceRequirement = requirementsSection.getDouble("balance", 0);
+            if (balanceRequirement > 0) {
+                requirements.add(new EconomyRequirement(balanceRequirement, economy));
+            }
+
+            // Playtime Requirement
+            String playtimeStr = requirementsSection.getString("playtime", null);
+            if (playtimeStr != null && !playtimeStr.isEmpty()) {
+                requirements.add(new PlaytimeRequirement(plugin, playtimeStr));
+            }
+
             // Add additional requirements as needed
         }
 
         // Messages
-        String personalMessage = rankSection.getString("personal_message", "");
-        String broadcastMessage = rankSection.getString("broadcast_message", "");
-        String denyMessage = rankSection.getString("deny_message", "");
+        ConfigurationSection messagesSection = rankSection.getConfigurationSection("messages");
+        String personalMessage = "";
+        String broadcastMessage = "";
+        String denyMessage = "";
+        if (messagesSection != null) {
+            personalMessage = messagesSection.getString("personal", "");
+            broadcastMessage = messagesSection.getString("broadcast", "");
+            denyMessage = messagesSection.getString("deny", "");
+        }
 
-        // Create Rank object using your original Rank class
+        // Create Rank object
         Rank rank = new Rank(
                 name,
                 nextRank,
-                balance,
+                cost,
                 requirements,
                 personalMessage,
                 broadcastMessage,

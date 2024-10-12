@@ -1,7 +1,6 @@
 package at.sleazlee.bmessentials.rankup;
 
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
