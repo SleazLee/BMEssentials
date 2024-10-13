@@ -37,7 +37,7 @@ public class AltarManager implements Listener {
 
 	private void loadAltarsFromConfig() {
 		FileConfiguration config = plugin.getConfig();
-		ConfigurationSection altarsSection = config.getConfigurationSection("systems.spawnsystems.altars");
+		ConfigurationSection altarsSection = config.getConfigurationSection("Systems.SpawnSystems.Altars");
 		if (altarsSection == null) {
 			plugin.getLogger().warning("Altars section not found in the configuration!");
 			return;

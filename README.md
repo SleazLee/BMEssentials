@@ -26,7 +26,7 @@
 ### Functional Systems
 - TPShop: Teleportation shop with tab completion.
 - Vote System: Admin voting system with tab completion.
-- BMWILD: Random teleportation system with no fall damage.
+- Wild: Random teleportation system with no fall damage.
 - Spawn Systems: Features like first join messages, healing springs, and more.
 - Common Commands: Commands like playtime, lag, and Discord info.
 - Trash System: Commands for trash and disposal.

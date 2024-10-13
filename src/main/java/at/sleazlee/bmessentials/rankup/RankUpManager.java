@@ -47,7 +47,7 @@ public class RankUpManager implements CommandExecutor {
         this.messageHandler = new MessageHandler();
         this.ranks = configLoader.loadRanks();
         plugin.getCommand("rankup").setExecutor(this);
-        plugin.getLogger().info("RankUpManager initialized successfully with " + ranks.size() + " ranks.");
+        plugin.getLogger().info("Discovered " + ranks.size() + " ranks in the config!");
     }
 
     /**

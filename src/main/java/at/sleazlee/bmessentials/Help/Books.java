@@ -1,4 +1,4 @@
-package at.sleazlee.bmessentials.HelpMenus;
+package at.sleazlee.bmessentials.Help;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
@@ -22,17 +22,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Handles the Help Menus system, allowing players to open formatted books via commands.
+ * Handles the Help Books system, allowing players to open formatted books via commands.
  * Enhancements include:
  * - Enhanced MiniMessage usage for rich formatting and interactivity.
  * - Asynchronous operations for improved performance.
  * - Rate limiting to prevent command abuse.
  */
-public class HelpMenus implements Listener {
+public class Books implements Listener {
 
     private final BMEssentials plugin;
-    private FileConfiguration menusConfig;
-    private final File menusFile;
+    private FileConfiguration booksConfig;
+    private final File booksFile;
 
     // Rate limiting: Map of player UUIDs to their last command timestamp
     private final Map<String, Long> playerCooldowns = new ConcurrentHashMap<>();
@@ -41,32 +41,32 @@ public class HelpMenus implements Listener {
     private final long cooldownMillis;
 
     /**
-     * Constructs a new HelpMenus instance and registers event listeners.
+     * Constructs a new HelpBooks instance and registers event listeners.
      *
      * @param plugin The main plugin instance.
      */
-    public HelpMenus(BMEssentials plugin) {
+    public Books(BMEssentials plugin) {
         this.plugin = plugin;
-        this.menusFile = new File(plugin.getDataFolder(), "menus.yml");
-        this.cooldownMillis = plugin.getConfig().getLong("systems.Menus.cooldown", 5000); // Default 5 seconds
-        loadMenusConfigAsync();
+        this.cooldownMillis = plugin.getConfig().getLong("Systems.Books.Cooldown", 200); // Default 0.2 seconds
+        this.booksFile = new File(plugin.getDataFolder(), "books.yml");
+        loadBooksConfigAsync();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /**
-     * Loads the menus configuration file asynchronously. If it doesn't exist, creates it with default content.
+     * Loads the books configuration file asynchronously. If it doesn't exist, creates it with default content.
      */
-    private void loadMenusConfigAsync() {
+    private void loadBooksConfigAsync() {
         Scheduler.run(() -> {
-            if (!menusFile.exists()) {
+            if (!booksFile.exists()) {
                 try {
-                    if (menusFile.getParentFile() != null) {
-                        menusFile.getParentFile().mkdirs(); // Ensure the data folder exists
+                    if (booksFile.getParentFile() != null) {
+                        booksFile.getParentFile().mkdirs(); // Ensure the data folder exists
                     }
-                    menusFile.createNewFile(); // Create the file
+                    booksFile.createNewFile(); // Create the file
 
                     // Load default content
-                    FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(menusFile);
+                    FileConfiguration defaultConfig = YamlConfiguration.loadConfiguration(booksFile);
                     defaultConfig.set("Books.book1", List.of(
                             "&2&lTown Claiming&f.Use <and>&a/Towns;&aShows your town menu.;/l<and>&0 to claim &0 &0 &0 and safeguard your &0 &f.&0 builds from player grief! You can: &2- &8Manage Members &2- &8Edit Town Flags &2- &8Assign Chunk Types <and>$RUN_COMMAND$Go Back; /help337<and>"
                     ));
@@ -82,17 +82,17 @@ public class HelpMenus implements Listener {
                     defaultConfig.set("Books.plot_usage", List.of(
                             "&3&lPlot Usage&f.Setting up the plot: <and>&a/Claim;&aClaims the 16x16 chunk that you're on.;/t claim <and>&3/t plot;&3Change the chunk type to a plot.;/t plot <and>&3/t plot add &8(&3name&8);&3Assigns the Plot that you are on to a specific In-Town player.;/plot assign <and>&7&oHover Text</and>Click me!;/help towns<and>"
                     ));
-                    defaultConfig.set("systems.Menus.cooldown", 5000); // 5 seconds cooldown
-                    defaultConfig.save(menusFile);
-                    plugin.getLogger().info("Created default menus.yml");
+                    defaultConfig.set("Systems.Books.Cooldown", 200); // 0.2 seconds cooldown
+                    defaultConfig.save(booksFile);
+                    plugin.getLogger().info("Created default books.yml");
                 } catch (IOException e) {
-                    plugin.getLogger().severe("Could not create default menus.yml!");
+                    plugin.getLogger().severe("Could not create default books.yml!");
                     e.printStackTrace();
                 }
             }
 
-            menusConfig = YamlConfiguration.loadConfiguration(menusFile);
-            plugin.getLogger().info("Loaded menus.yml");
+            booksConfig = YamlConfiguration.loadConfiguration(booksFile);
+            plugin.getLogger().info("Loaded books.yml");
         });
     }
 
@@ -135,18 +135,18 @@ public class HelpMenus implements Listener {
 
             // Load the book content asynchronously
             Scheduler.run(() -> {
-                if (menusConfig == null) {
-                    player.sendMessage(Component.text("Menu system is still loading. Please try again shortly."));
+                if (booksConfig == null) {
+                    player.sendMessage(Component.text("Book system is still loading. Please try again shortly."));
                     return;
                 }
 
                 String path = "Books." + bookName;
-                if (!menusConfig.contains(path)) {
+                if (!booksConfig.contains(path)) {
                     player.sendMessage(Component.text("This book does not exist."));
                     return;
                 }
 
-                List<String> bookContent = menusConfig.getStringList(path);
+                List<String> bookContent = booksConfig.getStringList(path);
                 if (bookContent != null && !bookContent.isEmpty()) {
                     openBook(player, bookContent);
                 } else {

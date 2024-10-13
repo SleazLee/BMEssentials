@@ -28,7 +28,7 @@ public class McMMOBoost implements CommandExecutor {
 				String playerName = args[0];
 				Player player = Bukkit.getPlayer(playerName);
 				double randomValue = Math.random();
-				double totalChance = plugin.getConfig().getDouble("systems.spawnsystems.mcmmoboost.totalchance");
+				double totalChance = plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.TotalChance");
 
 				if (player != null) {
 					if (randomValue <= totalChance) {
@@ -56,9 +56,9 @@ public class McMMOBoost implements CommandExecutor {
 		boolean has150Percent = false;
 		boolean hasDouble = false;
 		String newReward;
-		double tenPercentChance = plugin.getConfig().getDouble("systems.spawnsystems.mcmmoboost.tenpercentchance");
-		double fiftyPercentChance = (tenPercentChance + plugin.getConfig().getDouble("systems.spawnsystems.mcmmoboost.fiftypercentchance"));
-		double oneHundredFiftyPercentChance = (fiftyPercentChance + plugin.getConfig().getDouble("systems.spawnsystems.mcmmoboost.onehundredfiftypercentchance"));
+		double tenPercentChance = plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.TenPercentChance");
+		double fiftyPercentChance = (tenPercentChance + plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.FiftyPercentChance"));
+		double oneHundredFiftyPercentChance = (fiftyPercentChance + plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.OneHundredFiftyPercentChance"));
 
 		if (player.hasPermission("mcmmo.perks.xp.10percentboost.*")) {
 			has10Percent = true;

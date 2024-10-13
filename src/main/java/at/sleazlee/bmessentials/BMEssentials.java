@@ -5,7 +5,7 @@ import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.Containers.*;
-import at.sleazlee.bmessentials.HelpMenus.HelpMenus;
+import at.sleazlee.bmessentials.Help.Books;
 import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
@@ -21,7 +21,6 @@ import at.sleazlee.bmessentials.wild.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -83,7 +82,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // TPShop System
-        if (config.getBoolean("systems.tpshop.enabled")) {
+        if (config.getBoolean("Systems.TPShop.Enabled")) {
             this.getCommand("tpshop").setExecutor(new TPShopCommand());
             this.getCommand("tpshop").setTabCompleter(new TPShopTabCompleter());
 
@@ -92,7 +91,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Vote System
-        if (config.getBoolean("systems.votesystem.enabled")) {
+        if (config.getBoolean("Systems.VoteSystem.Enabled")) {
             this.getCommand("adminvote").setExecutor(new BMVote(this));
             this.getCommand("adminvote").setTabCompleter(new TestVoteTabCompleter());
 
@@ -101,24 +100,27 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Wild System
-        if (config.getBoolean("systems.bmwild.enabled")) {
+        if (config.getBoolean("Systems.Wild.Enabled")) {
+            // Create an instance of WildData with the plugin's configuration and plugin instance
+            WildData wildData = new WildData(this.getConfig(), this);
+
+            // Register the NoFallDamage event listener.
             getServer().getPluginManager().registerEvents(new NoFallDamage(this), this);
 
-            this.getCommand("wild").setExecutor(new BMWildCommand());
-            this.getCommand("wild").setTabCompleter(new WildTabCompleter());
-            this.getCommand("rtp").setExecutor(new BMWildCommand());
-            this.getCommand("rtp").setTabCompleter(new WildTabCompleter());
-            this.getCommand("randomtp").setExecutor(new BMWildCommand());
-            this.getCommand("randomtp").setTabCompleter(new WildTabCompleter());
-            this.getCommand("randomteleport").setExecutor(new BMWildCommand());
-            this.getCommand("randomteleport").setTabCompleter(new WildTabCompleter());
+            // Instantiate the command executor and tab completer, passing the WildData instance.
+            WildCommand wildCommand = new WildCommand(wildData, this);
+            WildTabCompleter wildTabCompleter = new WildTabCompleter(wildData);
 
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled BMWild");
+            // Register the /wild command executor and tab completer.
+            this.getCommand("wild").setExecutor(wildCommand);
+            this.getCommand("wild").setTabCompleter(wildTabCompleter);
+
+            // Add the system enabled message to the console.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Wild Systems");
         }
 
         // Spawn Systems
-        if (config.getBoolean("systems.spawnsystems.enabled")) {
+        if (config.getBoolean("Systems.SpawnSystems.Enabled")) {
             this.getCommand("firstjoinmessage").setExecutor(new FirstJoinCommand(this));
             this.getCommand("springsheal").setExecutor(new HealCommand(this));
             this.getCommand("mcmmoboost").setExecutor(new McMMOBoost(this));
@@ -133,7 +135,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Common Commands
-        if (config.getBoolean("systems.commoncommands.enabled")) {
+        if (config.getBoolean("Systems.CommonCommands.Enabled")) {
             this.getCommand("playtime").setExecutor(new CommonCommands(this));
             this.getCommand("lag").setExecutor(new CommonCommands(this));
             this.getCommand("bmdiscord").setExecutor(new CommonCommands(this));
@@ -143,7 +145,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Virtual Containers System
-        if (config.getBoolean("systems.containers.enabled")) {
+        if (config.getBoolean("Systems.Containers.Enabled")) {
 
             // Trash
             this.getCommand("trash").setExecutor(new TrashCommand());
@@ -177,7 +179,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // BungeeTell System
-        if (config.getBoolean("systems.bungeetell.enabled")) {
+        if (config.getBoolean("Systems.BungeeTell.Enabled")) {
             this.getCommand("bungeetell").setExecutor(new BungeeTellCommand(this));
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:bungeetell");
 
@@ -186,7 +188,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Map System
-        if (config.getBoolean("systems.maps.enabled")) {
+        if (config.getBoolean("Systems.Maps.Enabled")) {
 
             this.getCommand("map").setExecutor(new MapCommand(this));
             this.getCommand("map").setTabCompleter(new MapTabCompleter());
@@ -198,7 +200,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Donation System
-        if (config.getBoolean("systems.Donations.enabled")) {
+        if (config.getBoolean("Systems.Donations.Enabled")) {
 
             this.getCommand("donation").setExecutor(new DonationCommand(this));
 
@@ -207,7 +209,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Trophy System
-        if (config.getBoolean("systems.Trophies.enabled")) {
+        if (config.getBoolean("Systems.Trophies.Enabled")) {
             // Ensure the plugin's data folder exists
             if (!getDataFolder().exists()) {
                 getDataFolder().mkdirs();
@@ -233,14 +235,14 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Migrator System
-        if (config.getBoolean("systems.Migrator.enabled")) {
+        if (config.getBoolean("Systems.Migrator.Enabled")) {
             migratorManager = new MigratorManager(this);
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Migrator System");
         }
 
         // CommandQueue System
-        if (config.getBoolean("systems.CommandQueue.enabled")) {
+        if (config.getBoolean("Systems.CommandQueue.Enabled")) {
 
             this.queueManager = new CommandQueueManager(this);
 
@@ -256,14 +258,14 @@ public class BMEssentials extends JavaPlugin {
 
 
         // Vot System
-        if (getConfig().getBoolean("systems.Vot.enabled", true)) {
+        if (getConfig().getBoolean("Systems.Vot.Enabled")) {
             getCommand("vot").setExecutor(new VoteCommand());
             getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
         }
 
         // RankUp System
-        if (getConfig().getBoolean("systems.Rankup.enabled")) {
+        if (getConfig().getBoolean("Systems.Rankup.Enabled")) {
 
             if (!setupEconomy()) {
                 getLogger().severe("Disabled due to no Vault dependency found!");
@@ -275,10 +277,10 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the RankUp System");
         }
 
-        // Menu Systems
-        if (config.getBoolean("systems.Menus.enabled")) {
-            new HelpMenus(this);
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Menu System");
+        // Book Systems
+        if (config.getBoolean("Systems.Book.Enabled")) {
+            new Books(this);
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Book Systems");
         }
 
         // Finally enables the reload system.

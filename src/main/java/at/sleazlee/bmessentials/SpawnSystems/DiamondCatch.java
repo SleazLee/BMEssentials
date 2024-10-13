@@ -24,7 +24,7 @@ public class DiamondCatch implements CommandExecutor {
 				String playerName = args[0];
 				Player player = Bukkit.getPlayer(playerName);
 				double randomValue = Math.random();
-				double totalChance = plugin.getConfig().getDouble("systems.spawnsystems.diamondcatch.totalchance");
+				double totalChance = plugin.getConfig().getDouble("Systems.SpawnSystems.DiamondCatch.TotalChance");
 
 				if (player != null) {
 					if (randomValue < totalChance) {
@@ -49,9 +49,9 @@ public class DiamondCatch implements CommandExecutor {
 		double randomValue = Math.random();
 		double randomValueTwo = Math.random();
 		int rndNumber = 0;
-		double tenToFifty = plugin.getConfig().getDouble("systems.spawnsystems.diamondcatch.tentofifty");
-		double threeToTen = (tenToFifty + plugin.getConfig().getDouble("systems.spawnsystems.diamondcatch.threetoten"));
-		double oneToThree = (threeToTen + plugin.getConfig().getDouble("systems.spawnsystems.onetothree.onehundredfiftypercentchance"));
+		double tenToFifty = plugin.getConfig().getDouble("Systems.SpawnSystems.DiamondCatch.TenToFifty");
+		double threeToTen = (tenToFifty + plugin.getConfig().getDouble("Systems.SpawnSystems.DiamondCatch.ThreeToTen"));
+		double oneToThree = (threeToTen + plugin.getConfig().getDouble("Systems.SpawnSystems.DiamondCatch.OneToThree"));
 
 		if (randomValue <= tenToFifty) {
 			rndNumber = (int) ((Math.random() * 40) + 10);

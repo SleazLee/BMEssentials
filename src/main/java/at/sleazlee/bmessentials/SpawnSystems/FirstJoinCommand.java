@@ -10,6 +10,17 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+// WorldGuard imports
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -21,6 +32,29 @@ public class FirstJoinCommand implements CommandExecutor {
 
     public FirstJoinCommand(BMEssentials plugin) {
         this.plugin = plugin;
+    }
+
+    // Method to check if player is in a specific WorldGuard region
+    private boolean playerIsInRegion(Player player, String regionName) {
+        // Adapt the player's Bukkit World to a WorldGuard World
+        World wgWorld = BukkitAdapter.adapt(player.getWorld());
+        if (wgWorld == null) {
+            return false;
+        }
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionManager regions = container.get(wgWorld);
+        if (regions == null) {
+            return false;
+        }
+        // Adapt the player's location
+        com.sk89q.worldedit.util.Location loc = BukkitAdapter.adapt(player.getLocation());
+        ApplicableRegionSet set = regions.getApplicableRegions(loc.toVector().toBlockPoint());
+        for (ProtectedRegion region : set) {
+            if (region.getId().equalsIgnoreCase(regionName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -45,23 +79,27 @@ public class FirstJoinCommand implements CommandExecutor {
             public void run() {
                 if (!player.isOnline()) {
                     tasks.remove(playerId).cancel();
+                } else if (!playerIsInRegion(player, "spawn")) {
+                    tasks.remove(playerId).cancel();
                 } else if (count <= 1) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.AQUA + "" + ChatColor.BOLD + "Welcome to Blockminer!"));
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent(ChatColor.AQUA + "" + ChatColor.BOLD + "Welcome to Blockminer!"));
                     count++;
                 } else if (count <= 2) {
                     count++;
                 } else if (count <= 3) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.AQUA + "To Start Your Journey"));
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent(ChatColor.AQUA + "To Start Your Journey"));
                     count++;
                 } else if (count <= 7) {
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.AQUA + "" + ChatColor.BOLD + "JUMP IN THE PIT!"));
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                            new TextComponent(ChatColor.AQUA + "" + ChatColor.BOLD + "JUMP IN THE PIT!"));
                     count++;
                 } else {
                     count = 2;
                 }
-
             }
-        }, 0L, 40L);  // 80 ticks = 4 seconds, as 20 ticks = 1 second in Minecraft time.
+        }, 0L, 40L);  // 40 ticks = 2 seconds
 
         tasks.put(playerId, task);
 

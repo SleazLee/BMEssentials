@@ -10,125 +10,145 @@
 serverName: "blockminer"
 
 #The start of a list of Systems.
-systems:
+Systems:
 
-  discord:
+  Discord:
     # link to the discord
-    link: "https://discord.gg/NGx7DzFZAE"
+    Link: "https://discord.gg/NGx7DzFZAE"
 
   # Enables the /tpshop <###> command.
-  tpshop:
-    enabled: true
+  TPShop:
+    Enabled: true
 
   # Enables the vote system that listens for votes.
-  votesystem:
-    enabled: true
+  VoteSystem:
+    Enabled: true
 
     # Change the sound that plays when a player votes. (Default: ENTITY_EXPERIENCE_ORB_PICKUP)
-    sounds: "ENTITY_EXPERIENCE_ORB_PICKUP"
+    Sounds: "ENTITY_EXPERIENCE_ORB_PICKUP"
 
-    particles:
+    Particles:
       # Sets the particle radius around the player. (Default: 6)
-      radius: 6
+      Radius: 6
 
   # Enables the wild teleport system.
-  bmwild:
-    enabled: true
+  Wild:
+    Enabled: true
+
+    Bounds:
+      1:
+        Version: 1.19
+        Lower: 612
+        Upper: 19867
+
+      2:
+        Version: 1.21
+        Lower: 20580
+        Upper: 29595
+
+      # Add new versions as needed
+      # 3:
+      #   Version: <version>
+      #   Lower: <value>
+      #   Upper: <value>
 
   # Enables spawn only systems.
-  spawnsystems:
-    enabled: true
+  SpawnSystems:
+    Enabled: true
 
-    mcmmoboost:
+    McmmoBoost:
       # Chance to get a McMMO Boost at all. (Default 0.33, this means 33% chance)
-      totalchance: 0.33
+      TotalChance: 0.33
       # These should all add up to 1.00.
       # Default 0.43
-      tenpercentchance: 0.43
+      TenPercentChance: 0.43
       # Default 0.25
-      fiftypercentchance: 0.25
+      FiftyPercentChance: 0.25
       # Default 0.19
-      onehundredfiftypercentchance: 0.19
+      OneHundredFiftyPercentChance: 0.19
       # Default 0.13
-      twoHundredPercentChance: 0.13
+      TwoHundredPercentChance: 0.13
 
-    diamondcatch:
+    DiamondCatch:
       # Chance to get free Diamonds from the Wishing-Well. (Default 0.50, this means 50% chance)
-      totalchance: 0.50
+      TotalChance: 0.50
       # These should all add up to 1.00.
       # Default 0.06
-      tentofifty: 0.06
+      TenToFifty: 0.06
       # Default 0.18
-      threetoten: 0.18
+      ThreeToTen: 0.18
       # Default 0.32
-      onetothree: 0.32
+      OneToThree: 0.32
       # Default 0.44
-      one: 0.44
+      One: 0.44
 
-    altars:
-      healingsprings:
+    Altars:
+      HealingSprings:
         x: -247
         y: 61
         z: -108
         direction: WEST
-      wishingwell:
+      WishingWell:
         x: -238
         y: 71
         z: 37
         direction: NORTH
-      obelisk:
+      Obelisk:
         x: -125
         y: 71
         z: 16
         direction: EAST
 
   # Enables all the common commands.
-  commoncommands:
-    enabled: true
+  CommonCommands:
+    Enabled: true
 
   # Enables the trash system.
-  containers:
-    enabled: true
+  Containers:
+    Enabled: true
 
   # Enables the bungeetell system.
-  bungeetell:
-    enabled: true
+  BungeeTell:
+    Enabled: true
 
   # Enables the Map system.
-  maps:
-    enabled: true
+  Maps:
+    Enabled: true
 
     # Map links
-    default: "https://blockminer.net/map/"
+    Default: "https://blockminer.net/map/"
 
   # Enables the Ban/Mute system.
-  punishments:
-    enabled: true
+  Punishments:
+    Enabled: true
 
   # Enables the Donation system.
   Donations:
-    enabled: true
+    Enabled: true
 
   # Enables the Trophies system.
   Trophies:
-    enabled: true
+    Enabled: true
 
   # Enables the vot time/weather system.
   Vot:
-    enabled: true
+    Enabled: true
 
   # Enables the Rankup System
   Rankup:
-    enabled: true
+    Enabled: true
 
   # Enables the Migrator System
   Migrator:
-    enabled: false
+    Enabled: false
 
   # Enables the Command Queue System
   CommandQueue:
-    enabled: true
+    Enabled: true
 
   # Enables the Help Menu Systems
-  Menus:
-    enabled: true
+  Books:
+    Enabled: true
+
+    # Cooldown for opening a new book.
+    Cooldown: 200

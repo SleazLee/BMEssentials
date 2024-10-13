@@ -55,7 +55,7 @@ public class CommonCommands implements CommandExecutor {
 				ChatColor discordColor = ChatColor.of("#7187D7");
 				ChatColor linkColor = ChatColor.of("#97A8B3");
 
-				String discordLink = plugin.getConfig().getString("systems.discord.link");
+				String discordLink = plugin.getConfig().getString("Systems.Discord.Link");
 
 				player.sendMessage(discordColor + "" + "§lDiscord " + linkColor + "Link to join: " + discordColor + discordLink);
 

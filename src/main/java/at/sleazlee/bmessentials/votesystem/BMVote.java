@@ -261,7 +261,7 @@ public class BMVote implements Listener, CommandExecutor {
                 Location location = player.getLocation();
 
                 // play a sound
-                String soundName = plugin.getConfig().getString("systems.votesystem.sounds");
+                String soundName = plugin.getConfig().getString("Systems.VoteSystem.Sounds");
 
                 try {
                     Sound sound = Sound.valueOf(soundName); // Convert the string to a Sound
@@ -289,7 +289,7 @@ public class BMVote implements Listener, CommandExecutor {
 
     public void spawnFallingParticleSphere(Player player, String hexCode) {
         DustOptions dustOptions = Art.createDustOptions(hexCode);
-        double radius = plugin.getConfig().getDouble("systems.votesystem.particles.radius");
+        double radius = plugin.getConfig().getDouble("Systems.VoteSystem.Particles.Radius");
         Location location = player.getLocation();
 
         // Create a new task for the repeating particle effect

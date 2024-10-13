@@ -63,7 +63,7 @@ public class MapCommand implements CommandExecutor {
 				createMapLink(district.toLowerCase(), player);
 				break;
 			default:
-				mapLink = plugin.getConfig().getString("systems.maps.default");
+				mapLink = plugin.getConfig().getString("Systems.Maps.Default");
 
 				TextComponent baseText = new TextComponent("§a§lMaps §7Here's the link: §2");
 				// Create a text component with the desired message

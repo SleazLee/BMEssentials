@@ -114,7 +114,7 @@ def convert_menus(old_menus):
             new_pages.append(converted_page)
         new_menus['Books'][book_name] = new_pages
 
-    # Copy over other configurations if necessary, e.g., systems.Menus.cooldown
+    # Copy over other configurations if necessary, e.g., Systems.Menus.Cooldown
     if 'systems' in old_menus and 'Menus' in old_menus['systems']:
         new_menus['systems'] = {'Menus': old_menus['systems']['Menus']}
 

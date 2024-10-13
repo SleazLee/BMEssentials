@@ -20,20 +20,12 @@ commands:
     usage: /tpshop <###>
 
   wild:
-    description: Teleports the player to a random server with a random world.
-    usage: /wild
-
-  rtp:
-    description: Teleports the player to a random server with a random world.
-    usage: /rtp
-
-  randomtp:
-    description: Teleports the player to a random server with a random world.
-    usage: /randomtp
-
-  randomteleport:
-    description: Teleports the player to a random server with a random world.
-    usage: /randomteleport
+    description: Teleport to a random location.
+    usage: /wild [version]
+    aliases:
+    - rtp
+    - randomtp
+    - randomteleport
 
   firstjoinmessage:
     description: Sends repeating action bar messages to the player.
