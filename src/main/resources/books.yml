@@ -1,0 +1,17 @@
+##
+#  advanced_features:
+#    - '<gradient:#ff0000:#0000ff><bold>Advanced Features</bold></gradient>\n\nThis book demonstrates <hover:show_text:"This is hover text!">hover text</hover>, <click:run_command:"/say Hello World">clickable text commands</click>, and <click:suggest_command:"/help">clickable suggested commands</click>. It also uses <color:#00ff00>hex color codes</color>.'
+#    - '<rainbow>Second Page with Rainbow Gradient!</rainbow>'
+#  hover_example:
+#    - 'Hover over <hover:show_text:"Hello, this is hover text!"><yellow>this text</yellow></hover> to see the hover text.'
+#  clickable_command_example:
+#    - 'Click <click:run_command:"/say You clicked the text!"><green>here</green></click> to run a command.'
+#  suggested_command_example:
+#    - 'Click <click:suggest_command:"/msg YourFriend Hello!"><blue>here</blue></click> to suggest a command.'
+#  hex_color_example:
+#    - 'This text is in <color:#ff5733>hex color</color>.'
+##
+Books:
+  legacy_example:
+    - '&aThis is a line with &blegacy &ccolor &dcodes &eand &fMiniMessage &lbold &rreset.'
+    - 'You can still use MiniMessage tags like <bold>bold</bold> and legacy codes together.'

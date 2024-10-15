@@ -5,7 +5,10 @@ import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.Containers.*;
-import at.sleazlee.bmessentials.Help.Books;
+import at.sleazlee.bmessentials.Help.HelpBooks;
+import at.sleazlee.bmessentials.Help.Commands.BookCommand;
+import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
+import at.sleazlee.bmessentials.Help.HelpCommands;
 import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
@@ -277,10 +280,18 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the RankUp System");
         }
 
-        // Book Systems
-        if (config.getBoolean("Systems.Book.Enabled")) {
-            new Books(this);
+        // Enable Book Systems
+        if (getConfig().getBoolean("Systems.Help.Books.Enabled")) {
+            HelpBooks books = new HelpBooks(this);
+            getCommand("book").setExecutor(new BookCommand(books));
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Book Systems");
+        }
+
+        // Enable Commands System
+        if (getConfig().getBoolean("Systems.Help.Commands.Enabled")) {
+            HelpCommands commandsSystem = new HelpCommands(this);
+            getCommand("commands").setExecutor(new CommandsCommand(commandsSystem));
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Commands System");
         }
 
         // Finally enables the reload system.

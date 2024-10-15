@@ -168,7 +168,7 @@ commands:
   rankup:
     description: Rank up to the next level if conditions are met.
     usage: /rankup
-    permission: rankup.use
+    permission: bmessentials.rankup.use
     permission-message: You do not have permission to perform this command.
 
   migrateinventories:
@@ -192,13 +192,11 @@ commands:
 
   book:
     description: Opens a help book.
-    usage: /book <bookName>
+    usage: /book <book name>
 
-  bookreload:
-    description: Reloads the help books.
-    usage: /bookreload
-    permission: bmessentials.book.reload
-
+  commands:
+    description: Displays command information.
+    usage: /commands <command name>
 
 
 
@@ -215,7 +213,7 @@ permissions:
      description: Allows the player to bypass the vote initiation cooldown.
      default: op
 
-  rankup.use:
+  bmessentials.rankup.use:
     description: Allows the user to attempt to rank up.
     default: true
 

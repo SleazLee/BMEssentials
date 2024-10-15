@@ -12,6 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
+import static org.bukkit.Bukkit.getServer;
+
 /**
  * Manages rank-up functionalities and command execution.
  */
@@ -47,7 +49,7 @@ public class RankUpManager implements CommandExecutor {
         this.messageHandler = new MessageHandler();
         this.ranks = configLoader.loadRanks();
         plugin.getCommand("rankup").setExecutor(this);
-        plugin.getLogger().info("Discovered " + ranks.size() + " ranks in the config!");
+        getServer().getConsoleSender().sendMessage(ChatColor.GRAY + " - Discovered " + ChatColor.DARK_GRAY + ranks.size() + ChatColor.GRAY + " Ranks!");
     }
 
     /**
@@ -70,7 +72,7 @@ public class RankUpManager implements CommandExecutor {
         Player player = (Player) sender;
 
         // Check for necessary permission
-        if (!player.hasPermission("rankup.use")) {
+        if (!player.hasPermission("bmessentials.rankup.use")) {
             player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }

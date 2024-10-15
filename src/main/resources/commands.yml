@@ -1,0 +1,12 @@
+##
+#  hover_command: '<hover:show_text:"Hovering over commands!"><gold>Hover over this command text!</gold></hover>'
+#  clickable_command: 'Click <click:run_command:"/help"><green>here</green></click> to run /help.'
+#  suggested_command: 'Click <click:suggest_command:"/warp spawn"><aqua>here</aqua></click> to suggest /warp spawn.'
+#  hex_color_command: 'This message uses <color:#1abc9c>hex colors</color>!'
+#  multiline_example: |
+#    <green>This is a multi-line message.</green>
+#    <yellow>Second line with <bold>bold</bold> text.</yellow>
+#    <blue><click:run_command:'/help'>Click here for help.</click></blue>
+##
+Commands:
+  legacy_command: '&6This is a &lcommand &rwith &blegacy &ccolor &dcodes.'

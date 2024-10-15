@@ -146,9 +146,12 @@ Systems:
   CommandQueue:
     Enabled: true
 
-  # Enables the Help Menu Systems
-  Books:
-    Enabled: true
+  # The Help Menu Systems
+  Help:
+    # Enables the Help Books System
+    Books:
+      Enabled: true
 
-    # Cooldown for opening a new book.
-    Cooldown: 200
+    # Enables the Help Commands System
+    Commands:
+      Enabled: true
