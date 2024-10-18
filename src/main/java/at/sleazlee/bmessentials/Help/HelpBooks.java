@@ -55,9 +55,9 @@ public class HelpBooks {
         if (booksConfig.contains("Books")) {
             Set<String> books = booksConfig.getConfigurationSection("Books").getKeys(false);
             int numBooks = books.size();
-            getServer().getConsoleSender().sendMessage(ChatColor.GRAY + " - Discovered " + ChatColor.DARK_GRAY + numBooks + ChatColor.GRAY + " Books!");
+            getServer().getConsoleSender().sendMessage(ChatColor.GRAY + "    Discovered " + ChatColor.DARK_AQUA + numBooks + ChatColor.GRAY + " Books!");
         } else {
-            getServer().getConsoleSender().sendMessage(ChatColor.RED + " - No books found in books.yml!");
+            getServer().getConsoleSender().sendMessage(ChatColor.RED + "    No books found in books.yml!");
         }
     }
 

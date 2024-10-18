@@ -1,6 +1,8 @@
 package at.sleazlee.bmessentials.Migrator;
 
+import org.bukkit.Material;
 import org.bukkit.Statistic;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -22,10 +24,30 @@ public class StatsManager {
         YamlConfiguration config = new YamlConfiguration();
         for (Statistic stat : Statistic.values()) {
             try {
-                int value = player.getStatistic(stat);
-                config.set(stat.name(), value);
-            } catch (Exception ignored) {
-                // Ignore stats that require additional parameters
+                if (stat.getType() == Statistic.Type.UNTYPED) {
+                    int value = player.getStatistic(stat);
+                    config.set(stat.name(), value);
+                } else if (stat.getType() == Statistic.Type.ENTITY) {
+                    for (EntityType entity : EntityType.values()) {
+                        if (entity.isAlive() && entity.isSpawnable()) {
+                            int value = player.getStatistic(stat, entity);
+                            if (value != 0) {
+                                config.set(stat.name() + "." + entity.name(), value);
+                            }
+                        }
+                    }
+                } else if (stat.getType() == Statistic.Type.BLOCK || stat.getType() == Statistic.Type.ITEM) {
+                    for (Material material : Material.values()) {
+                        if (material.isItem() || material.isBlock()) {
+                            int value = player.getStatistic(stat, material);
+                            if (value != 0) {
+                                config.set(stat.name() + "." + material.name(), value);
+                            }
+                        }
+                    }
+                }
+            } catch (IllegalArgumentException ignored) {
+                // Ignore invalid combinations
             }
         }
         String yamlString = config.saveToString();
@@ -47,13 +69,28 @@ public class StatsManager {
             e.printStackTrace();
         }
 
-        for (String key : config.getKeys(false)) {
-            Statistic stat = Statistic.valueOf(key);
-            int value = config.getInt(key);
+        for (String key : config.getKeys(true)) {
             try {
-                player.setStatistic(stat, value);
-            } catch (Exception ignored) {
-                // Ignore stats that require additional parameters
+                if (key.contains(".")) {
+                    String[] parts = key.split("\\.");
+                    Statistic stat = Statistic.valueOf(parts[0]);
+                    String typeName = parts[1];
+                    int value = config.getInt(key);
+
+                    if (stat.getType() == Statistic.Type.ENTITY) {
+                        EntityType entity = EntityType.valueOf(typeName);
+                        player.setStatistic(stat, entity, value);
+                    } else if (stat.getType() == Statistic.Type.BLOCK || stat.getType() == Statistic.Type.ITEM) {
+                        Material material = Material.valueOf(typeName);
+                        player.setStatistic(stat, material, value);
+                    }
+                } else {
+                    Statistic stat = Statistic.valueOf(key);
+                    int value = config.getInt(key);
+                    player.setStatistic(stat, value);
+                }
+            } catch (IllegalArgumentException ignored) {
+                // Ignore invalid stats
             }
         }
     }

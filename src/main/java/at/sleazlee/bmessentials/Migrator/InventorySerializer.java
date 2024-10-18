@@ -1,11 +1,11 @@
 package at.sleazlee.bmessentials.Migrator;
 
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Base64;
-import java.util.List;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 
 /**
  * Provides methods to serialize and deserialize player inventories.
@@ -19,10 +19,19 @@ public class InventorySerializer {
      * @return the serialized string
      */
     public String serializeInventory(ItemStack[] items) {
-        YamlConfiguration config = new YamlConfiguration();
-        config.set("items", items);
-        String yamlString = config.saveToString();
-        return Base64.getEncoder().encodeToString(yamlString.getBytes(StandardCharsets.UTF_8));
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+            dataOutput.writeInt(items.length);
+            for (ItemStack item : items) {
+                dataOutput.writeObject(item);
+            }
+            dataOutput.close();
+            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -32,14 +41,19 @@ public class InventorySerializer {
      * @return the array of ItemStacks
      */
     public ItemStack[] deserializeInventory(String data) {
-        String yamlString = new String(Base64.getDecoder().decode(data), StandardCharsets.UTF_8);
-        YamlConfiguration config = new YamlConfiguration();
         try {
-            config.loadFromString(yamlString);
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64.getDecoder().decode(data));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            int length = dataInput.readInt();
+            ItemStack[] items = new ItemStack[length];
+            for (int i = 0; i < length; i++) {
+                items[i] = (ItemStack) dataInput.readObject();
+            }
+            dataInput.close();
+            return items;
         } catch (Exception e) {
             e.printStackTrace();
+            return new ItemStack[0];
         }
-        List<ItemStack> list = (List<ItemStack>) config.get("items");
-        return list.toArray(new ItemStack[0]);
     }
 }

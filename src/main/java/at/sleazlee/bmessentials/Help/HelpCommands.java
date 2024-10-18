@@ -48,9 +48,9 @@ public class HelpCommands {
         if (commandsConfig.contains("Commands")) {
             Set<String> commands = commandsConfig.getConfigurationSection("Commands").getKeys(false);
             int numCommands = commands.size();
-            getServer().getConsoleSender().sendMessage(ChatColor.GRAY + " - Discovered " + ChatColor.DARK_GRAY + numCommands + ChatColor.GRAY + " Commands!");
+            getServer().getConsoleSender().sendMessage(ChatColor.GRAY + "    Discovered " + ChatColor.GOLD + numCommands + ChatColor.GRAY + " Commands!");
         } else {
-            getServer().getConsoleSender().sendMessage(ChatColor.RED + " - No commands found in commands.yml!");
+            getServer().getConsoleSender().sendMessage(ChatColor.RED + "    No commands found in commands.yml!");
         }
     }
 

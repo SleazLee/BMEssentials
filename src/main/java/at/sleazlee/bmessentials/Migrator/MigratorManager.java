@@ -16,6 +16,7 @@ public class MigratorManager {
     private DatabaseManager databaseManager;
     private InventorySerializer inventorySerializer;
     private StatsManager statsManager;
+    private AdvancementsManager advancementsManager;
 
     /**
      * Initializes the migrator system components.
@@ -29,6 +30,7 @@ public class MigratorManager {
         databaseManager = new DatabaseManager(plugin);
         inventorySerializer = new InventorySerializer();
         statsManager = new StatsManager();
+        advancementsManager = new AdvancementsManager();
 
         // Register commands
         plugin.getCommand("migrateinventories").setExecutor(new MigrateInventoriesCommand(this));
@@ -58,6 +60,10 @@ public class MigratorManager {
 
     public StatsManager getStatsManager() {
         return statsManager;
+    }
+
+    public AdvancementsManager getAdvancementsManager() {
+        return advancementsManager;
     }
 
     /**

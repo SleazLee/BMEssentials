@@ -49,7 +49,7 @@ public class RankUpManager implements CommandExecutor {
         this.messageHandler = new MessageHandler();
         this.ranks = configLoader.loadRanks();
         plugin.getCommand("rankup").setExecutor(this);
-        getServer().getConsoleSender().sendMessage(ChatColor.GRAY + " - Discovered " + ChatColor.DARK_GRAY + ranks.size() + ChatColor.GRAY + " Ranks!");
+        getServer().getConsoleSender().sendMessage(ChatColor.GRAY + "    Discovered " + ChatColor.DARK_GREEN + ranks.size() + ChatColor.GRAY + " Ranks!");
     }
 
     /**

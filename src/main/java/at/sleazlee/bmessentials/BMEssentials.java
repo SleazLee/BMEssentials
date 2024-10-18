@@ -86,24 +86,27 @@ public class BMEssentials extends JavaPlugin {
 
         // TPShop System
         if (config.getBoolean("Systems.TPShop.Enabled")) {
-            this.getCommand("tpshop").setExecutor(new TPShopCommand());
-            this.getCommand("tpshop").setTabCompleter(new TPShopTabCompleter());
-
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled TPShop");
+
+            this.getCommand("tpshop").setExecutor(new TPShopCommand());
+            this.getCommand("tpshop").setTabCompleter(new TPShopTabCompleter());
         }
 
         // Vote System
         if (config.getBoolean("Systems.VoteSystem.Enabled")) {
-            this.getCommand("adminvote").setExecutor(new BMVote(this));
-            this.getCommand("adminvote").setTabCompleter(new TestVoteTabCompleter());
-
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vote Systems");
+
+            this.getCommand("adminvote").setExecutor(new BMVote(this));
+            this.getCommand("adminvote").setTabCompleter(new TestVoteTabCompleter());
         }
 
         // Wild System
         if (config.getBoolean("Systems.Wild.Enabled")) {
+            // Add the system enabled message to the console.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Wild Systems");
+
             // Create an instance of WildData with the plugin's configuration and plugin instance
             WildData wildData = new WildData(this.getConfig(), this);
 
@@ -117,13 +120,13 @@ public class BMEssentials extends JavaPlugin {
             // Register the /wild command executor and tab completer.
             this.getCommand("wild").setExecutor(wildCommand);
             this.getCommand("wild").setTabCompleter(wildTabCompleter);
-
-            // Add the system enabled message to the console.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Wild Systems");
         }
 
         // Spawn Systems
         if (config.getBoolean("Systems.SpawnSystems.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Spawn Systems");
+
             this.getCommand("firstjoinmessage").setExecutor(new FirstJoinCommand(this));
             this.getCommand("springsheal").setExecutor(new HealCommand(this));
             this.getCommand("mcmmoboost").setExecutor(new McMMOBoost(this));
@@ -132,23 +135,22 @@ public class BMEssentials extends JavaPlugin {
             AltarManager altarManager = new AltarManager(this);
             getServer().getPluginManager().registerEvents(altarManager, this);
             HealingSprings.startHealingSpringsAmbient(this);
-
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Spawn Systems");
         }
 
         // Common Commands
         if (config.getBoolean("Systems.CommonCommands.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled All Common Commands");
+
             this.getCommand("playtime").setExecutor(new CommonCommands(this));
             this.getCommand("lag").setExecutor(new CommonCommands(this));
             this.getCommand("bmdiscord").setExecutor(new CommonCommands(this));
-
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled All Common Commands");
         }
 
         // Virtual Containers System
         if (config.getBoolean("Systems.Containers.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Virtual Containers System");
 
             // Trash
             this.getCommand("trash").setExecutor(new TrashCommand());
@@ -176,43 +178,41 @@ public class BMEssentials extends JavaPlugin {
 
             // Anvil
             this.getCommand("anvil").setExecutor(new AnvilCommand());
-
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Virtual Containers System");
         }
 
         // BungeeTell System
         if (config.getBoolean("Systems.BungeeTell.Enabled")) {
-            this.getCommand("bungeetell").setExecutor(new BungeeTellCommand(this));
-            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:bungeetell");
-
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled BungeeTell System");
+
+            this.getCommand("bungeetell").setExecutor(new BungeeTellCommand(this));
+            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:bungeetell");
         }
 
         // Map System
         if (config.getBoolean("Systems.Maps.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Maps");
 
             this.getCommand("map").setExecutor(new MapCommand(this));
             this.getCommand("map").setTabCompleter(new MapTabCompleter());
             this.getCommand("maps").setExecutor(new MapCommand(this));
             this.getCommand("maps").setTabCompleter(new MapTabCompleter());
-
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Maps");
         }
 
         // Donation System
         if (config.getBoolean("Systems.Donations.Enabled")) {
-
-            this.getCommand("donation").setExecutor(new DonationCommand(this));
-
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Donation Systems");
+
+            this.getCommand("donation").setExecutor(new DonationCommand(this));
         }
 
         // Trophy System
         if (config.getBoolean("Systems.Trophies.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Trophy Systems");
+
             // Ensure the plugin's data folder exists
             if (!getDataFolder().exists()) {
                 getDataFolder().mkdirs();
@@ -233,19 +233,20 @@ public class BMEssentials extends JavaPlugin {
             } else {
                 getLogger().warning("PlaceholderAPI not found. Placeholders will not be available.");
             }
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Trophy Systems");
         }
 
         // Migrator System
         if (config.getBoolean("Systems.Migrator.Enabled")) {
-            migratorManager = new MigratorManager(this);
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Migrator System");
+
+            migratorManager = new MigratorManager(this);
         }
 
         // CommandQueue System
         if (config.getBoolean("Systems.CommandQueue.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the CommandQueue System");
 
             this.queueManager = new CommandQueueManager(this);
 
@@ -254,21 +255,22 @@ public class BMEssentials extends JavaPlugin {
 
             // Load commands from CommandQueue.yml
             queueManager.loadCommands();
-
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the CommandQueue System");
         }
 
 
         // Vot System
         if (getConfig().getBoolean("Systems.Vot.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
+
             getCommand("vot").setExecutor(new VoteCommand());
             getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
         }
 
         // RankUp System
         if (getConfig().getBoolean("Systems.Rankup.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the RankUp System");
 
             if (!setupEconomy()) {
                 getLogger().severe("Disabled due to no Vault dependency found!");
@@ -277,21 +279,24 @@ public class BMEssentials extends JavaPlugin {
             }
 
             this.rankUpManager = new RankUpManager(this, economy);
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the RankUp System");
         }
 
         // Enable Book Systems
         if (getConfig().getBoolean("Systems.Help.Books.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Book Systems");
+
             HelpBooks books = new HelpBooks(this);
             getCommand("book").setExecutor(new BookCommand(books));
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Book Systems");
         }
 
         // Enable Commands System
         if (getConfig().getBoolean("Systems.Help.Commands.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Commands System");
+
             HelpCommands commandsSystem = new HelpCommands(this);
             getCommand("commands").setExecutor(new CommandsCommand(commandsSystem));
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Commands System");
         }
 
         // Finally enables the reload system.

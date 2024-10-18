@@ -2,7 +2,6 @@ package at.sleazlee.bmessentials.Migrator.Listeners;
 
 import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.Migrator.VirtualChestGUI;
-import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -44,10 +43,8 @@ public class InventoryClickListener implements Listener {
             }
 
             // After the event, update the database
-            Scheduler.runLater(() -> {
-                VirtualChestGUI gui = (VirtualChestGUI) event.getInventory().getHolder();
-                gui.saveInventory();
-            }, 1L);
+            VirtualChestGUI gui = (VirtualChestGUI) event.getInventory().getHolder();
+            gui.saveInventory();
         }
     }
 }

@@ -172,18 +172,18 @@ commands:
     permission-message: You do not have permission to perform this command.
 
   migrateinventories:
-    description: Migrates player inventories.
-    usage: /migrateinventories
-    permission: inventorymigrator.admin
+  description: Migrate player inventories to the database
+  usage: /<command>
+  permission: inventorymigrator.admin
 
   resetmigration:
-    description: Resets the migration database.
-    usage: /resetmigration
+    description: Reset migration data
+    usage: /<command>
     permission: inventorymigrator.admin
 
   retrieveinventory:
-    description: Retrieves your migrated inventory.
-    usage: /retrieveinventory
+    description: Retrieve your migrated inventory
+    usage: /<command>
     permission: inventorymigrator.retrieve
 
   commandqueue:
@@ -218,9 +218,9 @@ permissions:
     default: true
 
   inventorymigrator.admin:
-    description: Allows execution of admin commands.
+    description: Allows use of admin commands for inventory migration
     default: op
 
   inventorymigrator.retrieve:
-    description: Allows players to retrieve their migrated inventory.
+    description: Allows players to retrieve their migrated inventory
     default: true
