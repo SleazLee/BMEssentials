@@ -171,21 +171,6 @@ commands:
     permission: bmessentials.rankup.use
     permission-message: You do not have permission to perform this command.
 
-  migrateinventories:
-  description: Migrate player inventories to the database
-  usage: /<command>
-  permission: inventorymigrator.admin
-
-  resetmigration:
-    description: Reset migration data
-    usage: /<command>
-    permission: inventorymigrator.admin
-
-  retrieveinventory:
-    description: Retrieve your migrated inventory
-    usage: /<command>
-    permission: inventorymigrator.retrieve
-
   commandqueue:
     description: Runs the command queue
     usage: /commandqueue run <player/console>
@@ -215,12 +200,4 @@ permissions:
 
   bmessentials.rankup.use:
     description: Allows the user to attempt to rank up.
-    default: true
-
-  inventorymigrator.admin:
-    description: Allows use of admin commands for inventory migration
-    default: op
-
-  inventorymigrator.retrieve:
-    description: Allows players to retrieve their migrated inventory
     default: true

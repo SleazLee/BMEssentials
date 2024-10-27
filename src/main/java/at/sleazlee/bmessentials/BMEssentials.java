@@ -9,7 +9,6 @@ import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
 import at.sleazlee.bmessentials.Help.HelpCommands;
-import at.sleazlee.bmessentials.Migrator.MigratorManager;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.rankup.RankUpManager;
@@ -52,9 +51,6 @@ public class BMEssentials extends JavaPlugin {
 
     /** The menu GUI for the trophy system. */
     private TrophyMenu trophyGUI;
-
-    /** The manager for the migrator system. */
-    private MigratorManager migratorManager;
 
     private CommandQueueManager queueManager;
 
@@ -235,14 +231,6 @@ public class BMEssentials extends JavaPlugin {
             }
         }
 
-        // Migrator System
-        if (config.getBoolean("Systems.Migrator.Enabled")) {
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Migrator System");
-
-            migratorManager = new MigratorManager(this);
-        }
-
         // CommandQueue System
         if (config.getBoolean("Systems.CommandQueue.Enabled")) {
             // Add the system enabled message.
@@ -317,11 +305,6 @@ public class BMEssentials extends JavaPlugin {
         // Close the Trophies Database Connection
         if (trophiesDB != null) {
             trophiesDB.close();
-        }
-
-        // Close the Player Migration Database Connection
-        if (migratorManager != null) {
-            migratorManager.shutdown();
         }
 
         // Log a message to indicate the plugin has been successfully disabled
