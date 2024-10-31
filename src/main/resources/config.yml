@@ -155,3 +155,7 @@ Systems:
     # Enables the Help Commands System
     Commands:
       Enabled: true
+
+  # Enables the PlayerData Systems
+  PlayerData:
+    Enabled: true

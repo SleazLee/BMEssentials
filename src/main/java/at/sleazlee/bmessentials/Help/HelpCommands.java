@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.Help;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.TextUtils.replaceLegacyColors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
@@ -74,7 +75,7 @@ public class HelpCommands {
 
         String message = commandsConfig.getString(path);
         if (message != null && !message.isEmpty()) {
-            String replacedText = TextUtils.replaceLegacyColors(message);
+            String replacedText = replaceLegacyColors.replaceLegacyColors(message);
             Component component = MiniMessage.miniMessage().deserialize(replacedText);
             player.sendMessage(component);
         } else {

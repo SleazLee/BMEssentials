@@ -1,9 +1,9 @@
-package at.sleazlee.bmessentials.Help;
+package at.sleazlee.bmessentials.TextUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TextUtils {
+public class replaceLegacyColors {
     public static String replaceLegacyColors(String input) {
         Map<Character, String> legacyToMiniMessage = new HashMap<>();
         legacyToMiniMessage.put('0', "black");

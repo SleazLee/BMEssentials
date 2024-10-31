@@ -9,6 +9,9 @@ import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
 import at.sleazlee.bmessentials.Help.HelpCommands;
+import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
+import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
+import at.sleazlee.bmessentials.PlayerData.PlayerJoinListener;
 import at.sleazlee.bmessentials.SpawnSystems.*;
 import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.rankup.RankUpManager;
@@ -20,6 +23,7 @@ import at.sleazlee.bmessentials.maps.*;
 import at.sleazlee.bmessentials.tpshop.*;
 import at.sleazlee.bmessentials.votesystem.*;
 import at.sleazlee.bmessentials.wild.*;
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -48,6 +52,15 @@ public class BMEssentials extends JavaPlugin {
 
     /** The database for the trophy system. */
     private TrophyDatabase trophiesDB;
+
+    /** The database for the PlayerData system.
+     * -- GETTER --
+     *  Gets the instance of the DatabaseManager.
+     *
+     * @return the database manager
+     */
+    @Getter
+    private PlayerDatabaseManager PlayerDataDBManager;
 
     /** The menu GUI for the trophy system. */
     private TrophyMenu trophyGUI;
@@ -287,6 +300,32 @@ public class BMEssentials extends JavaPlugin {
             getCommand("commands").setExecutor(new CommandsCommand(commandsSystem));
         }
 
+        // Enable PlayerData Systems
+        if (getConfig().getBoolean("Systems.PlayerData.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled PlayerData Systems");
+
+            // Initialize the database manager
+            PlayerDataDBManager = new PlayerDatabaseManager(this);
+            PlayerDataDBManager.initializeDatabase();
+
+            // Register the player join event listener
+            getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+
+            // Register PlaceholderAPI expansion if PlaceholderAPI is present
+            if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                new BMEPlaceholders(this).register();
+            } else {
+                getLogger().warning("PlaceholderAPI not found! Placeholders will not work.");
+            }
+        }
+
+
+
+
+
+
+
         // Finally enables the reload system.
         this.getCommand("bme").setExecutor(new BMECommandExecutor(this));
 
@@ -305,6 +344,11 @@ public class BMEssentials extends JavaPlugin {
         // Close the Trophies Database Connection
         if (trophiesDB != null) {
             trophiesDB.close();
+        }
+
+        // Close the PlayerData Database Connection
+        if (PlayerDataDBManager != null) {
+            PlayerDataDBManager.closeConnection();
         }
 
         // Log a message to indicate the plugin has been successfully disabled
@@ -342,4 +386,5 @@ public class BMEssentials extends JavaPlugin {
         }
         return rsp.getProvider();
     }
+
 }

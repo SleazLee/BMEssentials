@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.Help;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.TextUtils.replaceLegacyColors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -111,7 +112,7 @@ public class HelpBooks {
         List<Component> pageComponents = new ArrayList<>();
 
         for (String pageText : pages) {
-            String replacedText = TextUtils.replaceLegacyColors(pageText);
+            String replacedText = replaceLegacyColors.replaceLegacyColors(pageText);
             Component page = miniMessage.deserialize(replacedText);
             pageComponents.add(page);
         }
