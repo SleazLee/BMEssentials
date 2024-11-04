@@ -1,5 +1,6 @@
 package at.sleazlee.bmessentials.vot;
 
+import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -16,9 +17,17 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class VoteManager {
 
-    private static final VoteManager instance = new VoteManager();
+    private static VoteManager instance;
 
+    /**
+     * Gets the singleton instance of the VoteManager.
+     *
+     * @return the VoteManager instance
+     */
     public static VoteManager getInstance() {
+        if (instance == null) {
+            instance = new VoteManager();
+        }
         return instance;
     }
 
@@ -33,13 +42,30 @@ public class VoteManager {
     private Scheduler.Task scheduledVoteEndTask;
     private int totalPlayersAtVoteStart;
 
+    private final BMEssentials plugin;
+    private int voteDurationSeconds;
+    private long cooldownMilliseconds;
+
+    /**
+     * Private constructor for singleton pattern.
+     */
     private VoteManager() {
+        this.plugin = BMEssentials.getInstance();
+
+        // Ensure the plugin instance is available
+        if (plugin == null) {
+            throw new IllegalStateException("BMEssentials instance is not available yet!");
+        }
+
+        // Load configurable values
+        voteDurationSeconds = plugin.getConfig().getInt("Systems.Vot.VoteDurationSeconds", 60);
+        cooldownMilliseconds = plugin.getConfig().getInt("Systems.Vot.CooldownMinutes", 15) * 60 * 1000;
     }
 
     /**
      * Starts a new vote for the specified option.
      *
-     * @param option    the voting option (e.g., "Day", "Night")
+     * @param option    the voting option (e.g., "day", "night")
      * @param initiator the player who initiated the vote
      * @return true if the vote started successfully, false otherwise
      */
@@ -49,11 +75,10 @@ public class VoteManager {
             return false;
         }
 
-        long cooldown = 15 * 60 * 1000; // 15 minutes in milliseconds
         long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
 
-        if (timeSinceLastVote < cooldown && !initiator.hasPermission("bmessentials.vot.bypasscooldown")) {
-            long timeLeft = (cooldown - timeSinceLastVote) / 1000; // Time left in seconds
+        if (timeSinceLastVote < cooldownMilliseconds && !initiator.hasPermission("bmessentials.vot.bypasscooldown")) {
+            long timeLeft = (cooldownMilliseconds - timeSinceLastVote) / 1000; // Time left in seconds
             initiator.sendMessage(ChatColor.RED + "You must wait " + timeLeft + " seconds before starting a new vote.");
             return false;
         }
@@ -80,13 +105,19 @@ public class VoteManager {
         // Initiator votes "Yes" by default.
         castVote(initiator, true);
 
+        // Check for single-player scenario
+        if (totalPlayersAtVoteStart == 1) {
+            finalizeVote();
+            return true;
+        }
+
         return true;
     }
 
     /**
      * Allows a player to cast a vote.
      *
-     * @param player the player who is voting
+     * @param player  the player who is voting
      * @param voteYes true if voting "Yes", false if "No"
      */
     public void castVote(Player player, boolean voteYes) {
@@ -121,6 +152,8 @@ public class VoteManager {
      * Finalizes the vote, tallies results, and applies changes if successful.
      */
     void finalizeVote() {
+        if (!voteInProgress) return; // Prevent double finalization
+
         voteInProgress = false;
         clearActionBar();
 
@@ -131,6 +164,7 @@ public class VoteManager {
 
         if (scheduledVoteEndTask != null) {
             scheduledVoteEndTask.cancel();
+            scheduledVoteEndTask = null;
         }
 
         lastVoteTime = System.currentTimeMillis(); // Start cooldown
@@ -182,7 +216,7 @@ public class VoteManager {
     }
 
     /**
-     * Smoothly transitions the world's time to the target time.
+     * Smoothly transitions the world's time to the target time, always moving forward.
      *
      * @param world      the world to change the time in
      * @param targetTime the target time (in ticks)
@@ -193,17 +227,19 @@ public class VoteManager {
         }
 
         AtomicLong currentTime = new AtomicLong(world.getTime());
-        long totalTicksToAdd;
 
-        if (targetTime < currentTime.get()) {
-            totalTicksToAdd = (24000 - currentTime.get()) + targetTime;
-        } else {
-            totalTicksToAdd = targetTime - currentTime.get();
-        }
+        // Calculate total ticks to add to reach the target time, always moving forward
+        long totalTicksToAdd = (targetTime - currentTime.get() + 24000) % 24000;
 
-        final long transitionDuration = 200; // Duration in ticks (10 seconds)
-        final long stepCount = transitionDuration;
-        final long timeIncrement = totalTicksToAdd / stepCount;
+        // Desired time increment per tick
+        final long desiredTimeIncrement = 60; // Adjust this value for speed of transition
+
+        // Calculate the number of steps
+        final long steps = totalTicksToAdd / desiredTimeIncrement;
+        final long transitionDurationTicks = Math.max(1, steps);
+
+        // Adjust time increment to divide totalTicksToAdd evenly
+        final long timeIncrement = Math.max(1, totalTicksToAdd / transitionDurationTicks);
 
         final Scheduler.Task[] taskHolder = new Scheduler.Task[1];
         taskHolder[0] = Scheduler.runTimer(() -> {
@@ -211,8 +247,9 @@ public class VoteManager {
             currentTime.set(newTime);
             world.setTime(newTime);
 
-            // Check if the target time is reached or surpassed
-            if ((timeIncrement > 0 && newTime >= targetTime) || (timeIncrement < 0 && newTime <= targetTime)) {
+            long ticksRemaining = (targetTime - currentTime.get() + 24000) % 24000;
+
+            if (ticksRemaining <= 0 || ticksRemaining < timeIncrement) {
                 world.setTime(targetTime); // Ensure exact target time is set
                 taskHolder[0].cancel();
             }
@@ -226,9 +263,17 @@ public class VoteManager {
         int totalPlayers = totalPlayersAtVoteStart;
         int progressBars = 20;
 
-        int yesBars = (int) ((yesVotes / (double) totalPlayers) * progressBars);
-        int noBars = (int) ((noVotes / (double) totalPlayers) * progressBars);
+        double yesPercentage = yesVotes / (double) totalPlayers;
+        double noPercentage = noVotes / (double) totalPlayers;
+
+        int yesBars = (int) Math.round(yesPercentage * progressBars);
+        int noBars = (int) Math.round(noPercentage * progressBars);
         int neutralBars = progressBars - yesBars - noBars;
+
+        // Ensure bars do not exceed total
+        if (yesBars + noBars + neutralBars > progressBars) {
+            neutralBars = progressBars - yesBars - noBars;
+        }
 
         StringBuilder progressBar = new StringBuilder();
         progressBar.append(ChatColor.GREEN).append(StringUtils.repeat("█", yesBars));
@@ -254,6 +299,7 @@ public class VoteManager {
     private void clearActionBar() {
         if (actionBarTask != null) {
             actionBarTask.cancel();
+            actionBarTask = null;
         }
         for (Player online : Bukkit.getOnlinePlayers()) {
             online.sendActionBar(""); // Clear the action bar
@@ -270,7 +316,7 @@ public class VoteManager {
             bossBar.removeAll();
         }
         bossBar = Bukkit.createBossBar(
-                ChatColor.GRAY + "Vote for " + ChatColor.YELLOW + option + ChatColor.GRAY + "! Ends in 60s",
+                ChatColor.GRAY + "Vote for " + ChatColor.YELLOW + option + ChatColor.GRAY + "! Ends in " + voteDurationSeconds + "s",
                 BarColor.BLUE, BarStyle.SEGMENTED_20);
         for (Player online : Bukkit.getOnlinePlayers()) {
             bossBar.addPlayer(online);
@@ -284,22 +330,20 @@ public class VoteManager {
      * @param option the voting option
      */
     private void startVoteCountdown(String option) {
-        final int voteDurationSeconds = 60;
         AtomicLong timeLeft = new AtomicLong(voteDurationSeconds);
 
         scheduledVoteEndTask = Scheduler.runTimer(() -> {
-            double progressDecrement = 1.0 / voteDurationSeconds;
-            double currentProgress = bossBar.getProgress() - progressDecrement;
-            bossBar.setProgress(Math.max(0, currentProgress));
+            double progress = timeLeft.get() / (double) voteDurationSeconds;
+            bossBar.setProgress(progress);
 
             long secsLeft = timeLeft.decrementAndGet();
             bossBar.setTitle(ChatColor.GRAY + "Vote for " + ChatColor.YELLOW + option + ChatColor.GRAY +
                     "! Ends in " + ChatColor.YELLOW + secsLeft + "s");
 
-            if (currentProgress <= 0) {
+            if (secsLeft <= 0) {
                 finalizeVote();
             }
-        }, 20L, 20L); // Update every second (20 ticks per second)
+        }, 20L, 20L); // Update every second
     }
 
     /**
@@ -330,7 +374,6 @@ public class VoteManager {
     public void handlePlayerJoin(Player player) {
         if (voteInProgress && bossBar != null) {
             bossBar.addPlayer(player);
-            // Update total players if necessary
             totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
             updateVoteProgress();
         }
@@ -345,8 +388,12 @@ public class VoteManager {
         if (voteInProgress && bossBar != null) {
             bossBar.removePlayer(player);
             // Remove vote if the player had voted
-            votedPlayers.remove(player.getUniqueId());
-            // Update total players
+            if (votedPlayers.remove(player.getUniqueId())) {
+                if (votedPlayers.size() >= totalPlayersAtVoteStart) {
+                    finalizeVote();
+                    return;
+                }
+            }
             totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
             updateVoteProgress();
 

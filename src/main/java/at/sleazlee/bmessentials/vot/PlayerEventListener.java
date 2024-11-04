@@ -10,16 +10,23 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class PlayerEventListener implements Listener {
 
-    private final VoteManager voteManager = VoteManager.getInstance();
-
+    /**
+     * Handles player join events.
+     *
+     * @param event the PlayerJoinEvent
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        voteManager.handlePlayerJoin(event.getPlayer());
+        VoteManager.getInstance().handlePlayerJoin(event.getPlayer());
     }
 
+    /**
+     * Handles player quit events.
+     *
+     * @param event the PlayerQuitEvent
+     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        voteManager.handlePlayerQuit(event.getPlayer());
+        VoteManager.getInstance().handlePlayerQuit(event.getPlayer());
     }
 }
-

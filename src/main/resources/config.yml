@@ -133,6 +133,8 @@ Systems:
   # Enables the vot time/weather system.
   Vot:
     Enabled: true
+    VoteDurationSeconds: 60
+    CooldownMinutes: 15
 
   # Enables the Rankup System
   Rankup:

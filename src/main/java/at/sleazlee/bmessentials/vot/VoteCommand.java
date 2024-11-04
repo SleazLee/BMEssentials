@@ -9,8 +9,15 @@ import org.bukkit.entity.Player;
  */
 public class VoteCommand implements CommandExecutor {
 
-    private final VoteManager voteManager = VoteManager.getInstance();
-
+    /**
+     * Executes the /vot command.
+     *
+     * @param sender  the command sender
+     * @param command the command
+     * @param label   the alias used
+     * @param args    the command arguments
+     * @return true if the command was successful, false otherwise
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -21,6 +28,7 @@ public class VoteCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
+        VoteManager voteManager = VoteManager.getInstance();
 
         // Check for correct usage.
         if (args.length != 1) {
