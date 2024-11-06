@@ -7,7 +7,7 @@ description: One plugin to rule them all!
 folia-supported: true
 
 loadbefore: [Lands]
-depend: [Vault]
+depend: [Vault, WorldGuard, WorldEdit]
 softdepend: [HuskHomes, PlaceholderAPI]
 
 commands:

@@ -1,9 +1,17 @@
 package at.sleazlee.bmessentials.wild;
 
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -11,10 +19,6 @@ import java.util.Random;
 import java.util.List;
 import java.util.logging.Logger;
 
-/**
- * The WildCommand class handles the /wild command and its aliases.
- * It teleports players to random locations within specified coordinate bounds.
- */
 public class WildCommand implements CommandExecutor {
 
     private final WildData wildData; // Reference to WildData for version bounds.
@@ -31,15 +35,6 @@ public class WildCommand implements CommandExecutor {
         this.logger = plugin.getLogger();
     }
 
-    /**
-     * Executes the command when a player uses /wild or its aliases.
-     *
-     * @param sender  The command sender.
-     * @param command The command object.
-     * @param label   The alias used.
-     * @param args    Command arguments.
-     * @return true if the command was handled successfully.
-     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -73,12 +68,6 @@ public class WildCommand implements CommandExecutor {
         return true;
     }
 
-    /**
-     * Teleports the player to a random location within the specified version's bounds.
-     *
-     * @param player  The player to teleport.
-     * @param version The version to use for bounds ("all" for random).
-     */
     public void randomLocation(Player player, String version) {
         Random random = new Random();
         WildData.CoordinateBounds bounds;
@@ -147,7 +136,53 @@ public class WildCommand implements CommandExecutor {
         String serverName = "blockminer";
         String worldName = "world";
 
-        // Use the HuskHomes API to teleport the player.
-        HuskHomesAPIHook.teleportPlayer(player, newx, y, newz, yaw, pitch, worldName, serverName);
+        // Check if the player is in the 'spawn' region.
+        if (isPlayerInRegion(player, "spawn")) {
+            // Instant teleport
+            HuskHomesAPIHook.instantTeleportPlayer(player, newx, y, newz, yaw, pitch, worldName, serverName);
+        } else {
+            // Timed teleport
+            HuskHomesAPIHook.timedTeleportPlayer(player, newx, y, newz, yaw, pitch, worldName, serverName);
+        }
+    }
+
+    private boolean isPlayerInRegion(Player player, String regionName) {
+        WorldGuardPlugin worldGuard = getWorldGuard();
+        if (worldGuard == null) {
+            player.sendMessage("WorldGuard plugin not found!");
+            return false;
+        }
+
+        // Get the player's location in WorldGuard format
+        com.sk89q.worldedit.util.Location loc = BukkitAdapter.adapt(player.getLocation());
+
+        // Get the RegionContainer
+        com.sk89q.worldguard.protection.regions.RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+
+        // Get the RegionManager for the player's world
+        com.sk89q.worldguard.protection.managers.RegionManager regions = container.get(BukkitAdapter.adapt(player.getWorld()));
+
+        if (regions != null) {
+            // Get the set of regions at the player's location
+            ApplicableRegionSet regionSet = regions.getApplicableRegions(loc.toVector().toBlockPoint());
+
+            // Check if 'spawn' region is in the set
+            for (ProtectedRegion region : regionSet) {
+                if (region.getId().equalsIgnoreCase(regionName)) {
+                    return true;
+                }
+            }
+        } else {
+            player.sendMessage("Could not get region manager for your world.");
+        }
+        return false;
+    }
+
+    private WorldGuardPlugin getWorldGuard() {
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
+        if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+            return null;
+        }
+        return (WorldGuardPlugin) plugin;
     }
 }
