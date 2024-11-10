@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.Help;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.TextUtils.TextCenter;
 import at.sleazlee.bmessentials.TextUtils.replaceLegacyColors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -11,7 +12,10 @@ import org.bukkit.entity.Player;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -25,7 +29,7 @@ public class HelpCommands {
     private FileConfiguration commandsConfig;
 
     /**
-     * Constructs a new CommandsSystem instance and loads the commands configuration.
+     * Constructs a new HelpCommands instance and loads the commands configuration.
      *
      * @param plugin The main plugin instance.
      */
@@ -73,13 +77,84 @@ public class HelpCommands {
             return;
         }
 
-        String message = commandsConfig.getString(path);
-        if (message != null && !message.isEmpty()) {
-            String replacedText = replaceLegacyColors.replaceLegacyColors(message);
-            Component component = MiniMessage.miniMessage().deserialize(replacedText);
-            player.sendMessage(component);
+        List<String> messages = commandsConfig.getStringList(path);
+        if (messages != null && !messages.isEmpty()) {
+            for (String message : messages) {
+                // Process the message
+                String processedMessage = processMessage(message);
+
+                // Deserialize and send the message to the player
+                Component component = MiniMessage.miniMessage().deserialize(processedMessage);
+                player.sendMessage(component);
+            }
         } else {
             player.sendMessage(Component.text("This command information is empty."));
         }
+    }
+
+    /**
+     * Processes the message by handling custom placeholders and replacing legacy color codes.
+     *
+     * @param message The message to process.
+     * @return The processed message.
+     */
+    private String processMessage(String message) {
+        // Replace legacy color codes with MiniMessage tags
+        message = replaceLegacyColors.replaceLegacyColors(message);
+
+        // Process custom placeholders
+        message = processCustomPlaceholders(message);
+
+        return message;
+    }
+
+    /**
+     * Processes custom placeholders in the message.
+     *
+     * @param message The message containing placeholders.
+     * @return The message with placeholders replaced.
+     */
+    private String processCustomPlaceholders(String message) {
+        // Handle {center [color="..."]}...{/center}
+        message = processCenterPlaceholder(message);
+
+        // Handle {fullLineStrike color="..."}
+        message = processFullLineStrikePlaceholder(message);
+
+        return message;
+    }
+
+    private String processCenterPlaceholder(String message) {
+        // Pattern to match {center}...{/center} or {center color="..."}...{/center}
+        Pattern centerPattern = Pattern.compile("\\{center(?:\\s+color=\"([^\"]+)\")?}(.*?)\\{/center}");
+        Matcher matcher = centerPattern.matcher(message);
+        while (matcher.find()) {
+            String strikeColorName = matcher.group(1); // May be null if color is not specified
+            String textToCenter = matcher.group(2);
+
+            // Center the text with or without strikethrough lines
+            String centeredText = TextCenter.center(textToCenter, strikeColorName);
+
+            // Replace the placeholder with the centered text
+            message = matcher.replaceFirst(Matcher.quoteReplacement(centeredText));
+            matcher = centerPattern.matcher(message); // Reset matcher after replacement
+        }
+        return message;
+    }
+
+    private String processFullLineStrikePlaceholder(String message) {
+        Pattern fullLinePattern = Pattern.compile("\\{fullLineStrike\\s+color=\"([^\"]+)\"\\}");
+        Matcher matcher = fullLinePattern.matcher(message);
+        while (matcher.find()) {
+            String colorName = matcher.group(1);
+
+            // Generate full-line strike
+            String fullLineStrike = TextCenter.fullLineStrike(colorName);
+
+            // Replace the placeholder with the full-line strike
+            message = matcher.replaceFirst(Matcher.quoteReplacement(fullLineStrike));
+            matcher = fullLinePattern.matcher(message); // Reset matcher after replacement
+        }
+        return message;
     }
 }

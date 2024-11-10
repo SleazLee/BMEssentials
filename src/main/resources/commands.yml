@@ -1,12 +1,70 @@
-##
-#  hover_command: '<hover:show_text:"Hovering over commands!"><gold>Hover over this command text!</gold></hover>'
-#  clickable_command: 'Click <click:run_command:"/help"><green>here</green></click> to run /help.'
-#  suggested_command: 'Click <click:suggest_command:"/warp spawn"><aqua>here</aqua></click> to suggest /warp spawn.'
-#  hex_color_command: 'This message uses <color:#1abc9c>hex colors</color>!'
-#  multiline_example: |
-#    <green>This is a multi-line message.</green>
-#    <yellow>Second line with <bold>bold</bold> text.</yellow>
-#    <blue><click:run_command:'/help'>Click here for help.</click></blue>
-##
+# Commands Configuration File
+# ---------------------------
+# This file allows you to configure custom commands and their associated messages.
+# You can use MiniMessage formatting and custom placeholders to enhance your messages.
+
+# MiniMessage Formatting:
+# - Use standard MiniMessage tags for formatting, such as <bold>, <italic>, <underline>, <strikethrough>, and colors like <red>, <green>, etc.
+# - Example: '<bold><red>This is bold and red text!</red></bold>'
+
+# Legacy Color Codes:
+# - You can also use legacy color codes with '&' followed by a code (e.g., &a for green).
+# - The system will automatically convert legacy codes to MiniMessage tags.
+# - Example: '&aThis is green text using legacy color codes.'
+
+# Custom Placeholders:
+# - {center}...{/center}: Centers the enclosed text within the default chat width.
+#   - Example: '{center}&bThis text will be centered.{/center}'
+# - {center color="colorName"}...{/center}: Centers and adds strikes to text within the default chat width a.
+#   - Example: '{center color="gray"}&7Join us for fun and games.{/center}'
+# - {fullLineStrike color="colorName"}: Generates a full-line strikethrough in the specified color.
+#   - Example: '{fullLineStrike color="dark_gray"}'
+
+# Color Codes Reference:
+# - &0 or <black>: Black
+# - &1 or <dark_blue>: Dark Blue
+# - &2 or <dark_green>: Dark Green
+# - &3 or <dark_aqua>: Dark Aqua
+# - &4 or <dark_red>: Dark Red
+# - &5 or <dark_purple>: Dark Purple
+# - &6 or <gold>: Gold
+# - &7 or <gray>: Gray
+# - &8 or <dark_gray>: Dark Gray
+# - &9 or <blue>: Blue
+# - &a or <green>: Green
+# - &b or <aqua>: Aqua
+# - &c or <red>: Red
+# - &d or <light_purple>: Light Purple
+# - &e or <yellow>: Yellow
+# - &f or <white>: White
+
+# Formatting Codes:
+# - &k or <obfuscated>: Obfuscated
+# - &l or <bold>: Bold
+# - &m or <strikethrough>: Strikethrough
+# - &n or <underlined>: Underlined
+# - &o or <italic>: Italic
+# - &r or <reset>: Reset all formatting
+
+# Remember:
+# - Always close your MiniMessage tags to prevent formatting issues.
+# - Use the custom placeholders for centering and full-line strikes to enhance your messages.
+
+# For more information on MiniMessage formatting, visit:
+# https://docs.adventure.kyori.net/minimessage.html
+
+# Now you can define your commands below:
 Commands:
-  legacy_command: '&6This is a &lcommand &rwith &blegacy &ccolor &dcodes.'
+  welcome_message:
+    - '{center}<bold><gold>Welcome to the Server!</gold></bold>{/center}'
+    - '{center}&7Enjoy your stay!{/center}'
+  help_message:
+    - '{center}<gold><bold>Server Help{/bold}</gold>{/center}'
+    - 'Use &a/help &fto see a list of commands.'
+    - '{fullLineStrike color="dark_gray"}'
+  announcement:
+    - '{center}&eDouble XP Weekend Starts Now!{/center}'
+    - '{fullLineStrike color="yellow"}'
+  event_announcement:
+    - '{center color="dark_gray"}<bold><aqua>Special Event Tonight!</aqua></bold>{/center}'
+    - '{center color="gray"}&7Join us for fun and games.{/center}'

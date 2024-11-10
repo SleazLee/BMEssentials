@@ -10,7 +10,19 @@ public class TextCenter {
      */
     public static String center(String message) {
         int defaultTotalSpaces = 80; // Adjust this value based on your needs
-        return center(message, defaultTotalSpaces);
+        return center(message, defaultTotalSpaces, null);
+    }
+
+    /**
+     * Centers the given message within the default chat width, with optional strikeColorName.
+     *
+     * @param message         the message to be centered
+     * @param strikeColorName the color name for the strikethrough spaces
+     * @return the centered message
+     */
+    public static String center(String message, String strikeColorName) {
+        int defaultTotalSpaces = 80; // Adjust this value based on your needs
+        return center(message, defaultTotalSpaces, strikeColorName);
     }
 
     /**
@@ -21,10 +33,25 @@ public class TextCenter {
      * @return the centered message
      */
     public static String center(String message, int totalSpaces) {
+        return center(message, totalSpaces, null);
+    }
+
+    /**
+     * Centers the given message within the specified number of spaces, with optional strikeColorName.
+     *
+     * @param message         the message to be centered
+     * @param totalSpaces     the total number of spaces to center within
+     * @param strikeColorName the color name for the strikethrough spaces
+     * @return the centered message
+     */
+    public static String center(String message, int totalSpaces, String strikeColorName) {
         if (message == null || message.equals("")) return "";
 
-        // Replace legacy color codes with MiniMessage tags
-        message = replaceLegacyColors.replaceLegacyColors(message);
+        // Check if strikeColorName is provided
+        boolean useStrike = strikeColorName != null && !strikeColorName.isEmpty();
+        if (useStrike) {
+            message = " " + message + " ";
+        }
 
         // Calculate the total width in pixels of the given number of spaces
         int spaceWidth = DefaultFontInfo.SPACE.getLength() + 1;
@@ -48,15 +75,7 @@ public class TextCenter {
                         isBold = true;
                     } else if (tag.equalsIgnoreCase("/bold") || tag.equalsIgnoreCase("reset")) {
                         isBold = false;
-                    } else if (tag.equalsIgnoreCase("obfuscated") || tag.equalsIgnoreCase("/obfuscated") ||
-                            tag.equalsIgnoreCase("italic") || tag.equalsIgnoreCase("/italic") ||
-                            tag.equalsIgnoreCase("underlined") || tag.equalsIgnoreCase("/underlined") ||
-                            tag.equalsIgnoreCase("strikethrough") || tag.equalsIgnoreCase("/strikethrough") ||
-                            tag.matches("(#[A-Fa-f0-9]{6})|(#[A-Fa-f0-9]{3})") ||
-                            tag.matches("([a-z_]+)") ||
-                            tag.startsWith("/")) {
-                        // Other formatting tags or color codes, ignore for width calculation
-                    }
+                    } // Other tags are ignored for width calculation
 
                     // Skip over the tag
                     index = closingIndex + 1;
@@ -78,16 +97,76 @@ public class TextCenter {
         // Calculate the amount of space needed to center the message within the total width
         int halvedMessageSize = messagePxSize / 2;
         int toCompensate = (totalWidth / 2) - halvedMessageSize;
-        int compensated = 0;
         StringBuilder sb = new StringBuilder();
 
-        while (compensated < toCompensate) {
+        if (useStrike) {
+            // Divide compensation between left and right
+            int leftCompensate = toCompensate / 2;
+            int rightCompensate = toCompensate - leftCompensate;
+
+            // Build left padding with strikethrough
+            sb.append("<color:").append(strikeColorName).append("><st>");
+            int compensated = 0;
+            while (compensated < leftCompensate) {
+                sb.append(" ");
+                compensated += spaceWidth;
+            }
+            sb.append("</st></color>");
+
+            // Append the message
+            sb.append(message);
+
+            // Build right padding with strikethrough
+            StringBuilder sbRight = new StringBuilder();
+            sbRight.append("<color:").append(strikeColorName).append("><st>");
+            compensated = 0;
+            while (compensated < rightCompensate) {
+                sbRight.append(" ");
+                compensated += spaceWidth;
+            }
+            sbRight.append("</st></color>");
+
+            // Append the right padding
+            sb.append(sbRight.toString());
+        } else {
+            // Compensate only on the left side
+            int compensated = 0;
+            while (compensated < toCompensate) {
+                sb.append(" ");
+                compensated += spaceWidth;
+            }
+            // Append the message
+            sb.append(message);
+        }
+
+        // Return the centered message with MiniMessage formatting preserved
+        return sb.toString();
+    }
+
+    /**
+     * Generates a full-line strikethrough in the specified color.
+     *
+     * @param colorName the color name for the strikethrough line
+     * @return the full-line strikethrough string
+     */
+    public static String fullLineStrike(String colorName) {
+        int defaultTotalSpaces = 80; // Adjust this value as needed
+        int spaceWidth = DefaultFontInfo.SPACE.getLength() + 1;
+        int totalWidth = defaultTotalSpaces * spaceWidth;
+
+        // Build the strikethrough line
+        StringBuilder sb = new StringBuilder();
+        sb.append("<color:").append(colorName).append("><st>");
+
+        int compensated = 0;
+        while (compensated < totalWidth) {
             sb.append(" ");
             compensated += spaceWidth;
         }
 
-        // Return the centered message with MiniMessage formatting preserved
-        return sb.toString() + message;
+        sb.append("</st></color>");
+
+        return sb.toString();
     }
 
     /**
