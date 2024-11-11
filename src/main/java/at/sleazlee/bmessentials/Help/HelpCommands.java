@@ -126,7 +126,7 @@ public class HelpCommands {
 
     private String processCenterPlaceholder(String message) {
         // Pattern to match {center}...{/center} or {center color="..."}...{/center}
-        Pattern centerPattern = Pattern.compile("\\{center(?:\\s+color=\"([^\"]+)\")?}(.*?)\\{/center}");
+        Pattern centerPattern = Pattern.compile("\\{center(?:\\s+color='([^']+)')?}(.*?)\\{/center}");
         Matcher matcher = centerPattern.matcher(message);
         while (matcher.find()) {
             String strikeColorName = matcher.group(1); // May be null if color is not specified
@@ -143,7 +143,7 @@ public class HelpCommands {
     }
 
     private String processFullLineStrikePlaceholder(String message) {
-        Pattern fullLinePattern = Pattern.compile("\\{fullLineStrike\\s+color=\"([^\"]+)\"\\}");
+        Pattern fullLinePattern = Pattern.compile("\\{fullLineStrike\\s+color='([^']+)'\\}");
         Matcher matcher = fullLinePattern.matcher(message);
         while (matcher.find()) {
             String colorName = matcher.group(1);

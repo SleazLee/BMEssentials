@@ -101,8 +101,8 @@ public class TextCenter {
 
         if (useStrike) {
             // Divide compensation between left and right
-            int leftCompensate = toCompensate / 2;
-            int rightCompensate = toCompensate - leftCompensate;
+            int leftCompensate = toCompensate - 1;
+            int rightCompensate = toCompensate - 1;
 
             // Build left padding with strikethrough
             sb.append("<color:").append(strikeColorName).append("><st>");
