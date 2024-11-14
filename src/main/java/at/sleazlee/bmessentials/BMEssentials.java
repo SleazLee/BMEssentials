@@ -117,7 +117,7 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Wild Systems");
 
             // Create an instance of WildData with the plugin's configuration and plugin instance
-            WildData wildData = new WildData(this.getConfig(), this);
+            WildData wildData = new WildData(getConfig(), this);
 
             // Register the NoFallDamage event listener.
             getServer().getPluginManager().registerEvents(new NoFallDamage(this), this);

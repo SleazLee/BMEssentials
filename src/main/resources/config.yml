@@ -34,15 +34,13 @@ Systems:
   # Enables the wild teleport system.
   Wild:
     Enabled: true
-
     Bounds:
       1:
-        Version: "1.19"
+        Version: 1.19
         Lower: 612
         Upper: 19867
-
       2:
-        Version: "1.21"
+        Version: 1.21
         Lower: 20580
         Upper: 29595
 

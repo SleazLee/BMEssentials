@@ -61,15 +61,18 @@ public class WildData {
      * @param plugin The main plugin instance.
      */
     public WildData(FileConfiguration config, JavaPlugin plugin) {
-        this.logger = plugin.getLogger(); // Initialize the logger.
+        this.logger = plugin.getLogger();
 
-        // Access the 'bounds' section in the configuration.
+        // Log the entire configuration to check if it's loaded
+        logger.info("Config contents: " + config.saveToString());
+
         ConfigurationSection boundsSection = config.getConfigurationSection("Systems.Wild.Bounds");
-
         if (boundsSection != null) {
+            logger.info("Bounds section found.");
 
             // Iterate over each key under 'bounds' (e.g., '1', '2', etc.).
             for (String key : boundsSection.getKeys(false)) {
+                logger.info("Processing key: " + key);
                 // Access the configuration section for each version entry.
                 ConfigurationSection versionSection = boundsSection.getConfigurationSection(key);
                 if (versionSection != null) {
