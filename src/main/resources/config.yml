@@ -137,19 +137,10 @@ Systems:
     CooldownMinutes: 15
     BookLayouts:
       NewVote:
-        - '<gold><bold>Voting</bold>'
-        - '<gray>'
-        - '<click:run_command:/vot day><hover:show_text:"<gray>Click to start vote for Day Time"><dark_aqua><bold>Day Time</bold></hover></click>'
-        - '<click:run_command:/vot night><hover:show_text:"<gray>Click to start vote for Night Time"><green><bold>Night Time</bold></hover></click>'
-        - '<click:run_command:/vot clear><hover:show_text:"<gray>Click to start vote for Sunny Weather"><gold><bold>Sunny Weather</bold></hover></click>'
-        - '<click:run_command:/vot rain><hover:show_text:"<gray>Click to start vote for Rainy Weather"><dark_blue><bold>Rainy Weather</bold></hover></click>'
-        - '<click:run_command:/vot thunder><hover:show_text:"<gray>Click to start vote for Stormy Weather"><gray><bold>Stormy Weather</bold></hover></click>'
+        - '<gold><bold>Voting</bold><newline><newline><click:run_command:/vot day><hover:show_text:"<gray>Click to start vote for Day Time"><dark_aqua><bold>Day Time</bold></hover></click><newline><click:run_command:/vot night><hover:show_text:"<gray>Click to start vote for Night Time"><green><bold>Night Time</bold></hover></click><newline><click:run_command:/vot clear><hover:show_text:"<gray>Click to start vote for Sunny Weather"><gold><bold>Sunny Weather</bold></hover></click><newline><click:run_command:/vot rain><hover:show_text:"<gray>Click to start vote for Rainy Weather"><dark_blue><bold>Rainy Weather</bold></hover></click><newline><click:run_command:/vot thunder><hover:show_text:"<gray>Click to start vote for Stormy Weather"><gray><bold>Stormy Weather</bold></hover></click>'
+
       CurrentVote:
-        - '<gold><bold>Voting</bold>'
-        - '<gray>'
-        - '<gray>Place your vote for {color}{vote_type}'
-        - '<click:run_command:/vot yes><hover:show_text:"<green>Click to vote Yes"><green><bold>Yes</bold></hover></click>'
-        - '<click:run_command:/vot no><hover:show_text:"<red>Click to vote No"><red><bold>No</bold></hover></click>'
+        - '<gold><bold>Voting</bold><newline><gray>Place your vote for {color}{vote_type}<newline><click:run_command:/vot yes><hover:show_text:"<green>Click to vote Yes"><green><bold>Yes</bold></hover></click><newline><click:run_command:/vot no><hover:show_text:"<red>Click to vote No"><red><bold>No</bold></hover></click>'
 
   # Enables the Rankup System
   Rankup:
