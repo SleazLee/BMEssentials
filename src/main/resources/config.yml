@@ -37,14 +37,14 @@ Systems:
 
     Bounds:
       1:
-        Version: '1.19'
-        Lower: '612'
-        Upper: '19867'
+        Version: "1.19"
+        Lower: 612
+        Upper: 19867
 
       2:
-        Version: '1.21'
-        Lower: '20580'
-        Upper: '29595'
+        Version: "1.21"
+        Lower: 20580
+        Upper: 29595
 
       # Add new versions as needed
       # 3:
