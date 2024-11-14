@@ -29,5 +29,4 @@ public class Art {
         return new Particle.DustOptions(Color.fromRGB(r, g, b), 1);
     }
 
-// GitHub Test
 }

@@ -1,5 +1,8 @@
 package at.sleazlee.bmessentials.vot;
 
+import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.vot.VotBook;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -8,6 +11,12 @@ import org.bukkit.entity.Player;
  * Handles the /vot command for initiating and participating in votes.
  */
 public class VoteCommand implements CommandExecutor {
+
+    private final VotBook votBook;
+
+    public VoteCommand(BMEssentials plugin) {
+        this.votBook = new VotBook(plugin);
+    }
 
     /**
      * Executes the /vot command.
@@ -22,43 +31,62 @@ public class VoteCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         // Ensure the command sender is a player.
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("This command can only be executed by players.");
             return true;
         }
 
-        Player player = (Player) sender;
         VoteManager voteManager = VoteManager.getInstance();
 
-        // Check for correct usage.
-        if (args.length != 1) {
-            player.sendMessage(ChatColor.GRAY + "Usage: /" + label + " <day|night|clear|rain|thunder|yes|no>");
+        // If no arguments, open the vote book GUI
+        if (args.length == 0) {
+            openVoteBook(player);
             return true;
         }
 
         String option = args[0].toLowerCase();
 
         // Handle voting options.
-        if (option.equals("yes")) {
-            voteManager.castVote(player, true);
-            return true;
-        } else if (option.equals("no")) {
-            voteManager.castVote(player, false);
-            return true;
-        } else if (option.equals("reset") && player.hasPermission("bmessentials.vot.reset")) {
-            voteManager.finalizeVote();
-            player.sendMessage(ChatColor.GREEN + "Vote has been reset.");
-            return true;
+        switch (option) {
+            case "yes" -> {
+                voteManager.castVote(player, true);
+                return true;
+            }
+            case "no" -> {
+                voteManager.castVote(player, false);
+                return true;
+            }
+            case "reset" -> {
+                if (player.hasPermission("bmessentials.vot.reset")) {
+                    voteManager.finalizeVote();
+                    player.sendMessage(ChatColor.GREEN + "Vote has been reset.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You don't have permission to reset votes.");
+                }
+                return true;
+            }
+            case "day", "night", "clear", "rain", "thunder" -> {
+                voteManager.startVote(option, player);
+                return true;
+            }
+            default -> {
+                player.sendMessage(ChatColor.GRAY + "Usage: /" + label + " <day|night|clear|rain|thunder|yes|no>");
+                return true;
+            }
         }
+    }
 
-        // Start a new vote if the option is valid.
-        if (option.equals("day") || option.equals("night") || option.equals("clear") ||
-                option.equals("rain") || option.equals("thunder")) {
-            voteManager.startVote(option, player);
+    /**
+     * Opens the appropriate vote book GUI to the player.
+     *
+     * @param player the player to show the book to
+     */
+    private void openVoteBook(Player player) {
+        VoteManager voteManager = VoteManager.getInstance();
+        if (voteManager.isVoteInProgress()) {
+            votBook.openBook(player, "CurrentVote");
         } else {
-            player.sendMessage(ChatColor.GRAY + "Usage: /" + label + " <day|night|clear|rain|thunder|yes|no>");
+            votBook.openBook(player, "NewVote");
         }
-
-        return true;
     }
 }

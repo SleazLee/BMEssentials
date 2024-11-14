@@ -2,11 +2,11 @@ package at.sleazlee.bmessentials.vot;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
-import org.bukkit.boss.*;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -92,7 +92,7 @@ public class VoteManager {
 
         String startMessage = ChatColor.AQUA + initiator.getName() + ChatColor.GRAY + " has started a vote for " +
                 ChatColor.AQUA + option + ChatColor.GRAY + ".";
-        Bukkit.broadcastMessage(startMessage);
+        Bukkit.broadcast(Component.text(startMessage));
 
         displayVotePrompt();
 
@@ -158,7 +158,9 @@ public class VoteManager {
         clearActionBar();
 
         if (bossBar != null) {
-            bossBar.removeAll();
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                online.hideBossBar(bossBar);
+            }
             bossBar = null;
         }
 
@@ -170,15 +172,15 @@ public class VoteManager {
         lastVoteTime = System.currentTimeMillis(); // Start cooldown
 
         if (yesVotes > noVotes) {
-            Bukkit.broadcastMessage(ChatColor.GREEN + "The vote to change to " + voteOption + " has passed.");
+            Bukkit.broadcast(Component.text(ChatColor.GREEN + "The vote to change to " + voteOption + " has passed."));
             executeChange(voteOption);
         } else {
-            Bukkit.broadcastMessage(ChatColor.RED + "The vote to change to " + voteOption + " has failed.");
+            Bukkit.broadcast(Component.text(ChatColor.RED + "The vote to change to " + voteOption + " has failed."));
         }
 
         String resultMessage = ChatColor.GRAY + "Vote Results: " + ChatColor.GREEN + yesVotes + " Yes " + ChatColor.DARK_GRAY + "| " +
                 ChatColor.RED + noVotes + " No";
-        Bukkit.broadcastMessage(resultMessage);
+        Bukkit.broadcast(Component.text(resultMessage));
 
         votedPlayers.clear();
     }
@@ -192,24 +194,20 @@ public class VoteManager {
         for (World world : Bukkit.getWorlds()) {
             Scheduler.run(() -> {
                 switch (option) {
-                    case "clear":
+                    case "clear" -> {
                         world.setStorm(false);
                         world.setThundering(false);
-                        break;
-                    case "rain":
+                    }
+                    case "rain" -> {
                         world.setStorm(true);
                         world.setThundering(false);
-                        break;
-                    case "thunder":
+                    }
+                    case "thunder" -> {
                         world.setStorm(true);
                         world.setThundering(true);
-                        break;
-                    case "day":
-                        smoothTimeChange(world, 1000); // Sunrise time
-                        break;
-                    case "night":
-                        smoothTimeChange(world, 13000); // Sunset time
-                        break;
+                    }
+                    case "day" -> smoothTimeChange(world, 1000); // Sunrise time
+                    case "night" -> smoothTimeChange(world, 13000); // Sunset time
                 }
             });
         }
@@ -261,7 +259,7 @@ public class VoteManager {
      */
     private void updateVoteProgress() {
         int totalPlayers = totalPlayersAtVoteStart;
-        int progressBars = 20;
+        int progressBars = 10; // Adjusted to 10 as per your requirement
 
         double yesPercentage = yesVotes / (double) totalPlayers;
         double noPercentage = noVotes / (double) totalPlayers;
@@ -271,16 +269,22 @@ public class VoteManager {
         int neutralBars = progressBars - yesBars - noBars;
 
         // Ensure bars do not exceed total
-        if (yesBars + noBars + neutralBars > progressBars) {
+        if (yesBars + noBars > progressBars) {
+            int totalBars = yesBars + noBars;
+            double scalingFactor = (double) progressBars / totalBars;
+            yesBars = (int) Math.round(yesBars * scalingFactor);
+            noBars = (int) Math.round(noBars * scalingFactor);
             neutralBars = progressBars - yesBars - noBars;
         }
 
+        // Build the progress bar
+        String barChar = "■";
         StringBuilder progressBar = new StringBuilder();
-        progressBar.append(ChatColor.GREEN).append(StringUtils.repeat("█", yesBars));
-        progressBar.append(ChatColor.GRAY).append(StringUtils.repeat("█", neutralBars));
-        progressBar.append(ChatColor.RED).append(StringUtils.repeat("█", noBars));
+        progressBar.append(ChatColor.GREEN).append(StringUtils.repeat(barChar, yesBars));
+        progressBar.append(ChatColor.RED).append(StringUtils.repeat(barChar, noBars));
+        progressBar.append(ChatColor.GRAY).append(StringUtils.repeat(barChar, neutralBars));
 
-        String actionBarMessage = ChatColor.GRAY + "Voting Progress: " + progressBar.toString();
+        String actionBarMessage = progressBar.toString();
 
         if (actionBarTask != null) {
             actionBarTask.cancel();
@@ -288,7 +292,7 @@ public class VoteManager {
 
         actionBarTask = Scheduler.runTimer(() -> {
             for (Player online : Bukkit.getOnlinePlayers()) {
-                online.sendActionBar(actionBarMessage);
+                online.sendActionBar(Component.text(actionBarMessage));
             }
         }, 0L, 20L); // Update every second
     }
@@ -302,7 +306,7 @@ public class VoteManager {
             actionBarTask = null;
         }
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.sendActionBar(""); // Clear the action bar
+            online.sendActionBar(Component.empty()); // Clear the action bar
         }
     }
 
@@ -313,15 +317,23 @@ public class VoteManager {
      */
     private void initializeBossBar(String option) {
         if (bossBar != null) {
-            bossBar.removeAll();
+            for (Player online : Bukkit.getOnlinePlayers()) {
+                online.hideBossBar(bossBar);
+            }
         }
-        bossBar = Bukkit.createBossBar(
-                ChatColor.GRAY + "Vote for " + ChatColor.YELLOW + option + ChatColor.GRAY + "! Ends in " + voteDurationSeconds + "s",
-                BarColor.BLUE, BarStyle.SEGMENTED_20);
+        bossBar = BossBar.bossBar(
+                Component.text().append(Component.text("Voting for ", NamedTextColor.GRAY))
+                        .append(Component.text(option, NamedTextColor.GREEN, TextDecoration.BOLD))
+                        .append(Component.text("! | ", NamedTextColor.GRAY))
+                        .append(Component.text(voteDurationSeconds + "s", NamedTextColor.AQUA))
+                        .build(),
+                1.0f,
+                BossBar.Color.BLUE,
+                BossBar.Overlay.PROGRESS
+        );
         for (Player online : Bukkit.getOnlinePlayers()) {
-            bossBar.addPlayer(online);
+            online.showBossBar(bossBar);
         }
-        bossBar.setProgress(1.0);
     }
 
     /**
@@ -333,12 +345,15 @@ public class VoteManager {
         AtomicLong timeLeft = new AtomicLong(voteDurationSeconds);
 
         scheduledVoteEndTask = Scheduler.runTimer(() -> {
-            double progress = timeLeft.get() / (double) voteDurationSeconds;
-            bossBar.setProgress(progress);
+            float progress = timeLeft.get() / (float) voteDurationSeconds;
+            bossBar.progress(progress);
 
             long secsLeft = timeLeft.decrementAndGet();
-            bossBar.setTitle(ChatColor.GRAY + "Vote for " + ChatColor.YELLOW + option + ChatColor.GRAY +
-                    "! Ends in " + ChatColor.YELLOW + secsLeft + "s");
+            bossBar.name(Component.text().append(Component.text("Voting for ", NamedTextColor.GRAY))
+                    .append(Component.text(option, NamedTextColor.GREEN, TextDecoration.BOLD))
+                    .append(Component.text("! | ", NamedTextColor.GRAY))
+                    .append(Component.text(secsLeft + "s", NamedTextColor.AQUA))
+                    .build());
 
             if (secsLeft <= 0) {
                 finalizeVote();
@@ -350,19 +365,19 @@ public class VoteManager {
      * Displays the vote prompt to all players with clickable text.
      */
     private void displayVotePrompt() {
-        TextComponent message = new TextComponent(ChatColor.GRAY + "Click to vote: ");
-        TextComponent yesComponent = new TextComponent(ChatColor.GREEN + "[YES]");
-        yesComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vot yes"));
-        TextComponent separator = new TextComponent(ChatColor.DARK_GRAY + " / ");
-        TextComponent noComponent = new TextComponent(ChatColor.RED + "[NO]");
-        noComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/vot no"));
-
-        message.addExtra(yesComponent);
-        message.addExtra(separator);
-        message.addExtra(noComponent);
+        Component message = Component.text()
+                .append(Component.text("Click to vote: ", NamedTextColor.GRAY))
+                .append(Component.text("[YES]", NamedTextColor.GREEN)
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/vot yes"))
+                        .hoverEvent(Component.text("Click to vote YES", NamedTextColor.GREEN)))
+                .append(Component.text(" / ", NamedTextColor.DARK_GRAY))
+                .append(Component.text("[NO]", NamedTextColor.RED)
+                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/vot no"))
+                        .hoverEvent(Component.text("Click to vote NO", NamedTextColor.RED)))
+                .build();
 
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.spigot().sendMessage(message);
+            online.sendMessage(message);
         }
     }
 
@@ -373,7 +388,7 @@ public class VoteManager {
      */
     public void handlePlayerJoin(Player player) {
         if (voteInProgress && bossBar != null) {
-            bossBar.addPlayer(player);
+            player.showBossBar(bossBar);
             totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
             updateVoteProgress();
         }
@@ -386,7 +401,7 @@ public class VoteManager {
      */
     public void handlePlayerQuit(Player player) {
         if (voteInProgress && bossBar != null) {
-            bossBar.removePlayer(player);
+            player.hideBossBar(bossBar);
             // Remove vote if the player had voted
             if (votedPlayers.remove(player.getUniqueId())) {
                 if (votedPlayers.size() >= totalPlayersAtVoteStart) {
@@ -402,5 +417,23 @@ public class VoteManager {
                 finalizeVote();
             }
         }
+    }
+
+    /**
+     * Checks if a vote is currently in progress.
+     *
+     * @return true if a vote is in progress, false otherwise
+     */
+    public boolean isVoteInProgress() {
+        return voteInProgress;
+    }
+
+    /**
+     * Gets the current voting option.
+     *
+     * @return the voting option
+     */
+    public String getVoteOption() {
+        return voteOption;
     }
 }

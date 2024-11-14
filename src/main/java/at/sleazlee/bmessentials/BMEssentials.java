@@ -264,7 +264,7 @@ public class BMEssentials extends JavaPlugin {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vote System");
 
-            getCommand("vot").setExecutor(new VoteCommand());
+            getCommand("vot").setExecutor(new VoteCommand(this));
             getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         }
 
