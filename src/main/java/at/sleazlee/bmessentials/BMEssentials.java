@@ -38,9 +38,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class BMEssentials extends JavaPlugin {
 
-    /** The plugin configuration. */
-    private FileConfiguration config = getConfig();
-
     /** The main instance of the plugin. */
     private static BMEssentials main;
 
@@ -66,6 +63,7 @@ public class BMEssentials extends JavaPlugin {
     private TrophyMenu trophyGUI;
 
     private CommandQueueManager queueManager;
+    private FileConfiguration config;
 
     /**
      * Gets the instance of the main plugin class.
@@ -86,6 +84,12 @@ public class BMEssentials extends JavaPlugin {
 
         // Creates a new config.yml if it doesn't exist, copies from your resource.
         this.saveDefaultConfig();
+
+        // Reload the configuration to ensure it's loaded into memory
+        this.reloadConfig();
+
+        // Now, initialize the config variable with the loaded configuration
+        this.config = getConfig();
 
         // Art at the beginning.
         String[] startArt = Art.startupArt().split("\n");
