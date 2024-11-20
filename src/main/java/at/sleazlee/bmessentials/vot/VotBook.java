@@ -3,6 +3,7 @@ package at.sleazlee.bmessentials.vot;
 import at.sleazlee.bmessentials.BMEssentials;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -90,8 +91,8 @@ public class VotBook {
     private String applyPlaceholders(String text, Player player) {
         VoteManager voteManager = VoteManager.getInstance();
         if (voteManager.isVoteInProgress()) {
-            String voteType = voteManager.getVoteOption();
-            String color = getColorForVoteType(voteType);
+            String voteType = StringUtils.capitalize(voteManager.getVoteOption());
+            String color = getColorForVoteType(voteManager.getVoteOption());
             text = text.replace("{vote_type}", voteType);
             text = text.replace("{color}", color);
         }

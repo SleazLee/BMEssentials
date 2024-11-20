@@ -5,6 +5,7 @@ import at.sleazlee.bmessentials.Scheduler;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.*;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -41,6 +42,7 @@ public class VoteManager {
     private Scheduler.Task actionBarTask;
     private Scheduler.Task scheduledVoteEndTask;
     private int totalPlayersAtVoteStart;
+    private Player voteInitiator; // New field to track vote initiator
 
     private final BMEssentials plugin;
     private int voteDurationSeconds;
@@ -71,7 +73,9 @@ public class VoteManager {
      */
     public boolean startVote(String option, Player initiator) {
         if (voteInProgress) {
-            initiator.sendMessage(ChatColor.RED + "A vote is already in progress.");
+            String messageText = "<color:#ff3300><bold>Vot</bold> <red>There is not able to start next round, while another is running!";
+            Component message = MiniMessage.miniMessage().deserialize(messageText);
+            initiator.sendMessage(message);
             return false;
         }
 
@@ -89,9 +93,10 @@ public class VoteManager {
         noVotes = 0;
         votedPlayers.clear();
         totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
+        voteInitiator = initiator;
 
         String startMessage = ChatColor.AQUA + initiator.getName() + ChatColor.GRAY + " has started a vote for " +
-                ChatColor.AQUA + option + ChatColor.GRAY + ".";
+                ChatColor.AQUA + StringUtils.capitalize(option) + ChatColor.GRAY + ".";
         Bukkit.broadcast(Component.text(startMessage));
 
         displayVotePrompt();
@@ -122,24 +127,31 @@ public class VoteManager {
      */
     public void castVote(Player player, boolean voteYes) {
         if (!voteInProgress) {
-            player.sendMessage(ChatColor.RED + "There is no vote in progress.");
+            String messageText = "<color:#ff3300><bold>Vot</bold> <red>Currently, no voting round is running!";
+            Component message = MiniMessage.miniMessage().deserialize(messageText);
+            player.sendMessage(message);
             return;
         }
 
         if (votedPlayers.contains(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You have already voted.");
+            String messageText = "<color:#ff3300><bold>Vot</bold> <red>You have already placed a vote at this round!";
+            Component message = MiniMessage.miniMessage().deserialize(messageText);
+            player.sendMessage(message);
             return;
         }
 
         if (voteYes) {
             yesVotes++;
-            player.sendMessage(ChatColor.GREEN + "You voted YES.");
         } else {
             noVotes++;
-            player.sendMessage(ChatColor.RED + "You voted NO.");
         }
 
         votedPlayers.add(player.getUniqueId());
+
+        String messageText = "<yellow><bold>Vot</bold> <gray>Your vote was recorded!";
+        Component message = MiniMessage.miniMessage().deserialize(messageText);
+        player.sendMessage(message);
+
         updateVoteProgress();
 
         // Check if all players have voted.
@@ -157,13 +169,6 @@ public class VoteManager {
         voteInProgress = false;
         clearActionBar();
 
-        if (bossBar != null) {
-            for (Player online : Bukkit.getOnlinePlayers()) {
-                online.hideBossBar(bossBar);
-            }
-            bossBar = null;
-        }
-
         if (scheduledVoteEndTask != null) {
             scheduledVoteEndTask.cancel();
             scheduledVoteEndTask = null;
@@ -171,16 +176,36 @@ public class VoteManager {
 
         lastVoteTime = System.currentTimeMillis(); // Start cooldown
 
+        String capitalizedOption = StringUtils.capitalize(voteOption);
+        String resultMessage;
+
         if (yesVotes > noVotes) {
-            Bukkit.broadcast(Component.text(ChatColor.GREEN + "The vote to change to " + voteOption + " has passed."));
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold><bold>"
+                    + capitalizedOption
+                    + "</bold></gold> <gray>was <green><bold>Successful</bold></green><gray>!";
             executeChange(voteOption);
         } else {
-            Bukkit.broadcast(Component.text(ChatColor.RED + "The vote to change to " + voteOption + " has failed."));
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold><bold>"
+                    + capitalizedOption
+                    + "</bold></gold> <gray>was <color:#ff3300><bold>Unsuccessful</bold></color:#ff3300><gray>!";
         }
 
-        String resultMessage = ChatColor.GRAY + "Vote Results: " + ChatColor.GREEN + yesVotes + " Yes " + ChatColor.DARK_GRAY + "| " +
-                ChatColor.RED + noVotes + " No";
-        Bukkit.broadcast(Component.text(resultMessage));
+        Component resultComponent = MiniMessage.miniMessage().deserialize(resultMessage);
+        Bukkit.broadcast(resultComponent);
+
+        // Update boss bar message
+        if (bossBar != null) {
+            bossBar.name(resultComponent);
+            bossBar.progress(1.0f); // Reset progress bar if needed
+
+            // Keep the boss bar for 6 more seconds
+            Scheduler.runLater(() -> {
+                for (Player online : Bukkit.getOnlinePlayers()) {
+                    online.hideBossBar(bossBar);
+                }
+                bossBar = null;
+            }, 120L); // 6 seconds (20 ticks per second)
+        }
 
         votedPlayers.clear();
     }
@@ -259,7 +284,7 @@ public class VoteManager {
      */
     private void updateVoteProgress() {
         int totalPlayers = totalPlayersAtVoteStart;
-        int progressBars = 10; // Adjusted to 10 as per your requirement
+        int progressBars = 16; // Increased from 10 to 16
 
         double yesPercentage = yesVotes / (double) totalPlayers;
         double noPercentage = noVotes / (double) totalPlayers;
@@ -316,6 +341,8 @@ public class VoteManager {
      * @param option the voting option
      */
     private void initializeBossBar(String option) {
+        String capitalizedOption = StringUtils.capitalize(option);
+
         if (bossBar != null) {
             for (Player online : Bukkit.getOnlinePlayers()) {
                 online.hideBossBar(bossBar);
@@ -323,7 +350,7 @@ public class VoteManager {
         }
         bossBar = BossBar.bossBar(
                 Component.text().append(Component.text("Voting for ", NamedTextColor.GRAY))
-                        .append(Component.text(option, NamedTextColor.GREEN, TextDecoration.BOLD))
+                        .append(Component.text(capitalizedOption, NamedTextColor.GREEN, TextDecoration.BOLD))
                         .append(Component.text("! | ", NamedTextColor.GRAY))
                         .append(Component.text(voteDurationSeconds + "s", NamedTextColor.AQUA))
                         .build(),
@@ -342,6 +369,7 @@ public class VoteManager {
      * @param option the voting option
      */
     private void startVoteCountdown(String option) {
+        String capitalizedOption = StringUtils.capitalize(option);
         AtomicLong timeLeft = new AtomicLong(voteDurationSeconds);
 
         scheduledVoteEndTask = Scheduler.runTimer(() -> {
@@ -350,7 +378,7 @@ public class VoteManager {
 
             long secsLeft = timeLeft.decrementAndGet();
             bossBar.name(Component.text().append(Component.text("Voting for ", NamedTextColor.GRAY))
-                    .append(Component.text(option, NamedTextColor.GREEN, TextDecoration.BOLD))
+                    .append(Component.text(capitalizedOption, NamedTextColor.GREEN, TextDecoration.BOLD))
                     .append(Component.text("! | ", NamedTextColor.GRAY))
                     .append(Component.text(secsLeft + "s", NamedTextColor.AQUA))
                     .build());
@@ -365,19 +393,19 @@ public class VoteManager {
      * Displays the vote prompt to all players with clickable text.
      */
     private void displayVotePrompt() {
-        Component message = Component.text()
-                .append(Component.text("Click to vote: ", NamedTextColor.GRAY))
-                .append(Component.text("[YES]", NamedTextColor.GREEN)
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/vot yes"))
-                        .hoverEvent(Component.text("Click to vote YES", NamedTextColor.GREEN)))
-                .append(Component.text(" / ", NamedTextColor.DARK_GRAY))
-                .append(Component.text("[NO]", NamedTextColor.RED)
-                        .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/vot no"))
-                        .hoverEvent(Component.text("Click to vote NO", NamedTextColor.RED)))
-                .build();
+        String messageText = "<gray>Click to vote: "
+                + "<click:run_command:/vot yes><hover:show_text:'<green>Click to vote Yes!'>"
+                + "<green><bold>Yes</bold></hover></click> "
+                + "<dark_gray>/ "
+                + "<click:run_command:/vot no><hover:show_text:'<color:#ff3300>Click to vote No!'>"
+                + "<color:#ff3300><bold>No</bold></hover></click>";
+
+        Component message = MiniMessage.miniMessage().deserialize(messageText);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.sendMessage(message);
+            if (!online.equals(voteInitiator)) { // Exclude the initiator
+                online.sendMessage(message);
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 package at.sleazlee.bmessentials.vot;
 
 import at.sleazlee.bmessentials.BMEssentials;
-import at.sleazlee.bmessentials.vot.VotBook;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
@@ -66,7 +65,10 @@ public class VoteCommand implements CommandExecutor {
                 return true;
             }
             case "day", "night", "clear", "rain", "thunder" -> {
-                voteManager.startVote(option, player);
+                if (!voteManager.startVote(option, player)) {
+                    // Vote didn't start, message already sent in startVote method
+                    return true;
+                }
                 return true;
             }
             default -> {
