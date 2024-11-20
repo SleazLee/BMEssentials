@@ -62,6 +62,10 @@ public class VoteManager {
         // Load configurable values
         voteDurationSeconds = plugin.getConfig().getInt("Systems.Vot.VoteDurationSeconds", 60);
         cooldownMilliseconds = plugin.getConfig().getInt("Systems.Vot.CooldownMinutes", 15) * 60 * 1000;
+
+        // Log the loaded configuration values
+        plugin.getLogger().info("VoteManager initialized with voteDurationSeconds: " + voteDurationSeconds
+                + " seconds, cooldownMilliseconds: " + cooldownMilliseconds + " milliseconds");
     }
 
     /**
@@ -112,7 +116,7 @@ public class VoteManager {
 
         // Check for single-player scenario
         if (totalPlayersAtVoteStart == 1) {
-            finalizeVote();
+            finalizeVote(false);
             return true;
         }
 
@@ -156,14 +160,16 @@ public class VoteManager {
 
         // Check if all players have voted.
         if (votedPlayers.size() >= totalPlayersAtVoteStart) {
-            finalizeVote();
+            finalizeVote(false);
         }
     }
 
     /**
      * Finalizes the vote, tallies results, and applies changes if successful.
+     *
+     * @param isCancelled true if the vote was cancelled, false if it ended naturally
      */
-    void finalizeVote() {
+    void finalizeVote(boolean isCancelled) {
         if (!voteInProgress) return; // Prevent double finalization
 
         voteInProgress = false;
@@ -174,28 +180,40 @@ public class VoteManager {
             scheduledVoteEndTask = null;
         }
 
-        lastVoteTime = System.currentTimeMillis(); // Start cooldown
+        if (!isCancelled) {
+            lastVoteTime = System.currentTimeMillis(); // Start cooldown
+        }
 
         String capitalizedOption = StringUtils.capitalize(voteOption);
-        String resultMessage;
 
+        // Boss bar message as per your request
+        String bossBarMessage;
+        if (yesVotes > noVotes) {
+            bossBarMessage = "<green><bold>The Voting Round was Successful!</bold>";
+            executeChange(voteOption);
+        } else {
+            bossBarMessage = "<color:#ff3300><bold>The Voting Round was Unsuccessful!</bold>";
+        }
+
+        // Chat message remains the same
+        String resultMessage;
         if (yesVotes > noVotes) {
             resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold><bold>"
                     + capitalizedOption
                     + "</bold></gold> <gray>was <green><bold>Successful</bold></green><gray>!";
-            executeChange(voteOption);
         } else {
             resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold><bold>"
                     + capitalizedOption
                     + "</bold></gold> <gray>was <color:#ff3300><bold>Unsuccessful</bold></color:#ff3300><gray>!";
         }
 
-        Component resultComponent = MiniMessage.miniMessage().deserialize(resultMessage);
-        Bukkit.broadcast(resultComponent);
+        Component chatMessage = MiniMessage.miniMessage().deserialize(resultMessage);
+        Bukkit.broadcast(chatMessage);
 
         // Update boss bar message
         if (bossBar != null) {
-            bossBar.name(resultComponent);
+            Component bossBarComponent = MiniMessage.miniMessage().deserialize(bossBarMessage);
+            bossBar.name(bossBarComponent);
             bossBar.progress(1.0f); // Reset progress bar if needed
 
             // Keep the boss bar for 6 more seconds
@@ -208,6 +226,14 @@ public class VoteManager {
         }
 
         votedPlayers.clear();
+    }
+
+    /**
+     * Overloaded method for finalizing a vote without specifying cancellation.
+     * Assumes the vote was not cancelled.
+     */
+    void finalizeVote() {
+        finalizeVote(false);
     }
 
     /**
@@ -384,7 +410,7 @@ public class VoteManager {
                     .build());
 
             if (secsLeft <= 0) {
-                finalizeVote();
+                finalizeVote(false);
             }
         }, 20L, 20L); // Update every second
     }
@@ -433,7 +459,7 @@ public class VoteManager {
             // Remove vote if the player had voted
             if (votedPlayers.remove(player.getUniqueId())) {
                 if (votedPlayers.size() >= totalPlayersAtVoteStart) {
-                    finalizeVote();
+                    finalizeVote(false);
                     return;
                 }
             }
@@ -442,7 +468,7 @@ public class VoteManager {
 
             // If no players are left, cancel the vote
             if (totalPlayersAtVoteStart == 0) {
-                finalizeVote();
+                finalizeVote(true);
             }
         }
     }

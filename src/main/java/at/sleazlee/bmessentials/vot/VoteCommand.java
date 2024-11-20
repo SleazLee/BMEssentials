@@ -57,7 +57,7 @@ public class VoteCommand implements CommandExecutor {
             }
             case "reset" -> {
                 if (player.hasPermission("bmessentials.vot.reset")) {
-                    voteManager.finalizeVote();
+                    voteManager.finalizeVote(true); // Indicate that the vote was cancelled
                     player.sendMessage(ChatColor.GREEN + "Vote has been reset.");
                 } else {
                     player.sendMessage(ChatColor.RED + "You don't have permission to reset votes.");
