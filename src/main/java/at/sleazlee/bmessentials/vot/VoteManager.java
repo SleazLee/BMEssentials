@@ -189,13 +189,12 @@ public class VoteManager {
         // Boss bar message as per your request
         String bossBarMessage;
         if (yesVotes > noVotes) {
-            bossBarMessage = "<green><bold>The Voting Round was Successful!</bold>";
+            bossBarMessage = "<gray>Voting was <green><bold>Successful</bold><gray>!";
             executeChange(voteOption);
         } else {
-            bossBarMessage = "<color:#ff3300><bold>The Voting Round was Unsuccessful!</bold>";
+            bossBarMessage = "<gray>Voting was <color:#ff3300><bold>Unsuccessful</bold><gray>!";
         }
 
-        // Chat message remains the same
         String resultMessage;
         if (yesVotes > noVotes) {
             resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold><bold>"
