@@ -309,7 +309,7 @@ public class VoteManager {
      */
     private void updateVoteProgress() {
         int totalPlayers = totalPlayersAtVoteStart;
-        int progressBars = 16; // Increased from 10 to 16
+        int progressBars = 14;
 
         double yesPercentage = yesVotes / (double) totalPlayers;
         double noPercentage = noVotes / (double) totalPlayers;
@@ -380,7 +380,7 @@ public class VoteManager {
                         .append(Component.text(voteDurationSeconds + "s", NamedTextColor.AQUA))
                         .build(),
                 1.0f,
-                BossBar.Color.BLUE,
+                BossBar.Color.YELLOW,
                 BossBar.Overlay.PROGRESS
         );
         for (Player online : Bukkit.getOnlinePlayers()) {
