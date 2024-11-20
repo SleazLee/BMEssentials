@@ -380,7 +380,7 @@ public class VoteManager {
                         .append(Component.text(voteDurationSeconds + "s", NamedTextColor.AQUA))
                         .build(),
                 1.0f,
-                BossBar.Color.GREEN,
+                BossBar.Color.BLUE,
                 BossBar.Overlay.PROGRESS
         );
         for (Player online : Bukkit.getOnlinePlayers()) {
