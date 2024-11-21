@@ -95,7 +95,11 @@ public class VoteManager {
                 long minutesLeft = (timeLeft - secondsLeft) / 60;
                 timeMessage = minutesLeft + "m " + secondsLeft + "s";
             }
-            initiator.sendMessage(ChatColor.RED + "You must wait " + timeMessage + " before starting a new vote.");
+            
+            String messageText = "<color:#ff3300><bold>Vot</bold> <red>You must wait " + timeMessage + " before starting a new vote.";
+            Component message = MiniMessage.miniMessage().deserialize(messageText);
+
+            initiator.sendMessage(message);
             return false;
         }
 
