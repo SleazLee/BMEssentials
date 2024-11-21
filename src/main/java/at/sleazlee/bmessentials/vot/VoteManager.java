@@ -87,7 +87,15 @@ public class VoteManager {
 
         if (timeSinceLastVote < cooldownMilliseconds && !initiator.hasPermission("bmessentials.vot.bypasscooldown")) {
             long timeLeft = (cooldownMilliseconds - timeSinceLastVote) / 1000; // Time left in seconds
-            initiator.sendMessage(ChatColor.RED + "You must wait " + timeLeft + " seconds before starting a new vote.");
+            String timeMessage;
+            if (timeLeft < 60) {
+                timeMessage = timeLeft + "s";
+            } else {
+                long secondsLeft = timeLeft % 60;
+                long minutesLeft = (timeLeft - secondsLeft) / 60;
+                timeMessage = minutesLeft + "m " + secondsLeft + "s";
+            }
+            initiator.sendMessage(ChatColor.RED + "You must wait " + timeMessage + " before starting a new vote.");
             return false;
         }
 
