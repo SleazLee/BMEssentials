@@ -68,11 +68,9 @@ public class WildData {
 
         ConfigurationSection boundsSection = config.getConfigurationSection("Systems.Wild.Bounds");
         if (boundsSection != null) {
-            logger.info("Bounds section found.");
 
             // Iterate over each key under 'bounds' (e.g., '1', '2', etc.).
             for (String key : boundsSection.getKeys(false)) {
-                logger.info("Processing key: " + key);
                 // Access the configuration section for each version entry.
                 ConfigurationSection versionSection = boundsSection.getConfigurationSection(key);
                 if (versionSection != null) {
