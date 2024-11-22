@@ -63,9 +63,6 @@ public class WildData {
     public WildData(FileConfiguration config, JavaPlugin plugin) {
         this.logger = plugin.getLogger();
 
-        // Log the entire configuration to check if it's loaded
-        logger.info("Config contents: " + config.saveToString());
-
         ConfigurationSection boundsSection = config.getConfigurationSection("Systems.Wild.Bounds");
         if (boundsSection != null) {
 
