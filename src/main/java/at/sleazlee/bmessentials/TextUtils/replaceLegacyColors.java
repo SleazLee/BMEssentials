@@ -3,8 +3,26 @@ package at.sleazlee.bmessentials.TextUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class for converting legacy Minecraft color codes to MiniMessage tags.
+ * <p>
+ * This class supports both {@code &} and {@code §} symbols for legacy color codes.
+ * </p>
+ */
 public class replaceLegacyColors {
+
+    /**
+     * Replaces legacy Minecraft color codes (e.g., {@code &7} or {@code §7}) with MiniMessage tags.
+     * <p>
+     * For example, the input {@code "&7Hello §bWorld"} will be converted to
+     * {@code "<gray>Hello <aqua>World"}.
+     * </p>
+     *
+     * @param input the input string containing legacy color codes.
+     * @return the string with MiniMessage tags replacing legacy color codes.
+     */
     public static String replaceLegacyColors(String input) {
+        // Map of legacy color codes to their corresponding MiniMessage tags
         Map<Character, String> legacyToMiniMessage = new HashMap<>();
         legacyToMiniMessage.put('0', "black");
         legacyToMiniMessage.put('1', "dark_blue");
@@ -29,18 +47,25 @@ public class replaceLegacyColors {
         legacyToMiniMessage.put('o', "italic");
         legacyToMiniMessage.put('r', "reset");
 
+        // StringBuilder for constructing the result
         StringBuilder result = new StringBuilder();
         char[] chars = input.toCharArray();
+
+        // Iterate through the input string
         for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '&' && i + 1 < chars.length) {
+            // Check for valid legacy color code prefixes (& or §)
+            if ((chars[i] == '&' || chars[i] == '§') && i + 1 < chars.length) {
                 char code = chars[i + 1];
+                // Retrieve the corresponding MiniMessage tag
                 String tag = legacyToMiniMessage.get(Character.toLowerCase(code));
                 if (tag != null) {
+                    // Append the MiniMessage tag to the result
                     result.append('<').append(tag).append('>');
                     i++; // Skip the next character as it is part of the code
                     continue;
                 }
             }
+            // Append regular characters to the result
             result.append(chars[i]);
         }
         return result.toString();
