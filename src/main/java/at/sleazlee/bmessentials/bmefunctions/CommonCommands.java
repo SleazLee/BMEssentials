@@ -1,7 +1,10 @@
 package at.sleazlee.bmessentials.bmefunctions;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.TextUtils.TextCenter;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -43,12 +46,13 @@ public class CommonCommands implements CommandExecutor {
 				String tpsFifteenMins = PlaceholderAPI.setPlaceholders(player, "%server_tps_15_colored%");
 				String ping = PlaceholderAPI.setPlaceholders(player, "%player_colored_ping%");
 
+				String lagTitleStart = TextCenter.center("BM Performance", "dark_gray");
+				String lagTitleEnd = TextCenter.fullLineStrike("dark_gray");
 
-				player.sendMessage("§8§m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §b BM Performance §8§m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m ");
-				player.sendMessage("§7Memory∶ §8[§f" + ramBar + "§8] §e" + ramUsed + " GB §7Used, §a" + ramUnused + " GB§7 Free");
-				player.sendMessage("§7TPS∶ §8[§71m∶ " + tpsOneMin + "§8] [§75m∶ " + tpsFiveMins + "§8] [§715m∶ " + tpsFifteenMins + "§8]§7 §7 §7 §7 Your ping∶ §8[§a" + ping + "§7ms§8]");
-				player.sendMessage("§8§m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m §m ");
+				String messageText = lagTitleStart + "<newline><gray>Memory: </gray><dark_gray>[<white><hover:show_text:'Memory refers to RAM (Random Access Memory), which is used by the server to store and quickly access data. The more RAM a server has, the more information it can handle simultaneously, leading to smoother gameplay.'>" + ramBar + "</hover></white>]</dark_gray> <yellow><hover:show_text:'The amount of RAM currently being utilized by the server.'>" + ramUsed + " GB</hover></yellow> <gray>Used, </gray><green><hover:show_text:'The amount of RAM available and not currently in use by the server.'>" + ramUnused + " GB</hover></green><gray> Free</gray><newline><gray>TPS: </gray><dark_gray>[<blue><hover:show_text:'TPS averaged over the last 1 minute.'> 1m: " + tpsOneMin + "</hover></blue>] [<blue><hover:show_text:'TPS averaged over the last 5 minutes.'> 5m: " + tpsFiveMins + "</hover></blue>] [<blue><hover:show_text:'TPS averaged over the last 15 minutes.'> 15m: " + tpsFifteenMins + "</hover></blue>]<gray> Your ping: </gray><dark_gray>[<green><hover:show_text:'Ping measures the latency between your computer and the server, expressed in milliseconds (ms). Lower values mean a more responsive connection.'>" + ping + " ms</hover></green>]</dark_gray><newline>" + lagTitleEnd;
+				Component message = MiniMessage.miniMessage().deserialize(messageText);
 
+				sender.sendMessage(message);
 				return true;
 			}
 			if (label.equalsIgnoreCase("bmdiscord")) {
