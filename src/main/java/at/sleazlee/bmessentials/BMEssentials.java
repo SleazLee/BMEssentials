@@ -10,6 +10,7 @@ import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
 import at.sleazlee.bmessentials.Help.HelpCommands;
 import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
+import at.sleazlee.bmessentials.PlayerData.BMEChatPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
 import at.sleazlee.bmessentials.PlayerData.PlayerJoinListener;
 import at.sleazlee.bmessentials.SpawnSystems.*;
@@ -319,6 +320,7 @@ public class BMEssentials extends JavaPlugin {
             // Register PlaceholderAPI expansion if PlaceholderAPI is present
             if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
                 new BMEPlaceholders(this).register();
+                new BMEChatPlaceholders(this).register();
             } else {
                 getLogger().warning("PlaceholderAPI not found! Placeholders will not work.");
             }
