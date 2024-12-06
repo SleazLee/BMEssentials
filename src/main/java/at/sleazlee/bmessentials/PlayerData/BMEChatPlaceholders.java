@@ -128,15 +128,13 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
                 "&7Placed " + placedBlocks + " blocks &8/ &7Died " + deaths + " times");
 
         // Center each line
-        line1 = TextCenter.center(line1, 70);
-        line2 = TextCenter.center(line2, 70);
-        line3 = TextCenter.center(line3, 70);
-        line4 = TextCenter.center(line4, 70);
-        // line5 is empty, just center an empty string?
-        line5 = TextCenter.center(line5, 70);
-        line6 = TextCenter.center(line6, 70);
-        line7 = TextCenter.center(line7, 70);
-        line8 = TextCenter.center(line8, 70);
+        line1 = TextCenter.center(line1, 62);
+        line2 = TextCenter.center(line2, 62);
+        line3 = TextCenter.center(line3, 62);
+        line4 = TextCenter.center(line4, 62);
+        line6 = TextCenter.center(line6, 62);
+        line7 = TextCenter.center(line7, 62);
+        line8 = TextCenter.center(line8, 62);
 
         // Join all lines. The resulting string will be placed where %bm_player_stats% is used.
         // Depending on how ChatControlRed handles multiline placeholders, we may need to use \n.
