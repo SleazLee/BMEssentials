@@ -116,7 +116,7 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
 
         String line1 = ChatColor.translateAlternateColorCodes('&', "&7Name:&f " + player.getName() + " &7 &aPower LVL: " + mcmmoPower);
         String line2 = ChatColor.translateAlternateColorCodes('&', "&6First joined: &6" + joinDateStr);
-        String line3 = ChatColor.translateAlternateColorCodes('&', "&7Money:&b " + balanceDollars + " &8/ &e" + balanceVPs);
+        String line3 = ChatColor.translateAlternateColorCodes('&', "&7Money:&b $" + balanceDollars + " &8/ &e" + balanceVPs + " VPs");
         String line4 = ChatColor.translateAlternateColorCodes('&',
                 "&7Playtime: &c" + days + " Days &6" + hours + " Hours &e" + minutes + " Minutes");
         String line5 = "";
@@ -128,13 +128,13 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
                 "&7Placed " + placedBlocks + " blocks &8/ &7Died " + deaths + " times");
 
         // Center each line
-        line1 = TextCenter.center(line1, 62);
-        line2 = TextCenter.center(line2, 62);
-        line3 = TextCenter.center(line3, 62);
-        line4 = TextCenter.center(line4, 62);
-        line6 = TextCenter.center(line6, 62);
-        line7 = TextCenter.center(line7, 62);
-        line8 = TextCenter.center(line8, 62);
+        line1 = TextCenter.center(line1, 58);
+        line2 = TextCenter.center(line2, 58);
+        line3 = TextCenter.center(line3, 58);
+        line4 = TextCenter.center(line4, 58);
+        line6 = TextCenter.center(line6, 58);
+        line7 = TextCenter.center(line7, 58);
+        line8 = TextCenter.center(line8, 58);
 
         // Join all lines. The resulting string will be placed where %bm_player_stats% is used.
         // Depending on how ChatControlRed handles multiline placeholders, we may need to use \n.
