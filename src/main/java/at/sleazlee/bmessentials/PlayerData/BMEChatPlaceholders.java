@@ -33,7 +33,7 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
 
     @Override
     public String getIdentifier() {
-        return "bm"; // or "bme" if you prefer. Just ensure uniqueness.
+        return "bmeChat";
     }
 
     @Override
