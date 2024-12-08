@@ -64,7 +64,7 @@ public class VoteCommand implements CommandExecutor {
                 }
                 return true;
             }
-            case "day", "night", "sun", "rain", "thunder" -> {
+            case "day", "night", "clear", "rain", "thunder" -> {
                 if (!voteManager.startVote(option, player)) {
                     // Vote didn't start, message already sent in startVote method
                     return true;
@@ -72,7 +72,7 @@ public class VoteCommand implements CommandExecutor {
                 return true;
             }
             default -> {
-                player.sendMessage(ChatColor.GRAY + "Usage: /" + label + " <day|night|sun|rain|thunder|yes|no>");
+                player.sendMessage(ChatColor.GRAY + "Usage: /" + label + " <day|night|clear|rain|thunder|yes|no>");
                 return true;
             }
         }

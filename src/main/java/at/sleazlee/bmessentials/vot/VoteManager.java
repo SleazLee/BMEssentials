@@ -256,7 +256,7 @@ public class VoteManager {
         for (World world : Bukkit.getWorlds()) {
             Scheduler.run(() -> {
                 switch (option) {
-                    case "sun" -> {
+                    case "clear" -> {
                         world.setStorm(false);
                         world.setThundering(false);
                     }
