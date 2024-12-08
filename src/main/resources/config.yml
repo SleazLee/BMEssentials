@@ -141,7 +141,7 @@ Systems:
         - '<dark_gray><st>                            </st><newline>            <gold><bold>Vot</bold><newline><dark_gray><st>                            </st><newline><newline><dark_gray>    Would you like to<newline>    <dark_gray>vote for {color}<bold>{vote_type}</bold><dark_gray>?<newline><newline><newline>            <click:run_command:/vot yes><hover:show_text:"<green>Click to vote Yes"><green><bold>Yes</bold></hover></click><newline><newline><newline>             <click:run_command:/vot no><hover:show_text:"<red>Click to vote No"><red><bold>No</bold></hover></click><newline><newline><dark_gray><st>                            </st>'
 
       CooldownActive:
-        - '<dark_gray><st>                            </st><newline><bold>         <#ff3300>Vot</bold><newline><dark_gray><st>                            </st><newline><red><newline><newline>   You have to wait      <newline>    <bold>{time_left}</bold> before<newline><newline>    you can start a<newline><newline>        new vote!<newline></red><newline><dark_gray><st>                            </st>'
+        - '<dark_gray><st>                            </st><newline><bold>         <#ff3300>Vot</bold><newline><dark_gray><st>                            </st><newline><dark_gray><newline><newline>   You have to wait      <newline>    <red><bold>{time_left}</bold><dark_gray> before<newline><newline>    you can start a<newline><newline>        new vote!<newline><newline><dark_gray><st>                            </st>'
 
   # Enables the Rankup System
   Rankup:

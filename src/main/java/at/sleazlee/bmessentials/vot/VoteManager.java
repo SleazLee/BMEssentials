@@ -111,9 +111,13 @@ public class VoteManager {
         totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
         voteInitiator = initiator;
 
-        String startMessage = ChatColor.AQUA + initiator.getName() + ChatColor.GRAY + " has started a vote for " +
-                ChatColor.AQUA + StringUtils.capitalize(option) + ChatColor.GRAY + ".";
-        Bukkit.broadcast(Component.text(startMessage));
+        String capitalizedOption = StringUtils.capitalize(voteOption);
+        String customColor = VotBook.getColorForVoteType(voteOption);
+        String startMessage = "<aqua>" + initiator.getName() + "<gray> has started a vote for <aqua>" + customColor +
+                capitalizedOption + "<gray>.";
+
+        Component chatMessage = MiniMessage.miniMessage().deserialize(startMessage);
+        Bukkit.broadcast(chatMessage);
 
         displayVotePrompt();
 
@@ -247,7 +251,7 @@ public class VoteManager {
     void finalizeVote() {
         finalizeVote(false);
     }
-    
+
     boolean isCooldownActive(Player initiator) {
 
         long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
