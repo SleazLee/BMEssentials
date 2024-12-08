@@ -270,8 +270,8 @@ public class VoteManager {
 
         long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
 
-        String timeMessage = "";
-        if (isCooldownActive(initiator)) {
+        String timeMessage = "null";
+        if (timeSinceLastVote < cooldownMilliseconds) {
             long timeLeft = (cooldownMilliseconds - timeSinceLastVote) / 1000; // Time left in seconds
             if (timeLeft < 60) {
                 timeMessage = timeLeft + "s";
