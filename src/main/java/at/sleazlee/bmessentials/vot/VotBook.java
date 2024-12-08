@@ -105,14 +105,14 @@ public class VotBook {
      * @param voteType The vote type.
      * @return The color code.
      */
-    private String getColorForVoteType(String voteType) {
+    static String getColorForVoteType(String voteType) {
         return switch (voteType.toLowerCase()) {
-            case "day" -> "<#ffae34>";
-            case "night" -> "<#061948>";
-            case "clear" -> "<#ffd700>";
-            case "rain" -> "<#0b2973>";
-            case "thunder" -> "<#595e6c>";
-            default -> "<white>";
+            case "day" -> "<#ffd746>";
+            case "night" -> "<#1e1e43>";
+            case "clear" -> "<#63a1f2>";
+            case "rain" -> "<#4e4dce>";
+            case "thunder" -> "<#6d5091>";
+            default -> "<gold>";
         };
     }
 }

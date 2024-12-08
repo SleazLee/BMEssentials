@@ -197,6 +197,7 @@ public class VoteManager {
         }
 
         String capitalizedOption = StringUtils.capitalize(voteOption);
+        String customColor = VotBook.getColorForVoteType(voteOption);
 
         // Boss bar message as per your request
         String bossBarMessage;
@@ -209,11 +210,11 @@ public class VoteManager {
 
         String resultMessage;
         if (yesVotes > noVotes) {
-            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold><bold>"
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for " + customColor + "<bold>"
                     + capitalizedOption
                     + "</bold></gold> <gray>was <green><bold>Successful</bold></green><gray>!";
         } else {
-            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold><bold>"
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for " + customColor + "<bold>"
                     + capitalizedOption
                     + "</bold></gold> <gray>was <color:#ff3300><bold>Unsuccessful</bold></color:#ff3300><gray>!";
         }
