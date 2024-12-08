@@ -248,6 +248,55 @@ public class VoteManager {
         finalizeVote(false);
     }
 
+
+
+
+
+
+
+
+
+    boolean isCooldownActive(Player initiator) {
+
+        long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
+
+        if (timeSinceLastVote < cooldownMilliseconds && !initiator.hasPermission("bmessentials.vot.bypasscooldown")) {
+            return true;
+        }
+        return false;
+    }
+
+    String getTimeLeft(Player initiator) {
+
+        long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
+
+        String timeMessage = null;
+        if (timeSinceLastVote < cooldownMilliseconds && !initiator.hasPermission("bmessentials.vot.bypasscooldown")) {
+            long timeLeft = (cooldownMilliseconds - timeSinceLastVote) / 1000; // Time left in seconds
+            if (timeLeft < 60) {
+                timeMessage = timeLeft + "s";
+            } else {
+                long secondsLeft = timeLeft % 60;
+                long minutesLeft = (timeLeft - secondsLeft) / 60;
+                timeMessage = minutesLeft + "m " + secondsLeft + "s";
+            }
+
+        }
+        return timeMessage;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Applies the vote outcome by changing the time or weather.
      *

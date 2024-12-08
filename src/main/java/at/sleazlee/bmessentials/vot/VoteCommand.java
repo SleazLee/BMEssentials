@@ -85,7 +85,9 @@ public class VoteCommand implements CommandExecutor {
      */
     private void openVoteBook(Player player) {
         VoteManager voteManager = VoteManager.getInstance();
-        if (voteManager.isVoteInProgress()) {
+        if (voteManager.isCooldownActive(player)) {
+            votBook.openBook(player, "CooldownActive");
+        } else if (voteManager.isVoteInProgress()) {
             votBook.openBook(player, "CurrentVote");
         } else {
             votBook.openBook(player, "NewVote");

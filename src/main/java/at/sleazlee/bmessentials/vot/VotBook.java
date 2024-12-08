@@ -93,8 +93,10 @@ public class VotBook {
         if (voteManager.isVoteInProgress()) {
             String voteType = StringUtils.capitalize(voteManager.getVoteOption());
             String color = getColorForVoteType(voteManager.getVoteOption());
+            String timeLeft = voteManager.getTimeLeft(player);
             text = text.replace("{vote_type}", voteType);
             text = text.replace("{color}", color);
+            text = text.replace("{time_left}", timeLeft);
         }
         return text;
     }
