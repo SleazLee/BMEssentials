@@ -95,7 +95,7 @@ public class VoteManager {
                 long minutesLeft = (timeLeft - secondsLeft) / 60;
                 timeMessage = minutesLeft + "m " + secondsLeft + "s";
             }
-            
+
             String messageText = "<color:#ff3300><bold>Vot</bold> <red>You must wait " + timeMessage + " before starting a new vote.";
             Component message = MiniMessage.miniMessage().deserialize(messageText);
 
@@ -266,7 +266,7 @@ public class VoteManager {
         return false;
     }
 
-    String getTimeLeft(Player initiator) {
+    String getTimeLeft() {
 
         long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
 
