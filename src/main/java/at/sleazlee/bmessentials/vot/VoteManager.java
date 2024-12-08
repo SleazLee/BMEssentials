@@ -210,11 +210,11 @@ public class VoteManager {
 
         String resultMessage;
         if (yesVotes > noVotes) {
-            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for " + customColor + "<bold>"
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold>" + customColor + "<bold>"
                     + capitalizedOption
                     + "</bold></gold> <gray>was <green><bold>Successful</bold></green><gray>!";
         } else {
-            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for " + customColor + "<bold>"
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold>" + customColor + "<bold>"
                     + capitalizedOption
                     + "</bold></gold> <gray>was <color:#ff3300><bold>Unsuccessful</bold></color:#ff3300><gray>!";
         }
