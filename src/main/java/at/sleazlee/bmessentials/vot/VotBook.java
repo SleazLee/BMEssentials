@@ -109,7 +109,7 @@ public class VotBook {
         return switch (voteType.toLowerCase()) {
             case "day" -> "<#ffae34>";
             case "night" -> "<#061948>";
-            case "clear" -> "<#ffd700>";
+            case "sun" -> "<#ffd700>";
             case "rain" -> "<#0b2973>";
             case "thunder" -> "<#595e6c>";
             default -> "<white>";
