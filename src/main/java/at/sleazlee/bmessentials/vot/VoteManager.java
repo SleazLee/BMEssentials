@@ -247,15 +247,7 @@ public class VoteManager {
     void finalizeVote() {
         finalizeVote(false);
     }
-
-
-
-
-
-
-
-
-
+    
     boolean isCooldownActive(Player initiator) {
 
         long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
@@ -274,7 +266,7 @@ public class VoteManager {
         if (timeSinceLastVote < cooldownMilliseconds) {
             long timeLeft = (cooldownMilliseconds - timeSinceLastVote) / 1000; // Time left in seconds
             if (timeLeft < 60) {
-                timeMessage = timeLeft + "s";
+                timeMessage = "0m " + timeLeft + "s";
             } else {
                 long secondsLeft = timeLeft % 60;
                 long minutesLeft = (timeLeft - secondsLeft) / 60;
@@ -284,18 +276,6 @@ public class VoteManager {
         }
         return timeMessage;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Applies the vote outcome by changing the time or weather.
