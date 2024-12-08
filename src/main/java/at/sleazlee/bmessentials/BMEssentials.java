@@ -270,7 +270,7 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vote System");
 
             getCommand("vot").setExecutor(new VoteCommand(this));
-            this.getCommand("vot").setTabCompleter(new TPShopTabCompleter());
+            this.getCommand("vot").setTabCompleter(new VotTabCompleter());
             getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         }
 
