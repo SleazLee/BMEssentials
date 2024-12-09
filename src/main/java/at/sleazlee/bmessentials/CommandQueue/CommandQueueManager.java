@@ -73,10 +73,11 @@ public class CommandQueueManager {
     /**
      * Executes the queued commands either as a player or the console.
      *
-     * @param executorType The type of executor ("player" or "console").
-     * @param sender       The command sender initiating the execution.
+     * @param executorType   The type of executor ("player" or "console").
+     * @param sender         The command sender initiating the execution.
+     * @param delayInSeconds The delay in seconds between commands.
      */
-    public void runCommands(String executorType, CommandSender sender) {
+    public void runCommands(String executorType, CommandSender sender, int delayInSeconds) {
         if (commands == null || commands.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "No commands found in CommandQueue.yml");
             return;
@@ -85,9 +86,10 @@ public class CommandQueueManager {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&a&lQueue &7The Command Queue has started running..."));
 
         Iterator<String> iterator = commands.iterator();
+        int delayInTicks = delayInSeconds * 20; // Convert seconds to ticks
 
         /**
-         * Runnable class to execute each command with a delay.
+         * Runnable class to execute each command with the specified delay.
          */
         class CommandRunner implements Runnable {
             @Override
@@ -109,8 +111,8 @@ public class CommandQueueManager {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
                 }
 
-                // Schedule next command with a 5-tick delay
-                Scheduler.runLater(this, 5); // Adjust the delay if necessary
+                // Schedule the next command after the specified delay
+                Scheduler.runLater(this, delayInTicks);
             }
         }
 

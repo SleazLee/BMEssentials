@@ -173,7 +173,7 @@ commands:
 
   commandqueue:
     description: Runs the command queue
-    usage: /commandqueue run <player/console>
+    usage: /commandqueue run <player/console> <delay>
 
   book:
     description: Opens a help book.

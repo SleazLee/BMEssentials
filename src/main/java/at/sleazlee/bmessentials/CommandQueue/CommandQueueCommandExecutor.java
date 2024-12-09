@@ -42,16 +42,29 @@ public class CommandQueueCommandExecutor implements CommandExecutor {
         }
 
         // Validate command arguments
-        if (args.length != 2 || !args[0].equalsIgnoreCase("run") ||
+        // Now expecting: /commandqueue run <player/console> <delayInSeconds>
+        if (args.length != 3 || !args[0].equalsIgnoreCase("run") ||
                 (!args[1].equalsIgnoreCase("player") && !args[1].equalsIgnoreCase("console"))) {
-            sender.sendMessage(ChatColor.RED + "Usage: /commandqueue run <player/console>");
+            sender.sendMessage(ChatColor.RED + "Usage: /commandqueue run <player/console> <delayInSeconds>");
             return true;
         }
 
         String executorType = args[1].toLowerCase();
 
-        // Execute the command queue
-        manager.runCommands(executorType, sender);
+        int delayInSeconds;
+        try {
+            delayInSeconds = Integer.parseInt(args[2]);
+            if (delayInSeconds < 0) {
+                sender.sendMessage(ChatColor.RED + "Delay must be a non-negative integer.");
+                return true;
+            }
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.RED + "Please provide a valid integer for the delay in seconds.");
+            return true;
+        }
+
+        // Execute the command queue with the specified delay
+        manager.runCommands(executorType, sender, delayInSeconds);
 
         return true;
     }
