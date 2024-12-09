@@ -56,7 +56,7 @@
 # Now you can define your commands below:
 Commands:
   mcmmohelp:
-    - "&6&lMcMMO &7For info on everything mcmmo &bhttps://wiki.mcmmo.org/"
+    - "&6&lMcMMO &r&7For info on everything mcmmo &bhttps://wiki.mcmmo.org/"
 
   basicinfocommands:
     - "{center color='dark_gray'}<gold>Server Info CMDs{/center}"
