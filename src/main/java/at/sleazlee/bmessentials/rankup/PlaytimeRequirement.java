@@ -1,6 +1,6 @@
 package at.sleazlee.bmessentials.rankup;
 
-import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,7 +18,8 @@ public class PlaytimeRequirement implements Requirement {
     /**
      * Constructs a PlaytimeRequirement.
      *
-     * @param playtimeStr The playtime string from the config (e.g., "30 minutes").
+     * @param plugin       The plugin instance (used for logging).
+     * @param playtimeStr  The playtime string from the config (e.g., "30 minutes").
      */
     public PlaytimeRequirement(JavaPlugin plugin, String playtimeStr) {
         this.plugin = plugin;
@@ -51,7 +52,6 @@ public class PlaytimeRequirement implements Requirement {
      * @return The playtime in minutes, or -1 if invalid.
      */
     private int parsePlaytime(String playtimeStr) {
-        // Regular expression to capture number and time unit
         Pattern pattern = Pattern.compile("(\\d+)\\s*(seconds|minutes|hours|days)", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(playtimeStr.trim());
         if (matcher.matches()) {
@@ -74,18 +74,14 @@ public class PlaytimeRequirement implements Requirement {
     }
 
     /**
-     * Retrieves the player's playtime in minutes using PlaceholderAPI.
+     * Retrieves the player's playtime in minutes using the server's statistics.
      *
      * @param player The player whose playtime is to be retrieved.
      * @return The playtime in minutes.
      */
     private int getPlayerPlaytimeMinutes(Player player) {
-        String playtimeStr = PlaceholderAPI.setPlaceholders(player, "%statistic_time_played:minutes%");
-        try {
-            return Integer.parseInt(playtimeStr);
-        } catch (NumberFormatException e) {
-            plugin.getLogger().warning("Could not parse playtime minutes for player " + player.getName() + ": " + playtimeStr);
-            return 0;
-        }
+        int playTimeTicks = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        // 20 ticks = 1 second, 60 seconds = 1 minute
+        return (playTimeTicks / 20) / 60;
     }
 }

@@ -115,13 +115,7 @@ public class RankUpManager implements CommandExecutor {
         }
 
         if (!unmetRequirements.isEmpty()) {
-            // Send specific requirements' deny messages
-            for (String denyMsg : unmetRequirements) {
-                String formattedDenyMsg = messageHandler.formatMessage(denyMsg, player);
-                player.sendMessage(formattedDenyMsg);
-            }
-
-            // Send the general rank deny message
+            // Just send the general rank deny message from ranks.yml
             String rankDenyMsg = currentRank.getDenyMessage();
             if (rankDenyMsg != null && !rankDenyMsg.isEmpty()) {
                 String formattedRankDenyMsg = messageHandler.formatMessage(rankDenyMsg, player);
@@ -130,6 +124,7 @@ public class RankUpManager implements CommandExecutor {
 
             return true;
         }
+
 
         // Perform rank up
         performRankUp(player, currentRank, nextRank);

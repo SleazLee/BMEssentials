@@ -5,7 +5,7 @@ ranks:
   Default:
 
     default_zero:
-      name: "[0]"
+      name: "default"
       next_rank: "[1]"
       requirements:
         playtime: "30 minutes"
@@ -26,7 +26,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [2]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2]."
+        deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2]."
 
     default_two:
       name: "[2]"
@@ -38,7 +38,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [3]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3]."
+        deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3]."
 
     default_three:
       name: "[3]"
@@ -50,7 +50,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [4]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4]."
+        deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4]."
 
     default_four:
       name: "[4]"
@@ -62,7 +62,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [5]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5]."
+        deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5]."
 
     default_five:
       name: "[5]"
@@ -74,7 +74,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [6]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6]."
+        deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6]."
 
     default_six:
       name: "[6]"
@@ -86,7 +86,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [7]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7]."
+        deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7]."
 
     default_seven:
       name: "[7]"
@@ -98,7 +98,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [8]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8]."
+        deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8]."
 
     default_eight:
       name: "[8]"
@@ -110,7 +110,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [9]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9]."
+        deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9]."
 
     default_nine:
       name: "[9]"
@@ -122,7 +122,7 @@ ranks:
       messages:
         personal: "You successfully ranked up to [10]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10]."
+        deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10]."
 
     default_ten:
       name: "[10]"
@@ -139,8 +139,8 @@ ranks:
   Plus:
 
     plus_zero:
-      name: "[0][Plus]"
-      next_rank: "[1][Plus]"
+      name: "[0][plus]"
+      next_rank: "[1][plus]"
       requirements:
         playtime: "30 minutes"
         balance: 0
@@ -151,8 +151,8 @@ ranks:
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Plus]."
 
     plus_one:
-      name: "[1][Plus]"
-      next_rank: "[2][Plus]"
+      name: "[1][plus]"
+      next_rank: "[2][plus]"
       requirements:
         playtime: 0
         balance: 100
@@ -160,11 +160,11 @@ ranks:
       messages:
         personal: "You successfully ranked up to [2][Plus]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Plus]."
+        deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Plus]."
 
     plus_two:
-      name: "[2][Plus]"
-      next_rank: "[3][Plus]"
+      name: "[2][plus]"
+      next_rank: "[3][plus]"
       requirements:
         playtime: 0
         balance: 500
@@ -172,94 +172,94 @@ ranks:
       messages:
         personal: "You successfully ranked up to [3][Plus]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Plus]."
+        deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Plus]."
 
     plus_three:
-      name: "[3][Plus]"
-      next_rank: "[4][Plus]"
+      name: "[3][plus]"
+      next_rank: "[4][plus]"
       requirements:
         playtime: 0
         balance: 2500
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Plus]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Plus]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Plus]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Plus]."
 
     plus_four:
-      name: "[4][Plus]"
-      next_rank: "[5][Plus]"
+      name: "[4][plus]"
+      next_rank: "[5][plus]"
       requirements:
         playtime: "1 day"
         balance: 10000
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Plus]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Plus]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Plus]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Plus]."
 
     plus_five:
-      name: "[5][Plus]"
-      next_rank: "[6][Plus]"
+      name: "[5][plus]"
+      next_rank: "[6][plus]"
       requirements:
         playtime: 0
         balance: 25000
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Plus]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Plus]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Plus]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Plus]."
 
     plus_six:
-      name: "[6][Plus]"
-      next_rank: "[7][Plus]"
+      name: "[6][plus]"
+      next_rank: "[7][plus]"
       requirements:
         playtime: 0
         balance: 50000
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Plus]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Plus]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Plus]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Plus]."
 
     plus_seven:
-      name: "[7][Plus]"
-      next_rank: "[8][Plus]"
+      name: "[7][plus]"
+      next_rank: "[8][plus]"
       requirements:
         playtime: 0
         balance: 100000
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Plus]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Plus]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Plus]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Plus]."
 
     plus_eight:
-      name: "[8][Plus]"
-      next_rank: "[9][Plus]"
+      name: "[8][plus]"
+      next_rank: "[9][plus]"
       requirements:
         playtime: 0
         balance: 200000
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Plus]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Plus]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Plus]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Plus]."
 
     plus_nine:
-      name: "[9][Plus]"
-      next_rank: "[10][Plus]"
+      name: "[9][plus]"
+      next_rank: "[10][plus]"
       requirements:
         playtime: 0
         balance: 300000
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Plus]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Plus]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Plus]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Plus]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Plus]."
 
     plus_ten:
-      name: "[10][Plus]"
+      name: "[10][plus]"
       next_rank: none  # Indicates this is the top rank in this chain
       requirements:
         playtime: 0
@@ -273,127 +273,127 @@ ranks:
   Premium:
 
     premium_zero:
-      name: "[0][Premium]"
-      next_rank: "[1][Premium]"
+      name: "[0][premium]"
+      next_rank: "[1][premium]"
       requirements:
         playtime: "30 minutes"
         balance: 0
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Premium]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Premium]."
 
     premium_one:
-      name: "[1][Premium]"
-      next_rank: "[2][Premium]"
+      name: "[1][premium]"
+      next_rank: "[2][premium]"
       requirements:
         playtime: 0
         balance: 100
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Premium]."
 
     premium_two:
-      name: "[2][Premium]"
-      next_rank: "[3][Premium]"
+      name: "[2][premium]"
+      next_rank: "[3][premium]"
       requirements:
         playtime: 0
         balance: 500
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Premium]."
 
     premium_three:
-      name: "[3][Premium]"
-      next_rank: "[4][Premium]"
+      name: "[3][premium]"
+      next_rank: "[4][premium]"
       requirements:
         playtime: 0
         balance: 2500
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Premium]."
 
     premium_four:
-      name: "[4][Premium]"
-      next_rank: "[5][Premium]"
+      name: "[4][premium]"
+      next_rank: "[5][premium]"
       requirements:
         playtime: "1 day"
         balance: 10000
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Premium]."
 
     premium_five:
-      name: "[5][Premium]"
-      next_rank: "[6][Premium]"
+      name: "[5][premium]"
+      next_rank: "[6][premium]"
       requirements:
         playtime: 0
         balance: 25000
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Premium]."
 
     premium_six:
-      name: "[6][Premium]"
-      next_rank: "[7][Premium]"
+      name: "[6][premium]"
+      next_rank: "[7][premium]"
       requirements:
         playtime: 0
         balance: 50000
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Premium]."
 
     premium_seven:
-      name: "[7][Premium]"
-      next_rank: "[8][Premium]"
+      name: "[7][premium]"
+      next_rank: "[8][premium]"
       requirements:
         playtime: 0
         balance: 100000
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Premium]."
 
     premium_eight:
-      name: "[8][Premium]"
-      next_rank: "[9][Premium]"
+      name: "[8][premium]"
+      next_rank: "[9][premium]"
       requirements:
         playtime: 0
         balance: 200000
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Premium]."
 
     premium_nine:
-      name: "[9][Premium]"
-      next_rank: "[10][Premium]"
+      name: "[9][premium]"
+      next_rank: "[10][premium]"
       requirements:
         playtime: 0
         balance: 300000
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Premium]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Premium]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Premium]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Premium]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Premium]."
 
     premium_ten:
-      name: "[10][Premium]"
+      name: "[10][premium]"
       next_rank: none  # Indicates this is the top rank in this chain
       requirements:
         playtime: 0
@@ -407,127 +407,127 @@ ranks:
   Super:
 
     super_zero:
-      name: "[0][Super]"
-      next_rank: "[1][Super]"
+      name: "[0][super]"
+      next_rank: "[1][super]"
       requirements:
         playtime: "30 minutes"
         balance: 0
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Super]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Super]."
 
     super_one:
-      name: "[1][Super]"
-      next_rank: "[2][Super]"
+      name: "[1][super]"
+      next_rank: "[2][super]"
       requirements:
         playtime: 0
         balance: 100
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Super]."
 
     super_two:
-      name: "[2][Super]"
-      next_rank: "[3][Super]"
+      name: "[2][super]"
+      next_rank: "[3][super]"
       requirements:
         playtime: 0
         balance: 500
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Super]."
 
     super_three:
-      name: "[3][Super]"
-      next_rank: "[4][Super]"
+      name: "[3][super]"
+      next_rank: "[4][super]"
       requirements:
         playtime: 0
         balance: 2500
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Super]."
 
     super_four:
-      name: "[4][Super]"
-      next_rank: "[5][Super]"
+      name: "[4][super]"
+      next_rank: "[5][super]"
       requirements:
         playtime: "1 day"
         balance: 10000
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Super]."
 
     super_five:
-      name: "[5][Super]"
-      next_rank: "[6][Super]"
+      name: "[5][super]"
+      next_rank: "[6][super]"
       requirements:
         playtime: 0
         balance: 25000
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Super]."
 
     super_six:
-      name: "[6][Super]"
-      next_rank: "[7][Super]"
+      name: "[6][super]"
+      next_rank: "[7][super]"
       requirements:
         playtime: 0
         balance: 50000
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Super]."
 
     super_seven:
-      name: "[7][Super]"
-      next_rank: "[8][Super]"
+      name: "[7][super]"
+      next_rank: "[8][super]"
       requirements:
         playtime: 0
         balance: 100000
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Super]."
 
     super_eight:
-      name: "[8][Super]"
-      next_rank: "[9][Super]"
+      name: "[8][super]"
+      next_rank: "[9][super]"
       requirements:
         playtime: 0
         balance: 200000
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Super]."
 
     super_nine:
-      name: "[9][Super]"
-      next_rank: "[10][Super]"
+      name: "[9][super]"
+      next_rank: "[10][super]"
       requirements:
         playtime: 0
         balance: 300000
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Super]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Super]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Super]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Super]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Super]."
 
     super_ten:
-      name: "[10][Super]"
+      name: "[10][super]"
       next_rank: none  # Indicates this is the top rank in this chain
       requirements:
         playtime: 0
@@ -541,127 +541,127 @@ ranks:
   Ultra:
 
     ultra_zero:
-      name: "[0][Ultra]"
-      next_rank: "[1][Ultra]"
+      name: "[0][ultra]"
+      next_rank: "[1][ultra]"
       requirements:
         playtime: "30 minutes"
         balance: 0
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Ultra]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Ultra]."
 
     ultra_one:
-      name: "[1][Ultra]"
-      next_rank: "[2][Ultra]"
+      name: "[1][ultra]"
+      next_rank: "[2][ultra]"
       requirements:
         playtime: 0
         balance: 100
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Ultra]."
 
     ultra_two:
-      name: "[2][Ultra]"
-      next_rank: "[3][Ultra]"
+      name: "[2][ultra]"
+      next_rank: "[3][ultra]"
       requirements:
         playtime: 0
         balance: 500
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Ultra]."
 
     ultra_three:
-      name: "[3][Ultra]"
-      next_rank: "[4][Ultra]"
+      name: "[3][ultra]"
+      next_rank: "[4][ultra]"
       requirements:
         playtime: 0
         balance: 2500
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Ultra]."
 
     ultra_four:
-      name: "[4][Ultra]"
-      next_rank: "[5][Ultra]"
+      name: "[4][ultra]"
+      next_rank: "[5][ultra]"
       requirements:
         playtime: "1 day"
         balance: 10000
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Ultra]."
 
     ultra_five:
-      name: "[5][Ultra]"
-      next_rank: "[6][Ultra]"
+      name: "[5][ultra]"
+      next_rank: "[6][ultra]"
       requirements:
         playtime: 0
         balance: 25000
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Ultra]."
 
     ultra_six:
-      name: "[6][Ultra]"
-      next_rank: "[7][Ultra]"
+      name: "[6][ultra]"
+      next_rank: "[7][ultra]"
       requirements:
         playtime: 0
         balance: 50000
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Ultra]."
 
     ultra_seven:
-      name: "[7][Ultra]"
-      next_rank: "[8][Ultra]"
+      name: "[7][ultra]"
+      next_rank: "[8][ultra]"
       requirements:
         playtime: 0
         balance: 100000
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Ultra]."
 
     ultra_eight:
-      name: "[8][Ultra]"
-      next_rank: "[9][Ultra]"
+      name: "[8][ultra]"
+      next_rank: "[9][ultra]"
       requirements:
         playtime: 0
         balance: 200000
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Ultra]."
 
     ultra_nine:
-      name: "[9][Ultra]"
-      next_rank: "[10][Ultra]"
+      name: "[9][ultra]"
+      next_rank: "[10][ultra]"
       requirements:
         playtime: 0
         balance: 300000
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Ultra]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Ultra]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Ultra]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Ultra]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Ultra]."
 
     ultra_ten:
-      name: "[10][Ultra]"
+      name: "[10][ultra]"
       next_rank: none  # Indicates this is the top rank in this chain
       requirements:
         playtime: 0
@@ -675,104 +675,104 @@ ranks:
   Blockminer:
 
     blockminer_zero:
-      name: "[0][Blockminer]"
-      next_rank: "[1][Blockminer]"
+      name: "[0][blockminer]"
+      next_rank: "[1][blockminer]"
       requirements:
         playtime: "30 minutes"
         balance: 0
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Blockminer]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Blockminer]."
 
     blockminer_one:
-      name: "[1][Blockminer]"
-      next_rank: "[2][Blockminer]"
+      name: "[1][blockminer]"
+      next_rank: "[2][blockminer]"
       requirements:
         playtime: 0
         balance: 100
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Blockminer]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Blockminer]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Blockminer]."
 
     blockminer_two:
-      name: "[2][Blockminer]"
-      next_rank: "[3][Blockminer]"
+      name: "[2][blockminer]"
+      next_rank: "[3][blockminer]"
       requirements:
         playtime: 0
         balance: 500
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Blockminer]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Blockminer]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Blockminer]."
 
     blockminer_three:
-      name: "[3][Blockminer]"
-      next_rank: "[4][Blockminer]"
+      name: "[3][blockminer]"
+      next_rank: "[4][blockminer]"
       requirements:
         playtime: 0
         balance: 2500
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Blockminer]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Blockminer]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Blockminer]."
 
     blockminer_four:
-      name: "[4][Blockminer]"
-      next_rank: "[5][Blockminer]"
+      name: "[4][blockminer]"
+      next_rank: "[5][blockminer]"
       requirements:
         playtime: "1 day"
         balance: 10000
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Blockminer]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Blockminer]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Blockminer]."
 
     blockminer_five:
-      name: "[5][Blockminer]"
-      next_rank: "[6][Blockminer]"
+      name: "[5][blockminer]"
+      next_rank: "[6][blockminer]"
       requirements:
         playtime: 0
         balance: 25000
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Blockminer]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Blockminer]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Blockminer]."
 
     blockminer_six:
-      name: "[6][Blockminer]"
-      next_rank: "[7][Blockminer]"
+      name: "[6][blockminer]"
+      next_rank: "[7][blockminer]"
       requirements:
         playtime: 0
         balance: 50000
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Blockminer]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Blockminer]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Blockminer]."
 
     blockminer_seven:
-      name: "[7][Blockminer]"
-      next_rank: "[8][Blockminer]"
+      name: "[7][blockminer]"
+      next_rank: "[8][blockminer]"
       requirements:
         playtime: 0
         balance: 100000
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Blockminer]!"
-        broadcast: "&b&lRanks&f Conggratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Blockminer]."
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Blockminer]&f!"
+        deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Blockminer]."
 
     blockminer_eight:
-      name: "[8][Blockminer]"
-      next_rank: "[9][Blockminer]"
+      name: "[8][blockminer]"
+      next_rank: "[9][blockminer]"
       requirements:
         playtime: 0
         balance: 200000
@@ -780,11 +780,11 @@ ranks:
       messages:
         personal: "You successfully ranked up to [9][Blockminer]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Blockminer]."
+        deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Blockminer]."
 
     blockminer_nine:
-      name: "[9][Blockminer]"
-      next_rank: "[10][Blockminer]"
+      name: "[9][blockminer]"
+      next_rank: "[10][blockminer]"
       requirements:
         playtime: 0
         balance: 300000
@@ -792,10 +792,10 @@ ranks:
       messages:
         personal: "You successfully ranked up to [10][Blockminer]!"
         broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Blockminer]&f!"
-        deny: "&c&lRanks &cYou need have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Blockminer]."
+        deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Blockminer]."
 
     blockminer_ten:
-      name: "[10][Blockminer]"
+      name: "[10][blockminer]"
       next_rank: none  # Indicates this is the top rank in this chain
       requirements:
         playtime: 0
