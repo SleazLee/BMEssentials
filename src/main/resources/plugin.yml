@@ -183,6 +183,10 @@ commands:
     description: Displays command information.
     usage: /commands <command name>
 
+  version:
+    description: Check what chunk version you are in.
+    usage: /version
+
 
 
 permissions:

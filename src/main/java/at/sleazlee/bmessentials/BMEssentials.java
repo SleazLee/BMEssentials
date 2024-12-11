@@ -134,6 +134,10 @@ public class BMEssentials extends JavaPlugin {
             // Register the /wild command executor and tab completer.
             this.getCommand("wild").setExecutor(wildCommand);
             this.getCommand("wild").setTabCompleter(wildTabCompleter);
+
+            // Register the /version command
+            getCommand("version").setExecutor(new ChunkVersion(wildData, this));
+
         }
 
         // Spawn Systems
