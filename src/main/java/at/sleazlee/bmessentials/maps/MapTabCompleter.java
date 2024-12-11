@@ -13,10 +13,7 @@ public class MapTabCompleter implements TabCompleter {
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		if (args.length == 1) {
 			List<String> completions = new ArrayList<>();
-			completions.add("WildA");
-			completions.add("WildB");
-			completions.add("WildC");
-			completions.add("WildD");
+			completions.add("Blockminer");
 			return completions;
 		}
 		return null;
