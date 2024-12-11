@@ -2,27 +2,23 @@ package at.sleazlee.bmessentials.SpawnSystems;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class HealCommand implements CommandExecutor {
 
 	private final BMEssentials plugin;
-	private final List<String> processedPlayers = new ArrayList<>();
+	private final Map<UUID, Long> cooldowns = new HashMap<>();
+	private final long cooldownDuration = 90 * 60 * 1000; // 90 minutes in milliseconds
 	private final Random random = new Random();
 
 	public HealCommand(BMEssentials plugin) {
@@ -36,7 +32,7 @@ public class HealCommand implements CommandExecutor {
 			Player player = Bukkit.getPlayer(playerName);
 
 			if (player != null) {
-				checkAndExecute(playerName, player);
+				checkAndExecute(player);
 			} else {
 				sender.sendMessage("Player not found or not online.");
 			}
@@ -44,42 +40,48 @@ public class HealCommand implements CommandExecutor {
 		return true;
 	}
 
-	public void checkAndExecute(String playerName, Player player) {
-		if (!processedPlayers.contains(playerName)) {
-			// Run your code here (this will be executed if playerName is not found)
-			if (player.hasPermission("healingsprings.used")) {
-				String parsedMessage = PlaceholderAPI.setPlaceholders(player, "%luckperms_expiry_time_healingsprings.used%");
-				player.sendMessage("§5§lHealing Springs §fThe spring's power is not fully restored yet. Please try back later. §8(§e" + parsedMessage + "§8)");
-			} else {
-				// Heal the player
-				double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
-				player.setHealth(maxHealth);
+	private void checkAndExecute(Player player) {
+		UUID playerUUID = player.getUniqueId();
+		long currentTime = System.currentTimeMillis();
 
-				// Fill their hunger
-				player.setFoodLevel(20);
-
-				// Give them the regeneration effect for 10 seconds
-				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
-
-				// Play the sound "ENTITY_GLOW_SQUID_AMBIENT" to the player
-				player.playSound(player.getLocation(), Sound.ENTITY_GLOW_SQUID_AMBIENT, 1.0f, 1.0f);
-
-				player.sendMessage(getRandomMessage());
-
-				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-				String commandBuider = "lp user " + playerName + " permission settemp healingsprings.used true 1h30m";
-				Bukkit.dispatchCommand(console, commandBuider);
-			}
-
-			// Add playerName to the list
-			processedPlayers.add(playerName);
-
-			// Schedule a task to remove playerName from the list after 10 seconds
-			Scheduler.runLater(() -> processedPlayers.remove(playerName), 15 * 20);
+		if (cooldowns.containsKey(playerUUID) && cooldowns.get(playerUUID) > currentTime) {
+			// Player is on cooldown
+			long remainingTime = (cooldowns.get(playerUUID) - currentTime) / 1000; // Time in seconds
+			player.sendMessage("§5§lHealing Springs §fThe spring's power is not fully restored yet. Please try back later. §8(§e" + formatTime(remainingTime) + "§8)");
 		} else {
-			// Player name was found, do nothing
+			// Heal the player and apply effects
+			healPlayer(player);
 
+			// Set the cooldown expiration time
+			long cooldownExpiry = currentTime + cooldownDuration;
+			cooldowns.put(playerUUID, cooldownExpiry);
+
+			// Optionally schedule a task to clean up expired cooldowns (not strictly necessary)
+			Scheduler.runLater(() -> cooldowns.remove(playerUUID), (int) (cooldownDuration / 50)); // Convert milliseconds to ticks
 		}
+	}
+
+	private void healPlayer(Player player) {
+		// Heal the player
+		double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
+		player.setHealth(maxHealth);
+
+		// Fill their hunger
+		player.setFoodLevel(20);
+
+		// Give them the regeneration effect for 10 seconds
+		player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
+
+		// Play the sound "ENTITY_GLOW_SQUID_AMBIENT" to the player
+		player.playSound(player.getLocation(), Sound.ENTITY_GLOW_SQUID_AMBIENT, 1.0f, 1.0f);
+
+		player.sendMessage(getRandomMessage());
+	}
+
+	private String formatTime(long seconds) {
+		long minutes = seconds / 60;
+		seconds = seconds % 60;
+		return minutes + "m " + seconds + "s";
 	}
 
 	public String getRandomMessage() {
@@ -118,5 +120,4 @@ public class HealCommand implements CommandExecutor {
 		int randomIndex = random.nextInt(messageList.size()); // Generate a random index
 		return messageList.get(randomIndex); // Get the message at the random index
 	}
-
 }
