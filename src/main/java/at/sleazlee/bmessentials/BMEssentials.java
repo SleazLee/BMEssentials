@@ -4,6 +4,7 @@ import at.sleazlee.bmessentials.AltarSystem.AltarManager;
 import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
+import at.sleazlee.bmessentials.CommandQueue.CommandQueueTabCompleter;
 import at.sleazlee.bmessentials.Containers.*;
 import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
@@ -244,6 +245,7 @@ public class BMEssentials extends JavaPlugin {
 
             // Register the command executor
             getCommand("trophy").setExecutor(new TrophyCommand(this, trophiesDB, trophyGUI));
+            this.getCommand("trophy").setTabCompleter(new TrophyTabCompleter());
 
             // Register PlaceholderAPI expansion
             if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -262,6 +264,7 @@ public class BMEssentials extends JavaPlugin {
 
             // Register command executor
             this.getCommand("commandqueue").setExecutor(new CommandQueueCommandExecutor(this, queueManager));
+            getCommand("commandqueue").setTabCompleter(new CommandQueueTabCompleter());
 
             // Load commands from CommandQueue.yml
             queueManager.loadCommands();

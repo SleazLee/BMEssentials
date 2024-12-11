@@ -14,11 +14,18 @@ public class VotTabCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
             List<String> list = new ArrayList<>();
-            list.add("Day");
-            list.add("Night");
-            list.add("Clear");
-            list.add("Rain");
-            list.add("Thunder");
+
+            if (VoteManager.isVoteInProgress()) {
+                list.add("Yes");
+                list.add("No");
+            }
+            else {
+                list.add("Day");
+                list.add("Night");
+                list.add("Clear");
+                list.add("Rain");
+                list.add("Thunder");
+            }
             return list;
         }
 

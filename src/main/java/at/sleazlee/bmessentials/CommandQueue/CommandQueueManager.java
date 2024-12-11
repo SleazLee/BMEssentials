@@ -71,6 +71,26 @@ public class CommandQueueManager {
     }
 
     /**
+     * Returns the number of commands currently loaded.
+     *
+     * @return the command count.
+     */
+    public int getCommandCount() {
+        return (commands == null) ? 0 : commands.size();
+    }
+
+    /**
+     * Resets the CommandQueue.yml to its default state.
+     */
+    public void resetToDefault() {
+        File commandQueueFile = new File(plugin.getDataFolder(), "CommandQueue.yml");
+        if (commandQueueFile.exists()) {
+            commandQueueFile.delete();
+        }
+        createDefaultCommandQueueFile(commandQueueFile);
+    }
+
+    /**
      * Executes the queued commands either as a player or the console.
      *
      * @param executorType   The type of executor ("player" or "console").

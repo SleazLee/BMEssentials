@@ -41,31 +41,56 @@ public class CommandQueueCommandExecutor implements CommandExecutor {
             return true;
         }
 
-        // Validate command arguments
-        // Now expecting: /commandqueue run <player/console> <delayInSeconds>
-        if (args.length != 3 || !args[0].equalsIgnoreCase("run") ||
-                (!args[1].equalsIgnoreCase("player") && !args[1].equalsIgnoreCase("console"))) {
-            sender.sendMessage(ChatColor.RED + "Usage: /commandqueue run <player/console> <delayInSeconds>");
+        // If no args provided
+        if (args.length == 0) {
+            sender.sendMessage(ChatColor.RED + "Usage: /commandqueue [run|reload|clean]");
             return true;
         }
 
-        String executorType = args[1].toLowerCase();
+        // Handle /commandqueue reload
+        if (args[0].equalsIgnoreCase("reload")) {
+            manager.loadCommands();
+            int commandCount = manager.getCommandCount();
+            sender.sendMessage(ChatColor.GREEN + "CommandQueue reloaded! Found " + commandCount + " commands.");
+            return true;
+        }
 
-        int delayInSeconds;
-        try {
-            delayInSeconds = Integer.parseInt(args[2]);
-            if (delayInSeconds < 0) {
-                sender.sendMessage(ChatColor.RED + "Delay must be a non-negative integer.");
+        // Handle /commandqueue clean
+        if (args[0].equalsIgnoreCase("clean")) {
+            manager.resetToDefault();
+            manager.loadCommands();
+            int commandCount = manager.getCommandCount();
+            sender.sendMessage(ChatColor.GREEN + "CommandQueue.yml has been reset to default. Found " + commandCount + " commands.");
+            return true;
+        }
+
+        // Handle /commandqueue run <player/console> <delayInSeconds>
+        if (args[0].equalsIgnoreCase("run")) {
+            if (args.length != 3 ||
+                    (!args[1].equalsIgnoreCase("player") && !args[1].equalsIgnoreCase("console"))) {
+                sender.sendMessage(ChatColor.RED + "Usage: /commandqueue run <player/console> <delayInSeconds>");
                 return true;
             }
-        } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.RED + "Please provide a valid integer for the delay in seconds.");
+
+            String executorType = args[1].toLowerCase();
+            int delayInSeconds;
+            try {
+                delayInSeconds = Integer.parseInt(args[2]);
+                if (delayInSeconds < 0) {
+                    sender.sendMessage(ChatColor.RED + "Delay must be a non-negative integer.");
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "Please provide a valid integer for the delay in seconds.");
+                return true;
+            }
+
+            manager.runCommands(executorType, sender, delayInSeconds);
             return true;
         }
 
-        // Execute the command queue with the specified delay
-        manager.runCommands(executorType, sender, delayInSeconds);
-
+        // If command not recognized
+        sender.sendMessage(ChatColor.RED + "Unknown subcommand. Usage: /commandqueue [run|reload|clean]");
         return true;
     }
 }

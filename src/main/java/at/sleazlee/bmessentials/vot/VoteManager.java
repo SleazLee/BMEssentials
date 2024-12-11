@@ -33,7 +33,7 @@ public class VoteManager {
     }
 
     private final Set<UUID> votedPlayers = new HashSet<>();
-    private boolean voteInProgress = false;
+    private static boolean voteInProgress = false;
     private int yesVotes = 0;
     private int noVotes = 0;
     private String voteOption;
@@ -523,7 +523,7 @@ public class VoteManager {
      *
      * @return true if a vote is in progress, false otherwise
      */
-    public boolean isVoteInProgress() {
+    public static boolean isVoteInProgress() {
         return voteInProgress;
     }
 
