@@ -67,7 +67,7 @@ public class MapCommand implements CommandExecutor {
 
 				TextComponent baseText = new TextComponent("§a§lMaps §7Here's the link: §2");
 				// Create a text component with the desired message
-				TextComponent clickableText = new TextComponent("§2§lClick Me!");
+				TextComponent clickableText = new TextComponent("§2§lClick Me§7!");
 				// Add a click event to the message to open the URL
 				clickableText.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, mapLink));
 				// Append the clickable text to the base text
