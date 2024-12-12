@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class ChunkVersion implements CommandExecutor {
 
-    private final WildData wildData;
+    private static WildData wildData;
     private final JavaPlugin plugin;
 
     /**
@@ -24,7 +24,7 @@ public class ChunkVersion implements CommandExecutor {
      * @param plugin   The main plugin instance.
      */
     public ChunkVersion(WildData wildData, JavaPlugin plugin) {
-        this.wildData = wildData;
+        ChunkVersion.wildData = wildData;
         this.plugin = plugin;
     }
 
@@ -70,15 +70,33 @@ public class ChunkVersion implements CommandExecutor {
      * @param z The player's Z coordinate.
      * @return The version string if found; otherwise "1.16" as a default.
      */
-    public String getVersionFromLocation(double x, double z) {
-        // First, check the special rectangular area.
-        double minX = 27;
-        double maxX = 523;
-        double minZ = 30;
-        double maxZ = 520;
+    public static String getVersionFromLocation(double x, double z) {
+        // Spawn Inner
+        double spawnInnerMinX = 160;
+        double spawnInnerMaxX = 337;
+        double spawnInnerMinZ = 160;
+        double spawnInnerMaxZ = 329;
 
-        if (x >= minX && x <= maxX && z >= minZ && z <= maxZ) {
-            return "1.14";
+        // shops
+        double shopsMinX = 70;
+        double shopsMaxX = 428;
+        double shopsMinZ = 66;
+        double shopsMaxZ = 424;
+
+        // Spawn Inner
+        double spawnOuterMinX = 21;
+        double spawnOuterMaxX = 505;
+        double spawnOuterMinZ = 3;
+        double spawnOuterMaxZ = 514;
+
+        if (x >= spawnInnerMinX && x <= spawnInnerMaxX && z >= spawnInnerMinZ && z <= spawnInnerMaxZ) {
+            return "spawn";
+        }
+        if (x >= shopsMinX && x <= shopsMaxX && z >= shopsMinZ && z <= shopsMaxZ) {
+            return "shops";
+        }
+        if (x >= spawnOuterMinX && x <= spawnOuterMaxX && z >= spawnOuterMinZ && z <= spawnOuterMaxZ) {
+            return "spawn";
         }
 
         // If not in the special area, check the configured version bounds.

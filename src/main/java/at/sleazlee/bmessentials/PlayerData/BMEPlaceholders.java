@@ -1,7 +1,9 @@
 package at.sleazlee.bmessentials.PlayerData;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.wild.ChunkVersion;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 import java.text.SimpleDateFormat;
@@ -102,6 +104,20 @@ public class BMEPlaceholders extends PlaceholderExpansion {
                 return "";
             }
             return ChatColor.translateAlternateColorCodes('&', centeredName);
+        }
+
+        // Handle the %bme_chunkinfo% placeholder
+        if (identifier.equals("chunkinfo")) {
+
+            // Get player's current location.
+            double x = player.getLocation().getX();
+            double z = player.getLocation().getZ();
+
+            String ver = ChunkVersion.getVersionFromLocation(x,z);
+            if (ver == null) {
+                return "";
+            }
+            return ver;
         }
 
         // If the placeholder is not recognized, return null
