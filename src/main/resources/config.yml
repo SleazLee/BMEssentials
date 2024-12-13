@@ -37,12 +37,12 @@ Systems:
     Bounds:
       1:
         Version: 1.19
-        Lower: 535
-        Upper: 19945
+        Lower: 0
+        Upper: 19965
       2:
         Version: 1.21
-        Lower: 20530
-        Upper: 29675
+        Lower: 19965
+        Upper: 29701
 
       # Add new versions as needed
       # 3:
