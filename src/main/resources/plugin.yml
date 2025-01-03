@@ -187,6 +187,10 @@ commands:
     description: Check what chunk version you are in.
     usage: /version
 
+  bmrestart:
+    description: Restart the server with a specified timer.
+    usage: /bmrestart <30|15|5|1>
+
 
 
 permissions:

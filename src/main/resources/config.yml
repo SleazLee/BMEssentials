@@ -82,19 +82,19 @@ Systems:
 
     Altars:
       HealingSprings:
-        x: -247
+        x: 201
         y: 61
-        z: -108
+        z: 164
         direction: WEST
       WishingWell:
-        x: -238
+        x: 210
         y: 71
-        z: 37
+        z: 309
         direction: NORTH
       Obelisk:
-        x: -125
+        x: 323
         y: 71
-        z: 16
+        z: 288
         direction: EAST
 
   # Enables all the common commands.

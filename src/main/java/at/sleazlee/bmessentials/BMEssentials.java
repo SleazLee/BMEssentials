@@ -164,6 +164,9 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("playtime").setExecutor(new CommonCommands(this));
             this.getCommand("lag").setExecutor(new CommonCommands(this));
             this.getCommand("bmdiscord").setExecutor(new CommonCommands(this));
+
+            // Register the /bmrestart command executor
+            this.getCommand("bmrestart").setExecutor(new BMRestart(this));
         }
 
         // Virtual Containers System
