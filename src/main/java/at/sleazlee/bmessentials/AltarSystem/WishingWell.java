@@ -3,140 +3,216 @@ package at.sleazlee.bmessentials.AltarSystem;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.*;
-import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
+import static at.sleazlee.bmessentials.art.Art.createDustOptions;
+
+/**
+ * Controls the animation for the "Wishing Well" altar.
+ */
 public class WishingWell {
 
-    private static final int STEP_1_DURATION_TICKS = 80; // 4 seconds (Step 1: Spiral duration)
-    private static final int STEP_2_BALL_FORM_DURATION = 40; // 2 seconds to form the ball at the top (50 ticks)
-    private static final double SPIRAL_RADIUS = 0.5; // The radius of the spiral
-    private static final double HEIGHT_CHANGE = 3.0; // Height of the spiral (3 blocks)
-    private static final int PARTICLE_COUNT = 60; // Number of particles in the spiral
-    private static final double SPIRAL_ROTATIONS = 2.0; // Number of full rotations in the spiral
-
-    private static boolean animationInProgress = false; // Prevents reactivating while already running
+    private static boolean altarActivated = false;
 
     /**
-     * Plays the Wishing Well animation starting from Step 1 (Spiraling particles).
-     *
-     * @param plugin       The plugin instance.
-     * @param altarLocation The location of the altar being activated.
+     * Call this when the altar starts its animation sequence.
      */
-    public static void playWishingWellAnimation(BMEssentials plugin, Location altarLocation) {
-        // Ensure we don't start multiple animations simultaneously
-        if (animationInProgress) return;
-        animationInProgress = true;
-
-        World world = altarLocation.getWorld();
-        Location startLocation = altarLocation.clone().add(0.5, 0.0, 0.5); // Centered above the Altar
-        Location stopLocation = altarLocation.clone().add(0.5, 3.0, 0.5); // The ball location (3 blocks above)
-
-        // Step 1: Create a rising spiral of particles
-        for (int i = 0; i < PARTICLE_COUNT; i++) {
-            final int currentStep = i;
-
-            // Schedule each particle's position at the appropriate time
-            Scheduler.runLater(() -> {
-                // Calculate the progress of the particle (0 to 1)
-                double progress = (double) currentStep / PARTICLE_COUNT;
-
-                // Calculate the height (starts at well level, rises to 3 blocks)
-                double currentHeight = progress * HEIGHT_CHANGE;
-
-                // Calculate the angle of rotation for the spiral (0 to 2π)
-                double angle = progress * SPIRAL_ROTATIONS * 2 * Math.PI;
-
-                // Calculate x and z offsets for the spiral
-                double offsetX = SPIRAL_RADIUS * Math.cos(angle);
-                double offsetZ = SPIRAL_RADIUS * Math.sin(angle);
-
-                // Calculate the particle position
-                Location particleLocation = startLocation.clone().add(offsetX, currentHeight, offsetZ);
-
-                // Spawn the particle (end_rod)
-                world.spawnParticle(Particle.END_ROD, particleLocation, 2, 0, 0, 0, 0);
-
-                // Optional: Play sound effect when particles start
-                if (currentStep == 0) {
-                    world.playSound(startLocation, Sound.BLOCK_END_PORTAL_FRAME_FILL, 1f, 1f);
-                }
-            }, (STEP_1_DURATION_TICKS / PARTICLE_COUNT) * currentStep);
-        }
-
-        // Schedule transition to Step 2 (Pause and form magic ball at the top)
-        Scheduler.runLater(() -> pauseAndFormBall(plugin, stopLocation), STEP_1_DURATION_TICKS);
+    public static void activateWishingWellAltar() {
+        altarActivated = true;
     }
 
     /**
-     * Step 2: Pauses at the top and forms a glowing ball of particles.
-     *
-     * @param plugin       The plugin instance.
-     * @param ballLocation The location where the ball forms (3 blocks above the altar).
+     * Call this when the altar animation is complete.
      */
-    private static void pauseAndFormBall(BMEssentials plugin, Location ballLocation) {
-        World world = ballLocation.getWorld();
-
-        // Gradually form the glowing ball over a few seconds
-        for (int i = 0; i < STEP_2_BALL_FORM_DURATION; i++) {
-            final int currentStep = i;
-
-            Scheduler.runLater(() -> {
-                // Generate particles in a shrinking spherical pattern
-                double radius = 0.3; // Slightly larger radius for the forming ball
-                int particleDensity = 10; // More particles for denser appearance
-
-                for (double theta = 0; theta <= Math.PI; theta += Math.PI / particleDensity) {
-                    for (double phi = 0; phi <= 2 * Math.PI; phi += Math.PI / particleDensity) {
-                        double x = radius * Math.sin(theta) * Math.cos(phi);
-                        double y = radius * Math.sin(theta) * Math.sin(phi);
-                        double z = radius * Math.cos(theta);
-                        Location particleLocation = ballLocation.clone().add(x, y, z);
-                        world.spawnParticle(Particle.END_ROD, particleLocation, 1, 0, 0, 0, 0);
-                    }
-                }
-
-                // Optional: Add sound during ball formation
-                if (currentStep == STEP_2_BALL_FORM_DURATION / 2) {
-                    world.playSound(ballLocation, Sound.BLOCK_BEACON_AMBIENT, 1f, 1f);
-                }
-            }, currentStep * 2); // 2 ticks between each iteration
-        }
-
-        // Schedule transition to Step 3 (Shoot into well)
-        Scheduler.runLater(() -> shootIntoWell(plugin, ballLocation), STEP_2_BALL_FORM_DURATION);
+    public static void deactivateWishingWellAltar() {
+        altarActivated = false;
     }
 
     /**
-     * Step 3: Shoots the particle ball into the center of the Wishing Well.
+     * The main method that plays the Wishing Well altar animation.
      *
-     * @param plugin       The plugin instance.
-     * @param startLocation The starting location (where the ball is formed).
+     * @param plugin          Your main plugin instance.
+     * @param altarBlockLocation The block location of the altar (X=210, Y=71, Z=309).
      */
-    private static void shootIntoWell(BMEssentials plugin, Location startLocation) {
-        World world = startLocation.getWorld();
-        Location wellCenter = startLocation.clone().add(-3, -3, 0); // Example well target (adjust as needed)
-        int steps = 20; // Smooth steps for the particle beam
+    public static void playWishingWellAnimation(BMEssentials plugin, Location altarBlockLocation) {
+        // Mark altar as active (if you want an ambient effect like HealingSprings).
+        activateWishingWellAltar();
 
-        for (int i = 0; i <= steps; i++) {
-            final int currentStep = i;
+        // ------------------------------------------------------------------------------------
+        // 1) Define key points and overall timing
+        // ------------------------------------------------------------------------------------
+        // Altar block is at  (210, 71, 309). We'll assume altarBlockLocation is already that.
+        // Well center is at  (207, 71, 312).
+        // We’ll spawn our spark a bit more "centered" on the block, so add 0.5 to X/Z.
+        // Then we’ll animate a small spiral going upward 1.5 blocks over ~3 seconds,
+        // and afterwards have it quickly move to the well in ~2 seconds.
 
+        // Some location references:
+        World world = altarBlockLocation.getWorld();
+
+        // Adjust to the "center" of the block so it looks nicer
+        Location altarCenter = altarBlockLocation.clone().add(0.5, 1, 0.5);
+
+        // The top of the spiral will be 1.5 blocks above the altar
+        double spiralHeight = 1.5;
+
+        // The well center
+        Location wellCenter = new Location(world, 207.5, 72, 312.5);
+
+        // Define how many ticks we want each phase to take
+        int spiralDurationTicks = 60;   // ~3 seconds at 20tps
+        int travelDurationTicks = 40;   // ~2 seconds
+        // This totals ~5 seconds for the spark to reach the well.
+
+        // ------------------------------------------------------------------------------------
+        // 2) Spiral the spark upward
+        // ------------------------------------------------------------------------------------
+        // We'll schedule 60 small tasks (one per tick) to create the spiral effect.
+        for (int i = 0; i <= spiralDurationTicks; i++) {
+            final int step = i;
             Scheduler.runLater(() -> {
-                // Calculate the position of the particle along the trajectory
-                double progress = (double) currentStep / steps;
-                double x = startLocation.getX() + (wellCenter.getX() - startLocation.getX()) * progress;
-                double y = startLocation.getY() + (wellCenter.getY() - startLocation.getY()) * progress;
-                double z = startLocation.getZ() + (wellCenter.getZ() - startLocation.getZ()) * progress;
+                if (!altarActivated) return;
 
-                Location particleLocation = new Location(world, x, y, z);
+                // Angle to revolve the spark
+                double angle = 2 * Math.PI * step / 15;  // more revolutions if you like
+                double radius = 0.4;                    // how wide the spiral is
 
-                // Spawn particles to simulate the shooting effect
-                world.spawnParticle(Particle.FLASH, particleLocation, 5, 0.01, 0.01, 0.01, 0.02);
+                // Calculate offsets
+                double dx = radius * Math.cos(angle);
+                double dz = radius * Math.sin(angle);
 
-                // Play sound effect when the particle reaches the well
-                if (currentStep == steps) {
-                    world.playSound(wellCenter, Sound.ENTITY_GENERIC_EXPLODE, 1f, 0.8f);
-                }
-            }, currentStep * 2); // Spread out steps over 40 ticks (smooth beam)
+                // Gradually move up to 1.5 blocks over the spiralDuration
+                double dy = (spiralHeight / spiralDurationTicks) * step;
+
+                // Current location of the spark
+                double x = altarCenter.getX() + dx;
+                double y = altarCenter.getY() + dy;
+                double z = altarCenter.getZ() + dz;
+
+                // Spawn a yellow dust particle (you could also use Particle.END_ROD or similar)
+                world.spawnParticle(
+                        Particle.DUST,
+                        x, y, z,
+                        0, 0, 0, 0,
+                        createDustOptions("#FFFF55")  // bright yellow
+                );
+            }, step);
         }
+
+        // ------------------------------------------------------------------------------------
+        // 3) Move spark from top of spiral to the well
+        // ------------------------------------------------------------------------------------
+        // After the spiral is done, in the next 40 ticks (2 seconds), we move the spark to the well.
+        Scheduler.runLater(() -> {
+            // The spark’s start location is the last point in the spiral
+            final Location sparkStart = altarCenter.clone().add(0, spiralHeight, 0);
+
+            for (int i = 0; i <= travelDurationTicks; i++) {
+                final int step = i;
+                Scheduler.runLater(() -> {
+                    if (!altarActivated) return;
+
+                    // Linear interpolation from sparkStart -> wellCenter
+                    double fraction = (double) step / travelDurationTicks;
+
+                    double x = sparkStart.getX() + (wellCenter.getX() - sparkStart.getX()) * fraction;
+                    double y = sparkStart.getY() + (wellCenter.getY() - sparkStart.getY()) * fraction;
+                    double z = sparkStart.getZ() + (wellCenter.getZ() - sparkStart.getZ()) * fraction;
+
+                    // Spawn a yellow dust or magic particle
+                    world.spawnParticle(
+                            Particle.DUST,
+                            x, y, z,
+                            0, 0, 0, 0,
+                            createDustOptions("#FFFF55")
+                    );
+                }, step);
+            }
+
+        }, spiralDurationTicks);  // start after the spiral finishes
+
+        // ------------------------------------------------------------------------------------
+        // 4) Play a jingle once spark arrives at the well
+        // ------------------------------------------------------------------------------------
+        Scheduler.runLater(() -> {
+            if (!altarActivated) return;
+
+            // Simple "level up" sound or choose another jingle
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                onlinePlayer.playSound(wellCenter, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.AMBIENT, 1.0f, 1.0f);
+            }
+        }, spiralDurationTicks + travelDurationTicks);
+
+        // ------------------------------------------------------------------------------------
+        // 5) Purple mist comes out of The Well, then “strikes” the altar
+        // ------------------------------------------------------------------------------------
+        // We’ll do ~1 second (20 ticks) of purple mist rising from the well.
+        Scheduler.runLater(() -> {
+            if (!altarActivated) return;
+
+            for (int i = 0; i <= 20; i++) {
+                final int step = i;
+                Scheduler.runLater(() -> {
+                    // Slowly move upward from wellCenter
+                    double y = wellCenter.getY() + 0.3 + (0.02 * step);
+                    world.spawnParticle(
+                            Particle.DUST,
+                            wellCenter.getX(),
+                            y,
+                            wellCenter.getZ(),
+                            0, 0, 0, 0,
+                            createDustOptions("#A020F0") // purple color
+                    );
+                }, step);
+            }
+        }, spiralDurationTicks + travelDurationTicks + 5L);
+        // (start a small offset (5 ticks) after spark arrival to make it look smooth)
+
+        // After the mist forms, we quickly shoot a burst from the well to the altar
+        // then spawn the reward item (the diamond placeholder).
+        Scheduler.runLater(() -> {
+            if (!altarActivated) return;
+
+            // "Strike" effect: a quick line of purple from well -> altar
+            // We'll do ~10 small steps over 10 ticks
+            int strikeSteps = 10;
+            for (int i = 0; i <= strikeSteps; i++) {
+                final int step = i;
+                Scheduler.runLater(() -> {
+                    double fraction = (double) step / strikeSteps;
+                    double x = wellCenter.getX() + (altarCenter.getX() - wellCenter.getX()) * fraction;
+                    double y = (wellCenter.getY() + 1) + (altarCenter.getY() - wellCenter.getY()) * fraction;
+                    double z = wellCenter.getZ() + (altarCenter.getZ() - wellCenter.getZ()) * fraction;
+
+                    world.spawnParticle(
+                            Particle.DUST,
+                            x, y, z,
+                            0, 0, 0, 0,
+                            createDustOptions("#A020F0")
+                    );
+                }, step);
+            }
+        }, spiralDurationTicks + travelDurationTicks + 25L);
+
+        // ------------------------------------------------------------------------------------
+        // 6) Spawn the “prize” (the diamond placeholder) at the altar
+        // ------------------------------------------------------------------------------------
+        Scheduler.runLater(() -> {
+            if (!altarActivated) return;
+
+            // "Poof" at altar, spawn the placeholder item
+            world.spawnParticle(Particle.LARGE_SMOKE, altarCenter, 10, 0.2, 0.2, 0.2, 0.01);
+            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                // A small “poof” or explosion sound
+                onlinePlayer.playSound(altarCenter, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.AMBIENT, 0.2f, 1.0f);
+            }
+
+            // Finally show the item animation at the altar
+            Location aboveAltarCenter = altarBlockLocation.clone().add(0, 1, 0);
+            AltarManager.showItemAnimation(plugin, aboveAltarCenter, world);
+
+            // Deactivate the altar so ambient (if any) returns to default
+            deactivateWishingWellAltar();
+        }, spiralDurationTicks + travelDurationTicks + 35L);
     }
 }
