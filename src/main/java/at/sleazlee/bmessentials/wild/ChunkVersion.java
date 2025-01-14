@@ -8,29 +8,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * The ChunkVersion command class allows players to check which version-generated chunk they are in.
- * If their current coordinates fit within the defined bounds of a version, it reports that version.
- * Otherwise, it defaults to "1.16".
+ * The /version command class determines which "version ring" (if any)
+ * the player's current location falls into, based on the "Bounds" config.
  */
 public class ChunkVersion implements CommandExecutor {
 
-    private static WildData wildData;
-    private final JavaPlugin plugin;
+    private static WildData wildData = null;   // holds version bounds
+    private final JavaPlugin plugin;   // main plugin reference (for logging, etc.)
 
     /**
-     * Constructs a ChunkVersion object.
+     * Constructs a ChunkVersion object to check chunk versions.
      *
-     * @param wildData The WildData instance providing version bounds.
-     * @param plugin   The main plugin instance.
+     * @param wildData The WildData containing version bounds
+     * @param plugin   The main plugin instance
      */
     public ChunkVersion(WildData wildData, JavaPlugin plugin) {
-        ChunkVersion.wildData = wildData;
+        this.wildData = wildData;
         this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // Check if the sender is a player.
+        // Must be a player to use this command
         if (!(sender instanceof Player)) {
             sender.sendMessage("§cThis command can only be used by a player.");
             return true;
@@ -38,87 +37,59 @@ public class ChunkVersion implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // Get player's current location.
+        // Grab player's location and world
         double x = player.getLocation().getX();
         double z = player.getLocation().getZ();
         String world = player.getWorld().getName();
 
-        // Check if player is in the "world".
-        if (!world.equals("world")) {
-            String message = "<#ff3300><bold>Ver</bold> <red>You are not currently in the wild.";
-            player.sendMessage(MiniMessage.miniMessage().deserialize(message));
+        // If not in "world", we might not care
+        if (!world.equalsIgnoreCase("world")) {
+            String msg = "<red>You are not in the main overworld. No version check here.";
+            player.sendMessage(MiniMessage.miniMessage().deserialize(msg));
             return true;
         }
 
-        // Determine which version (if any) the player is currently in.
+        // Determine which version ring (if any) the player is currently in
         String version = getVersionFromLocation(x, z);
 
-        // Use MiniMessage for formatting:
+        // Construct a MiniMessage to show the result
         String message = "<yellow><bold>Ver</bold></yellow> <gray>You are currently in a <yellow>"
-                + version + "</yellow> generated chunk.";
+                + version + "</yellow> region.";
         player.sendMessage(MiniMessage.miniMessage().deserialize(message));
 
         return true;
     }
 
-
     /**
-     * Determines the version of the chunk at the given coordinates by first checking if they are within a defined
-     * rectangular region. If so, returns "1.14". If not, it checks against configured version bounds.
+     * Determines which version ring a given (x, z) coordinate belongs to,
+     * based on Chebyshev distance from (256, 256).
      *
-     * @param x The player's X coordinate.
-     * @param z The player's Z coordinate.
-     * @return The version string if found; otherwise "1.16" as a default.
+     * <p>Chebyshev distance = max(|x - centerX|, |z - centerZ|).</p>
+     *
+     * @param x The player's X coordinate
+     * @param z The player's Z coordinate
+     * @return The version string if found, otherwise "unmatched"
      */
     public static String getVersionFromLocation(double x, double z) {
-        // Spawn Inner
-        double spawnInnerMinX = 160;
-        double spawnInnerMaxX = 337;
-        double spawnInnerMinZ = 160;
-        double spawnInnerMaxZ = 329;
+        // 1) Compute the "square distance" from the plugin's center
+        double centerX = wildData.getCenterX();
+        double centerZ = wildData.getCenterZ();
 
-        // shops
-        double shopsMinX = 70;
-        double shopsMaxX = 428;
-        double shopsMinZ = 66;
-        double shopsMaxZ = 424;
+        double distX = Math.abs(x - centerX);
+        double distZ = Math.abs(z - centerZ);
+        double distance = Math.max(distX, distZ);
 
-        // Spawn Inner
-        double spawnOuterMinX = 21;
-        double spawnOuterMaxX = 505;
-        double spawnOuterMinZ = 3;
-        double spawnOuterMaxZ = 514;
-
-        if (x >= spawnInnerMinX && x <= spawnInnerMaxX && z >= spawnInnerMinZ && z <= spawnInnerMaxZ) {
-            return "spawn";
-        }
-        if (x >= shopsMinX && x <= shopsMaxX && z >= shopsMinZ && z <= shopsMaxZ) {
-            return "shops";
-        }
-        if (x >= spawnOuterMinX && x <= spawnOuterMaxX && z >= spawnOuterMinZ && z <= spawnOuterMaxZ) {
-            return "spawn";
-        }
-
-        // If not in the special area, check the configured version bounds.
-        double absX = Math.abs(x);
-        double absZ = Math.abs(z);
-
+        // 2) Check each version ring to see if distance falls in [lower, upper]
         for (String version : wildData.getVersions()) {
-            WildData.CoordinateBounds bounds = wildData.getBounds(version);
-            if (bounds != null) {
-                double lower = bounds.getLower();
-                double upper = bounds.getUpper();
+            WildData.CoordinateBounds cb = wildData.getBounds(version);
+            if (cb == null) continue;
 
-                boolean withinX = absX >= lower && absX <= upper;
-                boolean withinZ = absZ >= lower && absZ <= upper;
-
-                if (withinX && withinZ) {
-                    return version;
-                }
+            if (distance >= cb.getLower() && distance <= cb.getUpper()) {
+                return version; // Found a match
             }
         }
 
-        // If no match was found, return default version "1.16"
-        return "1.16";
+        // If no ring matched, return "unmatched"
+        return "unmatched";
     }
 }

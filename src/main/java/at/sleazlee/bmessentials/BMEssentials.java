@@ -129,7 +129,7 @@ public class BMEssentials extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new NoFallDamage(this), this);
 
             // Instantiate the command executor and tab completer, passing the WildData instance.
-            WildCommand wildCommand = new WildCommand(wildData, this);
+            WildCommand wildCommand = new WildCommand(config, wildData, this);
             WildTabCompleter wildTabCompleter = new WildTabCompleter(wildData);
 
             // Register the /wild command executor and tab completer.

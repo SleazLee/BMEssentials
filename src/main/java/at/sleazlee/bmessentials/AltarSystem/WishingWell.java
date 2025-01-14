@@ -31,27 +31,20 @@ public class WishingWell {
     /**
      * The main method that plays the Wishing Well altar animation.
      *
-     * @param plugin          Your main plugin instance.
+     * @param plugin             Your main plugin instance.
      * @param altarBlockLocation The block location of the altar (X=210, Y=71, Z=309).
      */
     public static void playWishingWellAnimation(BMEssentials plugin, Location altarBlockLocation) {
-        // Mark altar as active (if you want an ambient effect like HealingSprings).
+        // Mark altar as active
         activateWishingWellAltar();
 
         // ------------------------------------------------------------------------------------
         // 1) Define key points and overall timing
         // ------------------------------------------------------------------------------------
-        // Altar block is at  (210, 71, 309). We'll assume altarBlockLocation is already that.
-        // Well center is at  (207, 71, 312).
-        // We’ll spawn our spark a bit more "centered" on the block, so add 0.5 to X/Z.
-        // Then we’ll animate a small spiral going upward 1.5 blocks over ~3 seconds,
-        // and afterwards have it quickly move to the well in ~2 seconds.
-
-        // Some location references:
         World world = altarBlockLocation.getWorld();
 
-        // Adjust to the "center" of the block so it looks nicer
-        Location altarCenter = altarBlockLocation.clone().add(0.5, 1, 0.5);
+        // Adjust to the "center" of the block so it looks nicer and slightly above the block
+        Location altarCenter = altarBlockLocation.clone().add(0.5, 1.0, 0.5);
 
         // The top of the spiral will be 1.5 blocks above the altar
         double spiralHeight = 1.5;
@@ -65,17 +58,20 @@ public class WishingWell {
         // This totals ~5 seconds for the spark to reach the well.
 
         // ------------------------------------------------------------------------------------
-        // 2) Spiral the spark upward
+        // 2) Spiral the spark upward with color shifting from yellow to red
         // ------------------------------------------------------------------------------------
-        // We'll schedule 60 small tasks (one per tick) to create the spiral effect.
+        // Define start and end colors for the spark
+        Color startColor = Color.fromRGB(0xFF, 0xEA, 0x29); // #ffea29 (yellow)
+        Color endColor = Color.fromRGB(0xFF, 0x38, 0x38);   // #ff3838 (red)
+
         for (int i = 0; i <= spiralDurationTicks; i++) {
             final int step = i;
             Scheduler.runLater(() -> {
                 if (!altarActivated) return;
 
                 // Angle to revolve the spark
-                double angle = 2 * Math.PI * step / 15;  // more revolutions if you like
-                double radius = 0.4;                    // how wide the spiral is
+                double angle = 2 * Math.PI * step / 15;  // Adjust revolutions as needed
+                double radius = 0.4;                    // Spiral radius
 
                 // Calculate offsets
                 double dx = radius * Math.cos(angle);
@@ -89,20 +85,23 @@ public class WishingWell {
                 double y = altarCenter.getY() + dy;
                 double z = altarCenter.getZ() + dz;
 
-                // Spawn a yellow dust particle (you could also use Particle.END_ROD or similar)
+                // Interpolate color based on the current step
+                Color currentColor = interpolateColor(startColor, endColor, (double) step / spiralDurationTicks);
+                String hexColor = String.format("#%02X%02X%02X", currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
+
+                // Spawn a dust particle with the interpolated color
                 world.spawnParticle(
                         Particle.DUST,
                         x, y, z,
                         0, 0, 0, 0,
-                        createDustOptions("#FFFF55")  // bright yellow
+                        createDustOptions(hexColor)
                 );
             }, step);
         }
 
         // ------------------------------------------------------------------------------------
-        // 3) Move spark from top of spiral to the well
+        // 3) Move spark from top of spiral to the well with continued color shifting
         // ------------------------------------------------------------------------------------
-        // After the spiral is done, in the next 40 ticks (2 seconds), we move the spark to the well.
         Scheduler.runLater(() -> {
             // The spark’s start location is the last point in the spiral
             final Location sparkStart = altarCenter.clone().add(0, spiralHeight, 0);
@@ -119,12 +118,16 @@ public class WishingWell {
                     double y = sparkStart.getY() + (wellCenter.getY() - sparkStart.getY()) * fraction;
                     double z = sparkStart.getZ() + (wellCenter.getZ() - sparkStart.getZ()) * fraction;
 
-                    // Spawn a yellow dust or magic particle
+                    // Continue color shifting from yellow to red during travel
+                    Color currentColor = interpolateColor(startColor, endColor, (double) step / travelDurationTicks);
+                    String hexColor = String.format("#%02X%02X%02X", currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue());
+
+                    // Spawn a dust particle with the interpolated color
                     world.spawnParticle(
                             Particle.DUST,
                             x, y, z,
                             0, 0, 0, 0,
-                            createDustOptions("#FFFF55")
+                            createDustOptions(hexColor)
                     );
                 }, step);
             }
@@ -137,7 +140,7 @@ public class WishingWell {
         Scheduler.runLater(() -> {
             if (!altarActivated) return;
 
-            // Simple "level up" sound or choose another jingle
+            // Play a jingle sound at the well center
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.playSound(wellCenter, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.AMBIENT, 1.0f, 1.0f);
             }
@@ -181,7 +184,7 @@ public class WishingWell {
                 Scheduler.runLater(() -> {
                     double fraction = (double) step / strikeSteps;
                     double x = wellCenter.getX() + (altarCenter.getX() - wellCenter.getX()) * fraction;
-                    double y = (wellCenter.getY() + 1) + (altarCenter.getY() - wellCenter.getY()) * fraction;
+                    double y = wellCenter.getY() + (altarCenter.getY() - wellCenter.getY()) * fraction;
                     double z = wellCenter.getZ() + (altarCenter.getZ() - wellCenter.getZ()) * fraction;
 
                     world.spawnParticle(
@@ -195,24 +198,78 @@ public class WishingWell {
         }, spiralDurationTicks + travelDurationTicks + 25L);
 
         // ------------------------------------------------------------------------------------
-        // 6) Spawn the “prize” (the diamond placeholder) at the altar
+        // 6) Spawn the “prize” (the diamond placeholder) at the altar with enhanced water droplet sphere
         // ------------------------------------------------------------------------------------
         Scheduler.runLater(() -> {
             if (!altarActivated) return;
 
-            // "Poof" at altar, spawn the placeholder item
-            world.spawnParticle(Particle.LARGE_SMOKE, altarCenter, 10, 0.2, 0.2, 0.2, 0.01);
+            // Play a small “poof” or explosion sound
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                // A small “poof” or explosion sound
                 onlinePlayer.playSound(altarCenter, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.AMBIENT, 0.2f, 1.0f);
             }
 
-            // Finally show the item animation at the altar
-            Location aboveAltarCenter = altarBlockLocation.clone().add(0, 1, 0);
-            AltarManager.showItemAnimation(plugin, aboveAltarCenter, world);
+            // Define the prize location slightly above the altar center
+            Location prizeLocation = altarBlockLocation.clone().add(0.5, 1.3, 0.5);
+
+            // Show the item animation at the altar
+            AltarManager.showItemAnimation(plugin, prizeLocation, world);
+
+            // Create a dense sphere of water droplet particles around the prize
+            createWaterDropletSphere(world, prizeLocation, 0.5, 40, 1L);
 
             // Deactivate the altar so ambient (if any) returns to default
             deactivateWishingWellAltar();
         }, spiralDurationTicks + travelDurationTicks + 35L);
+    }
+
+    /**
+     * Interpolates between two colors based on the given fraction.
+     *
+     * @param startColor The starting color.
+     * @param endColor   The ending color.
+     * @param fraction   The fraction between 0.0 and 1.0.
+     * @return The interpolated color.
+     */
+    private static Color interpolateColor(Color startColor, Color endColor, double fraction) {
+        int red = (int) (startColor.getRed() + (endColor.getRed() - startColor.getRed()) * fraction);
+        int green = (int) (startColor.getGreen() + (endColor.getGreen() - startColor.getGreen()) * fraction);
+        int blue = (int) (startColor.getBlue() + (endColor.getBlue() - startColor.getBlue()) * fraction);
+        return Color.fromRGB(red, green, blue);
+    }
+
+    /**
+     * Creates a dense sphere of water droplet particles around a given location.
+     *
+     * @param world             The world where particles are spawned.
+     * @param center            The center location of the sphere.
+     * @param radius            The radius of the sphere.
+     * @param totalPoints       The total number of water droplets to spawn.
+     * @param delayBetweenPoints The delay in ticks between spawning each layer of particles.
+     */
+    private static void createWaterDropletSphere(World world, Location center, double radius, int totalPoints, long delayBetweenPoints) {
+        // Using the Fibonacci sphere algorithm for even distribution
+        for (int i = 0; i < totalPoints; i++) {
+            final int index = i;
+            Scheduler.runLater(() -> {
+                if (!altarActivated) return;
+
+                double phi = Math.acos(1 - 2.0 * (index + 0.5) / totalPoints);
+                double theta = Math.PI * (1 + Math.sqrt(5)) * index; // Golden angle
+
+                double x = radius * Math.sin(phi) * Math.cos(theta);
+                double y = radius * Math.sin(phi) * Math.sin(theta);
+                double z = radius * Math.cos(phi);
+
+                Location particleLocation = center.clone().add(x, y, z);
+
+                world.spawnParticle(
+                        Particle.DRIPPING_WATER,
+                        particleLocation,
+                        1,
+                        0, 0, 0,
+                        0.0
+                );
+            }, index * delayBetweenPoints);
+        }
     }
 }

@@ -8,34 +8,27 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * The WildTabCompleter class provides tab completion for the /wild command.
+ * Provides tab-completion for the /wild command:
+ *
+ * <p>Completion suggests all known versions plus "all".</p>
  */
 public class WildTabCompleter implements TabCompleter {
 
-    private final WildData wildData; // Reference to WildData for available versions.
+    private final WildData wildData;
 
     /**
-     * Constructs a WildTabCompleter object.
+     * Constructs a WildTabCompleter with references to the plugin's WildData.
      *
-     * @param wildData The WildData instance containing version information.
+     * @param wildData The WildData containing version ring info
      */
     public WildTabCompleter(WildData wildData) {
         this.wildData = wildData;
     }
 
-    /**
-     * Handles tab completion for the /wild command.
-     *
-     * @param sender  The command sender.
-     * @param command The command object.
-     * @param alias   The alias used.
-     * @param args    Command arguments.
-     * @return A list of possible completions.
-     */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        // Only handle the first argument
         if (args.length == 1) {
-            // Provide a list of versions and 'all' as suggestions.
             List<String> completions = new ArrayList<>(wildData.getVersions());
             completions.add("all");
             return completions;

@@ -9,8 +9,8 @@
 
 serverName: "blockminer"
 
-#The start of a list of Systems.
-Systems:
+`#The start of a list of Systems.
+Systems:`
 
   Discord:
     # link to the discord
@@ -34,15 +34,18 @@ Systems:
   # Enables the wild teleport system.
   Wild:
     Enabled: true
+    Center:
+      X: 256
+      Z: 256
     Bounds:
       1:
         Version: 1.19
-        Lower: 0
-        Upper: 19965
+        Lower: 256
+        Upper: 19711
       2:
         Version: 1.21
-        Lower: 19965
-        Upper: 29701
+        Lower: 20224
+        Upper: 29439
 
       # Add new versions as needed
       # 3:
