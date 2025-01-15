@@ -55,12 +55,47 @@ Systems:
 
     Regions:
       1:
-        Name: "Spawn"
-        Return: "Spawn"
-
+        Name: "ranks"
+        Return: "ranks"
       2:
-        Name: "Shop"
-        Return: "Shop"
+        Name: "shop1"
+        Return: "shops"
+      3:
+        Name: "shop2"
+        Return: "shops"
+      4:
+        Name: "shop3"
+        Return: "shops"
+      5:
+        Name: "shop4"
+        Return: "shops"
+      6:
+        Name: "rules"
+        Return: "rules"
+      7:
+        Name: "guidelines"
+        Return: "guidelines"
+      8:
+        Name: "voteshop"
+        Return: "voteshop"
+      9:
+        Name: "healingsprings"
+        Return: "healingsprings"
+      10:
+        Name: "obelisk"
+        Return: "obelisk"
+      11:
+        Name: "wishingwell"
+        Return: "wishingwell"
+      12:
+        Name: "platform"
+        Return: "platform"
+      13:
+        Name: "theeventportal"
+        Return: "theeventportal"
+      14:
+        Name: "spawn"
+        Return: "spawn"
 
       # Add new regions as needed
       # 3:
