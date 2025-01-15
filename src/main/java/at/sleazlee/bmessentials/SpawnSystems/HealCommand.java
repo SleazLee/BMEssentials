@@ -13,12 +13,20 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HealCommand implements CommandExecutor {
 
 	private final BMEssentials plugin;
-	private final Map<UUID, Long> cooldowns = new HashMap<>();
-	private final long cooldownDuration = 90 * 60 * 1000; // 90 minutes in milliseconds
+
+	// Existing cooldown map for 90-minute cooldown
+	private final Map<UUID, Long> mainCooldowns = new ConcurrentHashMap<>();
+	private final long mainCooldownDuration = 90 * 60 * 1000; // 90 minutes in milliseconds
+
+	// New cooldown map for 10-second command cooldown
+	private final Map<UUID, Long> commandCooldowns = new ConcurrentHashMap<>();
+	private final long commandCooldownDuration = 10 * 1000; // 10 seconds in milliseconds
+
 	private final Random random = new Random();
 
 	public HealCommand(BMEssentials plugin) {
@@ -27,15 +35,18 @@ public class HealCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		// Ensure the command is executed with at least one argument
 		if (args.length > 0) {
 			String playerName = args[0];
 			Player player = Bukkit.getPlayer(playerName);
 
-			if (player != null) {
+			if (player != null && sender.hasPermission("bmessentials.heal")) {
 				checkAndExecute(player);
 			} else {
-				sender.sendMessage("Player not found or not online.");
+				sender.sendMessage("§cPlayer not found, not online, or you lack permissions.");
 			}
+		} else {
+			sender.sendMessage("§cUsage: /" + label + " <player>");
 		}
 		return true;
 	}
@@ -44,37 +55,52 @@ public class HealCommand implements CommandExecutor {
 		UUID playerUUID = player.getUniqueId();
 		long currentTime = System.currentTimeMillis();
 
-		if (cooldowns.containsKey(playerUUID) && cooldowns.get(playerUUID) > currentTime) {
-			// Player is on cooldown
-			long remainingTime = (cooldowns.get(playerUUID) - currentTime) / 1000; // Time in seconds
-			player.sendMessage("§5§lHealing Springs §fThe spring's power is not fully restored yet. Please try back later. §8(§e" + formatTime(remainingTime) + "§8)");
+		// Check if the player is on the 10-second command cooldown
+		if (commandCooldowns.containsKey(playerUUID) && commandCooldowns.get(playerUUID) > currentTime) {
+			// Player is on the command cooldown; do nothing to prevent spam
+			return;
+		}
+
+		// Set the 10-second command cooldown
+		long commandCooldownExpiry = currentTime + commandCooldownDuration;
+		commandCooldowns.put(playerUUID, commandCooldownExpiry);
+
+		// Schedule removal of the command cooldown after 10 seconds
+		Scheduler.runLater(() -> commandCooldowns.remove(playerUUID), (int) (commandCooldownDuration / 50)); // 10,000 ms / 50 = 200 ticks
+
+		// Now, check the main 90-minute cooldown
+		if (mainCooldowns.containsKey(playerUUID) && mainCooldowns.get(playerUUID) > currentTime) {
+			// Player is on the 90-minute cooldown
+			long remainingTime = (mainCooldowns.get(playerUUID) - currentTime) / 1000; // Time in seconds
+			player.sendMessage("§d§lHealing Springs §fThe spring's power is not fully restored yet. Please try back later. §8(§e" + formatTime(remainingTime) + "§8)");
 		} else {
-			// Heal the player and apply effects
+			// Player is not on the 90-minute cooldown; proceed to heal
 			healPlayer(player);
 
-			// Set the cooldown expiration time
-			long cooldownExpiry = currentTime + cooldownDuration;
-			cooldowns.put(playerUUID, cooldownExpiry);
+			// Set the 90-minute cooldown expiration time
+			long mainCooldownExpiry = currentTime + mainCooldownDuration;
+			mainCooldowns.put(playerUUID, mainCooldownExpiry);
 
-			// Optionally schedule a task to clean up expired cooldowns (not strictly necessary)
-			Scheduler.runLater(() -> cooldowns.remove(playerUUID), (int) (cooldownDuration / 50)); // Convert milliseconds to ticks
+			// Schedule removal of the main cooldown after 90 minutes
+			Scheduler.runLater(() -> mainCooldowns.remove(playerUUID), (int) (mainCooldownDuration / 50)); // 90*60*1000 ms / 50 = 108,000 ticks
 		}
 	}
 
 	private void healPlayer(Player player) {
-		// Heal the player
+		// Heal the player to maximum health
 		double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
 		player.setHealth(maxHealth);
 
-		// Fill their hunger
+		// Restore hunger to maximum
 		player.setFoodLevel(20);
 
-		// Give them the regeneration effect for 10 seconds
+		// Apply regeneration effect for 10 seconds (200 ticks)
 		player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 10 * 20, 1));
 
-		// Play the sound "ENTITY_GLOW_SQUID_AMBIENT" to the player
+		// Play the ambient sound
 		player.playSound(player.getLocation(), Sound.ENTITY_GLOW_SQUID_AMBIENT, 1.0f, 1.0f);
 
+		// Send a random healing message
 		player.sendMessage(getRandomMessage());
 	}
 
