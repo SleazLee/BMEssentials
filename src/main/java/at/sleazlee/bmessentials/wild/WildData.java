@@ -1,40 +1,133 @@
 package at.sleazlee.bmessentials.wild;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 /**
- * The WildData class handles loading and storing the "Bounds" data for each version.
- *
- * <p>Each version has:
- * <ul>
- *   <li>Version: e.g. "1.19"</li>
- *   <li>Lower: double, the inner radius threshold</li>
- *   <li>Upper: double, the outer radius threshold</li>
- * </ul>
- *
- * <p>By default, this code assumes a center of (256,256). Adjust if needed.</p>
+ * WildData class loads and provides access to the Wild system's configuration,
+ * including version bounds and WorldGuard regions.
  */
 public class WildData {
 
+    private final double centerX;
+    private final double centerZ;
+    private final Map<String, CoordinateBounds> boundsMap;
+    private final List<Region> regions;
+
     /**
-     * CoordinateBounds represents a single ring in terms of:
-     * <p>distance in [lower, upper]</p>
-     * <p>We measure distance using Chebyshev distance: max(|x-256|, |z-256|).</p>
+     * Constructs a WildData object by loading configuration from the provided plugin.
+     *
+     * @param plugin The main plugin instance to access the configuration.
+     */
+    public WildData(JavaPlugin plugin) {
+        // Load the "Systems.Wild" section from config.yml
+        ConfigurationSection wildSection = plugin.getConfig().getConfigurationSection("Systems.Wild");
+        if (wildSection == null) {
+            throw new IllegalArgumentException("Systems.Wild section not found in config.yml");
+        }
+
+        // Load Center Coordinates
+        this.centerX = wildSection.getDouble("Center.X", 256.0);
+        this.centerZ = wildSection.getDouble("Center.Z", 256.0);
+
+        // Load Bounds
+        ConfigurationSection boundsSection = wildSection.getConfigurationSection("Bounds");
+        if (boundsSection == null) {
+            throw new IllegalArgumentException("Systems.Wild.Bounds section not found in config.yml");
+        }
+
+        this.boundsMap = new HashMap<>();
+        for (String key : boundsSection.getKeys(false)) {
+            ConfigurationSection versionSection = boundsSection.getConfigurationSection(key);
+            if (versionSection != null) {
+                String version = versionSection.getString("Version");
+                double lower = versionSection.getDouble("Lower");
+                double upper = versionSection.getDouble("Upper");
+                if (version != null) {
+                    boundsMap.put(version, new CoordinateBounds(lower, upper));
+                }
+            }
+        }
+
+        // Load Regions
+        ConfigurationSection regionsSection = wildSection.getConfigurationSection("Regions");
+        if (regionsSection == null) {
+            this.regions = Collections.emptyList();
+        } else {
+            this.regions = new ArrayList<>();
+            for (String key : regionsSection.getKeys(false)) {
+                ConfigurationSection regionSection = regionsSection.getConfigurationSection(key);
+                if (regionSection != null) {
+                    String name = regionSection.getString("Name");
+                    String returnValue = regionSection.getString("Return");
+                    if (name != null && returnValue != null) {
+                        regions.add(new Region(name, returnValue));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieves the set of available version names.
+     *
+     * @return A Set containing all version names.
+     */
+    public Set<String> getVersions() {
+        return boundsMap.keySet();
+    }
+
+    /**
+     * Retrieves the CoordinateBounds for a given version.
+     *
+     * @param version The version name.
+     * @return The CoordinateBounds object, or null if not found.
+     */
+    public CoordinateBounds getBounds(String version) {
+        return boundsMap.get(version);
+    }
+
+    /**
+     * Retrieves the X-coordinate of the center.
+     *
+     * @return Center X.
+     */
+    public double getCenterX() {
+        return centerX;
+    }
+
+    /**
+     * Retrieves the Z-coordinate of the center.
+     *
+     * @return Center Z.
+     */
+    public double getCenterZ() {
+        return centerZ;
+    }
+
+    /**
+     * Retrieves the list of configured Regions.
+     *
+     * @return List of Region objects.
+     */
+    public List<Region> getRegions() {
+        return regions;
+    }
+
+    /**
+     * Inner class representing the bounds of a version ring.
      */
     public static class CoordinateBounds {
         private final double lower;
         private final double upper;
 
         /**
-         * Constructs a new coordinate-bound ring.
+         * Constructs a CoordinateBounds object with specified lower and upper bounds.
          *
-         * @param lower the inner threshold
-         * @param upper the outer threshold
+         * @param lower The lower bound of the distance.
+         * @param upper The upper bound of the distance.
          */
         public CoordinateBounds(double lower, double upper) {
             this.lower = lower;
@@ -42,98 +135,58 @@ public class WildData {
         }
 
         /**
-         * @return The lower radius threshold
+         * Retrieves the lower bound.
+         *
+         * @return Lower bound.
          */
         public double getLower() {
             return lower;
         }
 
         /**
-         * @return The upper radius threshold
+         * Retrieves the upper bound.
+         *
+         * @return Upper bound.
          */
         public double getUpper() {
             return upper;
         }
     }
 
-    // A map from version string (e.g. "1.19") to its [lower, upper] ring
-    private final Map<String, CoordinateBounds> versionBounds = new HashMap<>();
-    // Keep a list of versions for iteration
-    private final List<String> versions = new ArrayList<>();
-
-    // Hard-coded center (change to read from config if needed)
-    private double centerX = 256.0;
-    private double centerZ = 256.0;
-
-    private final Logger logger;
-
     /**
-     * Constructs WildData by reading the "Systems.Wild.Bounds" section of config.
-     *
-     * @param config the plugin's FileConfiguration
-     * @param plugin the main JavaPlugin for logging, etc.
+     * Inner class representing a WorldGuard region.
      */
-    public WildData(FileConfiguration config, JavaPlugin plugin) {
-        this.logger = plugin.getLogger();
+    public static class Region {
+        private final String name;
+        private final String returnValue;
 
-        // If you need a dynamic center, uncomment or add these lines:
-        centerX = config.getDouble("Systems.Wild.Center.X", 256.0);
-        centerZ = config.getDouble("Systems.Wild.Center.Z", 256.0);
-
-        // Read the "Bounds" section
-        ConfigurationSection boundsSection = config.getConfigurationSection("Systems.Wild.Bounds");
-        if (boundsSection == null) {
-            logger.warning("[Wild] Bounds section is null or missing in config.yml");
-            return;
+        /**
+         * Constructs a Region object with specified name and return value.
+         *
+         * @param name        The name of the WorldGuard region.
+         * @param returnValue The value to return when a player is within this region.
+         */
+        public Region(String name, String returnValue) {
+            this.name = name;
+            this.returnValue = returnValue;
         }
 
-        // For each numeric key (1, 2, 3...) under "Bounds"
-        for (String key : boundsSection.getKeys(false)) {
-            ConfigurationSection versionSec = boundsSection.getConfigurationSection(key);
-            if (versionSec != null) {
-                String versionName = versionSec.getString("Version");
-                double lower = versionSec.getDouble("Lower");
-                double upper = versionSec.getDouble("Upper");
-
-                if (versionName != null) {
-                    // Store the ring
-                    versionBounds.put(versionName, new CoordinateBounds(lower, upper));
-                    versions.add(versionName);
-                } else {
-                    logger.warning("[Wild] Missing 'Version' key in Bounds entry: " + key);
-                }
-            }
+        /**
+         * Retrieves the name of the region.
+         *
+         * @return Region name.
+         */
+        public String getName() {
+            return name;
         }
-    }
 
-    /**
-     * @return X-coordinate of the square center (default 256)
-     */
-    public double getCenterX() {
-        return centerX;
-    }
-
-    /**
-     * @return Z-coordinate of the square center (default 256)
-     */
-    public double getCenterZ() {
-        return centerZ;
-    }
-
-    /**
-     * Retrieve the [lower, upper] ring for a specific version.
-     *
-     * @param version the version string (e.g. "1.19")
-     * @return the corresponding CoordinateBounds, or null if not found
-     */
-    public CoordinateBounds getBounds(String version) {
-        return versionBounds.get(version);
-    }
-
-    /**
-     * @return A list of all version strings found in "Bounds"
-     */
-    public List<String> getVersions() {
-        return versions;
+        /**
+         * Retrieves the return value associated with the region.
+         *
+         * @return Return value.
+         */
+        public String getReturnValue() {
+            return returnValue;
+        }
     }
 }

@@ -1,25 +1,20 @@
 package at.sleazlee.bmessentials.wild;
 
+import at.sleazlee.bmessentials.bmefunctions.IsInWorldGuardRegion;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -49,10 +44,10 @@ public class WildCommand implements CommandExecutor {
     /**
      * Constructs a new WildCommand.
      *
-     * @param wildData the WildData that contains version bounds
-     * @param plugin   the main plugin instance (for logging, scheduling, etc.)
+     * @param wildData the WildData that contains version bounds.
+     * @param plugin   the main plugin instance (for logging, scheduling, etc.).
      */
-    public WildCommand(FileConfiguration config, WildData wildData, JavaPlugin plugin) {
+    public WildCommand(WildData wildData, JavaPlugin plugin) {
         this.wildData = wildData;
         this.logger = plugin.getLogger();
         this.plugin = plugin;
@@ -113,13 +108,14 @@ public class WildCommand implements CommandExecutor {
                 return;
             }
         } else {
-            // Pick a random version from the list
-            List<String> versions = wildData.getVersions();
-            if (versions.isEmpty()) {
+            // Pick a random version from the set
+            Set<String> versionSet = wildData.getVersions();
+            if (versionSet.isEmpty()) {
                 player.sendMessage("§c§lWild §cNo versions defined in config.");
                 return;
             }
-            String chosen = versions.get(random.nextInt(versions.size()));
+            List<String> versionsList = new ArrayList<>(versionSet);
+            String chosen = versionsList.get(random.nextInt(versionsList.size()));
             bounds = wildData.getBounds(chosen);
             version = chosen; // For logging purposes
         }
@@ -185,8 +181,11 @@ public class WildCommand implements CommandExecutor {
                     String worldName = "world";
                     String serverName = "blockminer";
 
-                    if (isPlayerInRegion(player, "spawn")) {
+                    if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")) {
                         // Instant teleport if in spawn region
+                        HuskHomesAPIHook.instantTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
+                    } else if (IsInWorldGuardRegion.isPlayerInRegion(player, "Shop")) {
+                        // Instant teleport if in shop region
                         HuskHomesAPIHook.instantTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
                     } else {
                         // Timed teleport otherwise
@@ -194,7 +193,7 @@ public class WildCommand implements CommandExecutor {
                     }
                 } else if (attempt == maxRetries) {
                     // After max retries, proceed to generate a new location without checking
-                    logger.info("[Wild] Attempt " + attempt + ": Teleport location (" + finalX + ", " + (finalY - 1) + ", " + finalZ + ") is above water. Generating a new location without checking.");
+                    logger.info("[Wild] Attempt " + attempt + ": Teleport location (" + finalX + ", " + (finalY - 1) + ", " + finalZ + ") is above water. Teleporting anyway.");
 
                     // Generate a new random location without checking
                     double newXOffset = random.nextDouble() * (2 * upper) - upper;
@@ -208,13 +207,15 @@ public class WildCommand implements CommandExecutor {
                             + " to version " + version
                             + " at X=" + newFinalX + ", Z=" + newFinalZ + " without water check.");
 
-                    // Teleport the player using HuskHomes
+                    // Teleport the player using HuskHomes without water check
                     String worldName = "world";
                     String serverName = "blockminer";
 
-                    // Teleport the player using HuskHomes without water check
-                    if (isPlayerInRegion(player, "spawn")) {
+                    if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")) {
                         // Instant teleport if in spawn region
+                        HuskHomesAPIHook.instantTeleportPlayer(player, newFinalX, finalY, newFinalZ, 0, 90, worldName, serverName);
+                    } else if (IsInWorldGuardRegion.isPlayerInRegion(player, "Shop")) {
+                        // Instant teleport if in shop region
                         HuskHomesAPIHook.instantTeleportPlayer(player, newFinalX, finalY, newFinalZ, 0, 90, worldName, serverName);
                     } else {
                         // Timed teleport otherwise
@@ -223,55 +224,5 @@ public class WildCommand implements CommandExecutor {
                 }
             }
         }
-    }
-
-    /**
-     * Checks if the player is within a specific WorldGuard region by name.
-     *
-     * @param player     the player
-     * @param regionName the WorldGuard region ID to check (e.g., "spawn")
-     * @return true if the player is inside the specified region, false otherwise
-     */
-    private boolean isPlayerInRegion(Player player, String regionName) {
-        WorldGuardPlugin wg = getWorldGuard();
-        if (wg == null) {
-            player.sendMessage("WorldGuard plugin not found!");
-            return false;
-        }
-
-        // Convert Bukkit location to WorldEdit/WorldGuard location
-        com.sk89q.worldedit.util.Location weLoc = BukkitAdapter.adapt(player.getLocation());
-
-        // Get the RegionContainer from WorldGuard
-        RegionManager mgr = WorldGuard.getInstance().getPlatform().getRegionContainer()
-                .get(BukkitAdapter.adapt(player.getWorld()));
-        if (mgr == null) {
-            player.sendMessage("Could not get region manager for this world.");
-            return false;
-        }
-
-        // Get the set of regions applicable at the player's location
-        ApplicableRegionSet set = mgr.getApplicableRegions(weLoc.toVector().toBlockPoint());
-
-        // Check if any region in the set matches the specified region name
-        for (ProtectedRegion region : set) {
-            if (region.getId().equalsIgnoreCase(regionName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Retrieves the WorldGuard plugin instance from Bukkit's plugin manager.
-     *
-     * @return WorldGuardPlugin instance if found, otherwise null
-     */
-    private WorldGuardPlugin getWorldGuard() {
-        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-        if (plugin instanceof WorldGuardPlugin) {
-            return (WorldGuardPlugin) plugin;
-        }
-        return null;
     }
 }

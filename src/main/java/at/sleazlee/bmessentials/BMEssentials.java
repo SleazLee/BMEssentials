@@ -122,14 +122,14 @@ public class BMEssentials extends JavaPlugin {
             // Add the system enabled message to the console.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Wild Systems");
 
-            // Create an instance of WildData with the plugin's configuration and plugin instance
-            WildData wildData = new WildData(getConfig(), this);
+            // Create an instance of WildData with the plugin instance
+            WildData wildData = new WildData(this);
 
             // Register the NoFallDamage event listener.
             getServer().getPluginManager().registerEvents(new NoFallDamage(this), this);
 
             // Instantiate the command executor and tab completer, passing the WildData instance.
-            WildCommand wildCommand = new WildCommand(config, wildData, this);
+            WildCommand wildCommand = new WildCommand(wildData, this);
             WildTabCompleter wildTabCompleter = new WildTabCompleter(wildData);
 
             // Register the /wild command executor and tab completer.
@@ -138,7 +138,6 @@ public class BMEssentials extends JavaPlugin {
 
             // Register the /version command
             getCommand("version").setExecutor(new ChunkVersion(wildData, this));
-
         }
 
         // Spawn Systems

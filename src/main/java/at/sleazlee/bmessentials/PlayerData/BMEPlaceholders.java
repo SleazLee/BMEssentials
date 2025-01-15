@@ -3,21 +3,24 @@ package at.sleazlee.bmessentials.PlayerData;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.wild.ChunkVersion;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * Provides custom placeholders for PlaceholderAPI.
  * Placeholders:
  * - %bme_joindate%: The formatted join date of the player.
  * - %bme_centeredname%: The centered name of the player.
+ * - %bme_chunkinfo%: The version or region name where the player is located.
  */
 public class BMEPlaceholders extends PlaceholderExpansion {
 
-    private BMEssentials plugin;
+    private final BMEssentials plugin;
 
     /**
      * Constructs the BmePlaceholders expansion with a reference to the main plugin.
@@ -108,13 +111,9 @@ public class BMEPlaceholders extends PlaceholderExpansion {
 
         // Handle the %bme_chunkinfo% placeholder
         if (identifier.equals("chunkinfo")) {
-
-            // Get player's current location.
-            double x = player.getLocation().getX();
-            double z = player.getLocation().getZ();
-
-            String ver = ChunkVersion.getVersionFromLocation(x,z);
-            if (ver == null) {
+            // Get the version or region name where the player is located
+            String ver = ChunkVersion.getVersionFromLocation(player);
+            if (ver == null || ver.isEmpty()) {
                 return "";
             }
             return ver;
@@ -124,4 +123,3 @@ public class BMEPlaceholders extends PlaceholderExpansion {
         return null;
     }
 }
-

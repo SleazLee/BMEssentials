@@ -10,7 +10,7 @@
 serverName: "blockminer"
 
 `#The start of a list of Systems.
-Systems:`
+Systems:
 
   Discord:
     # link to the discord
@@ -52,6 +52,20 @@ Systems:`
       #   Version: <version>
       #   Lower: <value>
       #   Upper: <value>
+
+    Regions:
+      1:
+        Name: "Spawn"
+        Return: "Spawn"
+
+      2:
+        Name: "Shop"
+        Return: "Shop"
+
+      # Add new regions as needed
+      # 3:
+      #   Name: <Region Name>
+      #   Return: <Return Value>
 
   # Enables spawn only systems.
   SpawnSystems:

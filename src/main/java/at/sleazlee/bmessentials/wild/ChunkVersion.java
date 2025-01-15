@@ -1,6 +1,8 @@
 package at.sleazlee.bmessentials.wild;
 
+import at.sleazlee.bmessentials.bmefunctions.IsInWorldGuardRegion;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,21 +11,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * The /version command class determines which "version ring" (if any)
- * the player's current location falls into, based on the "Bounds" config.
+ * the player's current location falls into, based on the "Bounds" and "Regions" config.
  */
 public class ChunkVersion implements CommandExecutor {
 
-    private static WildData wildData = null;   // holds version bounds
-    private final JavaPlugin plugin;   // main plugin reference (for logging, etc.)
+    private static WildData wildData = null;   // holds version bounds and regions
+    private final JavaPlugin plugin;           // main plugin reference (for logging, etc.)
 
     /**
      * Constructs a ChunkVersion object to check chunk versions.
      *
-     * @param wildData The WildData containing version bounds
-     * @param plugin   The main plugin instance
+     * @param wildData The WildData containing version bounds and regions.
+     * @param plugin   The main plugin instance.
      */
     public ChunkVersion(WildData wildData, JavaPlugin plugin) {
-        this.wildData = wildData;
+        ChunkVersion.wildData = wildData;
         this.plugin = plugin;
     }
 
@@ -44,34 +46,40 @@ public class ChunkVersion implements CommandExecutor {
 
         // If not in "world", we might not care
         if (!world.equalsIgnoreCase("world")) {
-            String msg = "<red>You are not in the main overworld. No version check here.";
+            String msg = "<red>You are not in the main overworld. No version check here.</red>";
             player.sendMessage(MiniMessage.miniMessage().deserialize(msg));
             return true;
         }
 
         // Determine which version ring (if any) the player is currently in
-        String version = getVersionFromLocation(x, z);
+        String version = getVersionFromLocation(player);
 
         // Construct a MiniMessage to show the result
-        String message = "<yellow><bold>Ver</bold></yellow> <gray>You are currently in a <yellow>"
-                + version + "</yellow> region.";
+        String message;
+        if (!version.equals("unmatched")) {
+            message = "<yellow><bold>Ver</bold></yellow> <gray>You are currently in a <yellow>"
+                    + version + "</yellow> region.";
+        } else {
+            message = "<yellow><bold>Ver</bold></yellow> <gray>You are currently in an <yellow>unmatched</yellow> region.";
+        }
         player.sendMessage(MiniMessage.miniMessage().deserialize(message));
 
         return true;
     }
 
     /**
-     * Determines which version ring a given (x, z) coordinate belongs to,
-     * based on Chebyshev distance from (256, 256).
+     * Determines which version ring a given Player is in,
+     * based on Chebyshev distance from (centerX, centerZ) and WorldGuard regions.
      *
-     * <p>Chebyshev distance = max(|x - centerX|, |z - centerZ|).</p>
-     *
-     * @param x The player's X coordinate
-     * @param z The player's Z coordinate
-     * @return The version string if found, otherwise "unmatched"
+     * @param player The player whose location is to be checked.
+     * @return The version string if found, or the region's return value, otherwise "unmatched".
      */
-    public static String getVersionFromLocation(double x, double z) {
-        // 1) Compute the "square distance" from the plugin's center
+    public static String getVersionFromLocation(Player player) {
+        // Grab player's coordinates
+        double x = player.getLocation().getX();
+        double z = player.getLocation().getZ();
+
+        // Compute Chebyshev distance from the center
         double centerX = wildData.getCenterX();
         double centerZ = wildData.getCenterZ();
 
@@ -79,7 +87,23 @@ public class ChunkVersion implements CommandExecutor {
         double distZ = Math.abs(z - centerZ);
         double distance = Math.max(distX, distZ);
 
-        // 2) Check each version ring to see if distance falls in [lower, upper]
+        // Define Spawn Area bounds
+        double spawnLower = 0.0;
+        double spawnUpper = 250.0;
+
+        // Check if within Spawn Area
+        if (distance >= spawnLower && distance <= spawnUpper) {
+            // Player is within Spawn Area, check WorldGuard regions
+            for (WildData.Region region : wildData.getRegions()) {
+                if (IsInWorldGuardRegion.isPlayerInRegion(player, region.getName())) {
+                    return region.getReturnValue();
+                }
+            }
+            // Player is within Spawn Area but not in any defined region
+            return "unmatched";
+        }
+
+        // Player is outside Spawn Area, check version rings
         for (String version : wildData.getVersions()) {
             WildData.CoordinateBounds cb = wildData.getBounds(version);
             if (cb == null) continue;
