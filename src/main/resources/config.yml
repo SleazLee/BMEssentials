@@ -54,6 +54,7 @@ Systems:
       # Add new versions as needed
       # 3:
       #   Version: <version>
+      #     [Hint] Region max cords -256 for lower and upper.
       #   Lower: <value>
       #   Upper: <value>
 
