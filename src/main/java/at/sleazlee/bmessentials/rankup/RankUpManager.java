@@ -142,7 +142,7 @@ public class RankUpManager implements CommandExecutor {
                 return;
             }
 
-            EconomyResponse resp = economy.withdraw(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(cost));
+            EconomyResponse resp = economy.withdraw(plugin.getName(), player.getUniqueId(),"no_world", "Dollars", BigDecimal.valueOf(cost));
             if (!resp.transactionSuccess()) {
                 player.sendMessage(ChatColor.RED + "Failed to deduct cost for rank up: " + resp.errorMessage);
                 plugin.getLogger().warning("Withdraw failed for " + player.getName() + " cost = " + cost);
@@ -186,13 +186,28 @@ public class RankUpManager implements CommandExecutor {
     private void setPlayerRankLuckPerms(Player player, String oldRank, String newRank) {
         User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
 
-        // Set primary group. This is the simplest approach,
-        // but you can also manage group nodes if you prefer more control.
+        // 1) Check if the "newRank" group exists
+        var group = luckPerms.getGroupManager().getGroup(newRank);
+        if (group == null) {
+            plugin.getLogger().warning("LuckPerms group does not exist: " + newRank);
+            player.sendMessage(ChatColor.RED + "Cannot rank up; group '" + newRank + "' does not exist in LuckPerms.");
+            return;
+        }
+
+        // 2) Add the user to that group if they're not already
+        //    We'll create an InheritanceNode for that group.
+        var node = net.luckperms.api.node.types.InheritanceNode.builder(group).build();
+        user.data().add(node);
+
+        // 3) Now we can set the user's primary group
         user.setPrimaryGroup(newRank);
 
-        // Save changes back to LuckPerms
+        // 4) Save changes back to LuckPerms
         luckPerms.getUserManager().saveUser(user);
+
+        plugin.getLogger().info("Set primary group for " + player.getName() + " to " + newRank);
     }
+
 
     /**
      * Grabs the LuckPerms API, returns false if not available.
