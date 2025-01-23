@@ -223,3 +223,7 @@ permissions:
   bmessentials.rankup.use:
     description: Allows the user to attempt to rank up.
     default: true
+
+  bmessentials.eco.admin:
+    description: Access to all economy admin commands
+    default: op

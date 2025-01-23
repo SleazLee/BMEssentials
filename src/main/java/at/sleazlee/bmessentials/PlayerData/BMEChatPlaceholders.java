@@ -52,19 +52,55 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
             return "";
         }
 
+        // Existing player_stats placeholder
         if (identifier.equalsIgnoreCase("player_stats")) {
             return getFormattedStats(player);
         }
 
+        // New: Dollar balance with 2 decimal places
+        if (identifier.equalsIgnoreCase("dollars")) {
+            return getDollarsBalance(player);
+        }
+
+        // New: VotePoints balance (whole number)
+        if (identifier.equalsIgnoreCase("votepoints")) {
+            return getVotePointsBalance(player);
+        }
+
         return null;
+    }
+
+    /**
+    * Gets the player's dollar balance formatted with 2 decimal places
+    * Usage: %bmechat_dollars%
+    */
+    private String getDollarsBalance(Player player) {
+        double balance = plugin.getPlayerDataDBManager().getDollars(player.getUniqueId().toString());
+        return String.format("$%.2f", balance);
+    }
+
+    /**
+     * Gets the player's VotePoints balance with proper pluralization
+     * Usage: %bmechat_votepoints%
+     */
+    private String getVotePointsBalance(Player player) {
+        double balance = plugin.getPlayerDataDBManager().getVotePoints(player.getUniqueId().toString());
+        int vpAmount = (int) balance; // VP should always be whole numbers
+
+        // Handle pluralization
+        if (vpAmount == 1) {
+            return "1 VP";
+        } else {
+            return String.format("%d VPs", vpAmount);
+        }
     }
 
     private String getFormattedStats(Player player) {
         // Fetch placeholders from PAPI:
         // If null or empty, default to "0"
         String mcmmoPower = fetchOrDefault(player, "%mcmmo_power_level%", "0");
-        String balanceDollars = fetchOrDefault(player, "%gemseconomy_balance_dollars_formatted%", "0");
-        String balanceVPs = fetchOrDefault(player, "%gemseconomy_balance_VPs_formatted%", "0");
+        String balanceDollars = getDollarsBalance(player);
+        String balanceVPs = getVotePointsBalance(player);
 
         // Fetch join date from your player data DB (assuming %bme_joindate% works)
         long joinDateLong = plugin.getPlayerDataDBManager().getJoinDate(player.getUniqueId().toString());
@@ -116,7 +152,7 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
 
         String line1 = ChatColor.translateAlternateColorCodes('&', "&7Name:&f " + player.getName() + " &7 &aPower LVL: " + mcmmoPower);
         String line2 = ChatColor.translateAlternateColorCodes('&', "&6First joined: &6" + joinDateStr);
-        String line3 = ChatColor.translateAlternateColorCodes('&', "&7Money:&b $" + balanceDollars + " &8/ &e" + balanceVPs + " VPs");
+        String line3 = ChatColor.translateAlternateColorCodes('&', "&7Money: " + balanceDollars + " &8/ " + balanceVPs);
         String line4 = ChatColor.translateAlternateColorCodes('&',
                 "&7Playtime: &c" + days + " Days &6" + hours + " Hours &e" + minutes + " Minutes");
         String line5 = "";

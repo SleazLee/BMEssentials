@@ -1,5 +1,6 @@
 package at.sleazlee.bmessentials.rankup;
 
+import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -131,43 +132,69 @@ public class RankUpManager implements CommandExecutor {
     }
 
     /**
-     * Withdraw cost from player's balance, then set new rank in LuckPerms.
+     * Executes the rank-up process, deducting costs and updating the player's group.
+     *
+     * @param player      The player ranking up.
+     * @param currentRank The player's current rank.
+     * @param nextRank    The rank the player is moving to.
      */
     private void performRankUp(Player player, Rank currentRank, Rank nextRank) {
-        double cost = currentRank.getCost();
-        if (cost > 0) {
-            // VaultUnlocked's "has" check
-            if (!economy.has(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(cost))) {
+        // Calculate total cost from all EconomyRequirements
+        double totalCost = 0.0;
+        for (Requirement req : currentRank.getRequirements()) {
+            if (req instanceof EconomyRequirement) {
+                EconomyRequirement econReq = (EconomyRequirement) req;
+                totalCost += econReq.getRequiredBalance();
+            }
+        }
+
+        if (totalCost > 0) {
+            // Check balance using VaultUnlocked's economy
+            if (!economy.has(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(totalCost))) {
                 player.sendMessage(ChatColor.RED + "You do not have enough money to rank up.");
                 return;
             }
 
-            EconomyResponse resp = economy.withdraw(plugin.getName(), player.getUniqueId(),"no_world", "Dollars", BigDecimal.valueOf(cost));
+            // Withdraw the total cost in Dollars
+            EconomyResponse resp = economy.withdraw(
+                    plugin.getName(),
+                    player.getUniqueId(),
+                    "no_world",
+                    BMSEconomyProvider.CURRENCY_DOLLARS,
+                    BigDecimal.valueOf(totalCost)
+            );
+
             if (!resp.transactionSuccess()) {
-                player.sendMessage(ChatColor.RED + "Failed to deduct cost for rank up: " + resp.errorMessage);
-                plugin.getLogger().warning("Withdraw failed for " + player.getName() + " cost = " + cost);
+                player.sendMessage(ChatColor.RED + "Failed to deduct cost: " + resp.errorMessage);
+                plugin.getLogger().warning("Withdraw failed for " + player.getName() + ": " + totalCost);
                 return;
             }
         }
 
-        // Actually set rank in LuckPerms
+        // Update LuckPerms rank
         setPlayerRankLuckPerms(player, currentRank.getName(), nextRank.getName());
 
-        // Personal message
-        String personal = currentRank.getPersonalMessage();
-        if (personal != null && !personal.isEmpty()) {
-            player.sendMessage(messageHandler.formatMessage(personal, player));
+        // Send messages
+        sendRankUpMessages(player, currentRank);
+    }
+
+    /**
+     * Sends personalized and broadcast messages after a successful rank-up.
+     *
+     * @param player      The player who ranked up.
+     * @param currentRank The rank the player just left.
+     */
+    private void sendRankUpMessages(Player player, Rank currentRank) {
+        String personalMsg = currentRank.getPersonalMessage();
+        if (!personalMsg.isEmpty()) {
+            player.sendMessage(messageHandler.formatMessage(personalMsg, player));
         }
 
-        // Broadcast message
-        String broadcast = currentRank.getBroadcastMessage();
-        if (broadcast != null && !broadcast.isEmpty()) {
-            broadcast = messageHandler.formatMessage(broadcast, player);
-            plugin.getServer().broadcastMessage(broadcast);
+        String broadcastMsg = currentRank.getBroadcastMessage();
+        if (!broadcastMsg.isEmpty()) {
+            String formatted = messageHandler.formatMessage(broadcastMsg, player);
+            plugin.getServer().broadcastMessage(formatted);
         }
-
-        plugin.getLogger().info("Player " + player.getName() + " ranked up from "
-                + currentRank.getName() + " to " + nextRank.getName());
     }
 
     /**

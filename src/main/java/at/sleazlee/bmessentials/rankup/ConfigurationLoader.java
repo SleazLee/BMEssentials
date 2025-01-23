@@ -74,39 +74,42 @@ public class ConfigurationLoader {
         return ranks;
     }
 
+
     /**
-     * Parses a single rank from the configuration.
+     * Parses a rank configuration section into a Rank object.
      *
-     * @param rankKey      The key of the rank to parse.
-     * @param ranksSection The configuration section containing ranks.
-     * @return A Rank object, or null if parsing failed.
+     * @param rankKey        The key of the rank in the configuration.
+     * @param ranksSection   The ConfigurationSection containing rank definitions.
+     * @return A configured Rank object, or null if parsing fails.
      */
     private Rank parseRank(String rankKey, ConfigurationSection ranksSection) {
         ConfigurationSection rankSection = ranksSection.getConfigurationSection(rankKey);
         if (rankSection == null) {
-            plugin.getLogger().warning("Rank section not found for key: " + rankKey);
+            plugin.getLogger().warning("Invalid rank section: " + rankKey);
             return null;
         }
 
         String name = rankSection.getString("name", rankKey);
         String nextRank = rankSection.getString("next_rank", null);
-        double cost = rankSection.getDouble("cost", 0);
 
-        // Requirements
+        // Load requirements
         List<Requirement> requirements = new ArrayList<>();
         ConfigurationSection requirementsSection = rankSection.getConfigurationSection("requirements");
         if (requirementsSection != null) {
+            // Economy requirement
+            double balanceReq = requirementsSection.getDouble("balance", 0);
+            if (balanceReq > 0) {
+                requirements.add(new EconomyRequirement(
+                        plugin.getName(),
+                        balanceReq,
+                        economy
+                ));
+            }
+
             // MCMMO Power Level Requirement
             int mcmmoPowerLevel = requirementsSection.getInt("mcmmo_power_level", 0);
             if (mcmmoPowerLevel > 0) {
                 requirements.add(new McMMORequirement(mcmmoPowerLevel));
-            }
-
-            // Economy Balance Requirement
-            double balanceRequirement = requirementsSection.getDouble("balance", 0);
-            if (balanceRequirement > 0) {
-                // Pass plugin.getName() so EconomyRequirement can do economy.has("YourPluginName", uuid, BigDecimal)
-                requirements.add(new EconomyRequirement(plugin.getName(), balanceRequirement, economy));
             }
 
             // Playtime Requirement
@@ -114,32 +117,15 @@ public class ConfigurationLoader {
             if (playtimeStr != null && !playtimeStr.isEmpty()) {
                 requirements.add(new PlaytimeRequirement(plugin, playtimeStr));
             }
-
-            // Add additional requirements as needed
         }
 
-        // Messages
+        // Load messages
         ConfigurationSection messagesSection = rankSection.getConfigurationSection("messages");
-        String personalMessage = "";
-        String broadcastMessage = "";
-        String denyMessage = "";
-        if (messagesSection != null) {
-            personalMessage = messagesSection.getString("personal", "");
-            broadcastMessage = messagesSection.getString("broadcast", "");
-            denyMessage = messagesSection.getString("deny", "");
-        }
+        String personalMsg = messagesSection != null ? messagesSection.getString("personal", "") : "";
+        String broadcastMsg = messagesSection != null ? messagesSection.getString("broadcast", "") : "";
+        String denyMsg = messagesSection != null ? messagesSection.getString("deny", "") : "";
 
-        // Create Rank object
-        Rank rank = new Rank(
-                name,
-                nextRank,
-                cost,
-                requirements,
-                personalMessage,
-                broadcastMessage,
-                denyMessage
-        );
-
-        return rank;
+        return new Rank(name, nextRank, requirements, personalMsg, broadcastMsg, denyMsg);
     }
+
 }

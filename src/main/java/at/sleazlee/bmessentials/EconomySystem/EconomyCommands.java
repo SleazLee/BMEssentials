@@ -209,18 +209,25 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     }
 
     // -------------------------------------------------------------------------
-    // /eco give <player> <amount> [currency]  (OP Only)
+    // ECO HANDLER  (OP Only)
     // -------------------------------------------------------------------------
     private boolean handleEco(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(mini("<yellow>Usage: /eco give <player> <amount> [currency]"));
+            sender.sendMessage(mini("<yellow>Usage: /eco <give|take|set> <player> <amount> [currency]"));
             return true;
         }
-        if (args[0].equalsIgnoreCase("give")) {
-            return handleEcoGive(sender, Arrays.copyOfRange(args, 1, args.length));
+
+        switch (args[0].toLowerCase()) {
+            case "give":
+                return handleEcoGive(sender, Arrays.copyOfRange(args, 1, args.length));
+            case "take":
+                return handleEcoTake(sender, Arrays.copyOfRange(args, 1, args.length));
+            case "set":
+                return handleEcoSet(sender, Arrays.copyOfRange(args, 1, args.length));
+            default:
+                sender.sendMessage(mini("<yellow>Usage: /eco <give|take|set> <player> <amount> [currency]"));
+                return true;
         }
-        sender.sendMessage(mini("<yellow>Usage: /eco give <player> <amount> [currency]"));
-        return true;
     }
 
     private boolean handleEcoGive(CommandSender sender, String[] args) {
@@ -283,6 +290,184 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                     economy.format(plugin.getName(), BigDecimal.valueOf(newBal), currency)));
         }
         return true;
+    }
+
+    // -------------------------------------------------------------------------
+    // NEW: /eco take <player> <amount> [currency]
+    // -------------------------------------------------------------------------
+    /**
+     * Handles the eco take command - removes currency from a player's balance
+     * @param sender Command sender
+     * @param args Command arguments [player, amount, currency?]
+     * @return true if command was handled
+     */
+    private boolean handleEcoTake(CommandSender sender, String[] args) {
+        if (!checkEcoPermission(sender)) return true;
+
+        if (args.length < 2) {
+            sender.sendMessage(mini("<yellow>Usage: /eco take <player> <amount> [currency]"));
+            return true;
+        }
+
+        return handleEcoTransaction(sender, args, TransactionType.TAKE);
+    }
+
+    // -------------------------------------------------------------------------
+    // NEW: /eco set <player> <amount> [currency]
+    // -------------------------------------------------------------------------
+    /**
+     * Handles the eco set command - sets a player's balance to exact amount
+     * @param sender Command sender
+     * @param args Command arguments [player, amount, currency?]
+     * @return true if command was handled
+     */
+    private boolean handleEcoSet(CommandSender sender, String[] args) {
+        if (!checkEcoPermission(sender)) return true;
+
+        if (args.length < 2) {
+            sender.sendMessage(mini("<yellow>Usage: /eco set <player> <amount> [currency]"));
+            return true;
+        }
+
+        String playerName = args[0];
+        String amountStr = args[1];
+        String currency = (args.length >= 3) ? args[2] : BMSEconomyProvider.CURRENCY_DOLLARS;
+
+        OfflinePlayer target = getOfflinePlayer(playerName);
+        if (invalidTarget(sender, target)) return true;
+
+        double amount;
+        try {
+            amount = Double.parseDouble(amountStr);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(mini("<red>Invalid amount."));
+            return true;
+        }
+
+        if (economy == null) {
+            sender.sendMessage(mini("<red>Economy not available!"));
+            return true;
+        }
+
+        // Calculate needed adjustment
+        BigDecimal current = economy.balance(plugin.getName(), target.getUniqueId(), "no_world", currency);
+        BigDecimal desired = BigDecimal.valueOf(amount);
+        BigDecimal difference = desired.subtract(current);
+
+        EconomyResponse resp;
+        if (difference.compareTo(BigDecimal.ZERO) > 0) {
+            resp = economy.deposit(plugin.getName(), target.getUniqueId(), "no_world", currency, difference);
+        } else if (difference.compareTo(BigDecimal.ZERO) < 0) {
+            resp = economy.withdraw(plugin.getName(), target.getUniqueId(), "no_world", currency, difference.abs());
+        } else {
+            sender.sendMessage(mini("<yellow>Player already has exactly " + desired));
+            return true;
+        }
+
+        handleEcoResponse(sender, target, resp, desired, currency, "set");
+        return true;
+    }
+
+
+    // -------------------------------------------------------------------------
+    // SHARED ECO HELPER METHODS
+    // -------------------------------------------------------------------------
+    private enum TransactionType { GIVE, TAKE }
+
+    /**
+     * Checks if sender has permission to use eco commands
+     * @param sender Command sender
+     * @return true if authorized
+     */
+    private boolean checkEcoPermission(CommandSender sender) {
+        if (!sender.isOp() && !sender.hasPermission("bmessentials.eco.admin")) {
+            sender.sendMessage(mini("<red>You don't have permission for this command!"));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates if target player exists
+     * @param sender Command sender for error messages
+     * @param target Player being checked
+     * @return true if target is invalid
+     */
+    private boolean invalidTarget(CommandSender sender, OfflinePlayer target) {
+        if (target == null || !target.hasPlayedBefore()) {
+            sender.sendMessage(mini("<red>Player not found!"));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Handles generic eco transactions (give/take)
+     * @param sender Command sender
+     * @param args Command arguments
+     * @param type Transaction type (GIVE/TAKE)
+     */
+    private boolean handleEcoTransaction(CommandSender sender, String[] args, TransactionType type) {
+        String playerName = args[0];
+        String amountStr = args[1];
+        String currency = (args.length >= 3) ? args[2] : BMSEconomyProvider.CURRENCY_DOLLARS;
+
+        OfflinePlayer target = getOfflinePlayer(playerName);
+        if (invalidTarget(sender, target)) return true;
+
+        double amount;
+        try {
+            amount = Double.parseDouble(amountStr);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(mini("<red>Invalid amount."));
+            return true;
+        }
+
+        if (economy == null) {
+            sender.sendMessage(mini("<red>Economy not available!"));
+            return true;
+        }
+
+        EconomyResponse resp;
+        BigDecimal bigAmount = BigDecimal.valueOf(amount);
+
+        if (type == TransactionType.GIVE) {
+            resp = economy.deposit(plugin.getName(), target.getUniqueId(), "no_world", currency, bigAmount);
+        } else {
+            resp = economy.withdraw(plugin.getName(), target.getUniqueId(), "no_world", currency, bigAmount);
+        }
+
+        handleEcoResponse(sender, target, resp, bigAmount, currency, type.name().toLowerCase());
+        return true;
+    }
+
+    /**
+     * Handles response from economy operations
+     * @param sender Command sender
+     * @param target Target player
+     * @param resp Economy response
+     * @param amount Amount involved
+     * @param currency Currency type
+     * @param action Action performed (give/take/set)
+     */
+    private void handleEcoResponse(CommandSender sender, OfflinePlayer target, EconomyResponse resp,
+                                   BigDecimal amount, String currency, String action) {
+        if (!resp.transactionSuccess()) {
+            sender.sendMessage(mini("<red>Failed to " + action + " money: " + resp.errorMessage));
+            return;
+        }
+
+        String formattedAmount = economy.format(plugin.getName(), amount, currency);
+        sender.sendMessage(mini("<green>Successfully " + action + " <white>" + formattedAmount +
+                "</white> to/from " + target.getName()));
+
+        if (target.isOnline()) {
+            Player onlineTarget = (Player) target;
+            BigDecimal newBalance = economy.balance(plugin.getName(), onlineTarget.getUniqueId(), "no_world", currency);
+            onlineTarget.sendMessage(mini("<gray>Your balance was adjusted by <white>" +
+                    formattedAmount + "</white>. New balance: " +
+                    economy.format(plugin.getName(), newBalance, currency)));
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -352,7 +537,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     private List<String> tabCompleteEco(String[] args) {
         if (args.length == 1) {
             // subcommands: "give"
-            return filterByPrefix(Collections.singletonList("give"), args[0]);
+            return filterByPrefix(Arrays.asList("give", "take", "set"), args[0]);
         } else if (args.length == 2) {
             // player name
             return getOnlinePlayerNames(args[1]);

@@ -3,32 +3,30 @@ package at.sleazlee.bmessentials.rankup;
 import java.util.List;
 
 /**
- * Represents a single rank with its requirements and associated messages.
+ * Represents a rank with its requirements and messages.
  */
 public class Rank {
     private final String name;
     private final String nextRank;
-    private final double cost;
     private final List<Requirement> requirements;
     private final String personalMessage;
     private final String broadcastMessage;
     private final String denyMessage;
 
     /**
-     * Constructs a new Rank.
+     * Constructs a Rank.
      *
-     * @param name             The name/key of the rank.
-     * @param nextRank         The next rank's name/key.
-     * @param cost             The cost to rank up.
-     * @param requirements     The list of requirements for this rank.
-     * @param personalMessage  The personal message to send upon successful rank up.
-     * @param broadcastMessage The broadcast message to send upon successful rank up.
-     * @param denyMessage      The message to send if requirements are not met.
+     * @param name            The rank's display name.
+     * @param nextRank        The next rank in the progression (or null).
+     * @param requirements    List of requirements to rank up.
+     * @param personalMessage Message sent privately to the player.
+     * @param broadcastMessage Message broadcasted to the server.
+     * @param denyMessage     Message shown if requirements aren't met.
      */
-    public Rank(String name, String nextRank, double cost, List<Requirement> requirements, String personalMessage, String broadcastMessage, String denyMessage) {
+    public Rank(String name, String nextRank, List<Requirement> requirements,
+                String personalMessage, String broadcastMessage, String denyMessage) {
         this.name = name;
         this.nextRank = nextRank;
-        this.cost = cost;
         this.requirements = requirements;
         this.personalMessage = personalMessage;
         this.broadcastMessage = broadcastMessage;
@@ -41,15 +39,6 @@ public class Rank {
 
     public String getNextRank() {
         return nextRank;
-    }
-
-    /**
-     * Gets the cost to rank up.
-     *
-     * @return The cost in the server's economy.
-     */
-    public double getCost() {
-        return cost;
     }
 
     public List<Requirement> getRequirements() {
