@@ -89,13 +89,13 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.1-R0.1-SNAPSHOT</version>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>5.1.0</version>
+            <version>6.2.1</version>
         </dependency>
         <dependency>
             <groupId>net.william278</groupId>
@@ -104,9 +104,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultUnlockedAPI</artifactId>
+            <version>2.9</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -139,18 +139,18 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.46.1.0</version>
+            <version>3.48.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.1.0</version>
+            <version>26.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-text-minimessage</artifactId>
-            <version>4.17.0</version>
+            <version>4.18.0</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
@@ -161,13 +161,19 @@
         <dependency>
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api-plugin</artifactId>
-            <version>2.13.2</version>
+            <version>2.14.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20240303</version>
+        </dependency>
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.4</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -7,8 +7,8 @@ description: One plugin to rule them all!
 folia-supported: true
 
 loadbefore: [Lands]
-depend: [Vault, WorldGuard, WorldEdit]
-softdepend: [HuskHomes, PlaceholderAPI]
+depend: [WorldGuard, WorldEdit]
+softdepend: [VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms]
 
 commands:
   bme:
@@ -190,6 +190,20 @@ commands:
   bmrestart:
     description: Restart the server with a specified timer.
     usage: /bmrestart <30|15|5|1>
+
+  pay:
+    description: Pay another player
+
+  bal:
+    description: Show your balance
+    aliases: [money]
+
+  baltop:
+    description: Show top balances
+    aliases: [moneytop]
+
+  eco:
+    description: OP economy commands
 
 
 

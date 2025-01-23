@@ -6,6 +6,8 @@ import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueTabCompleter;
 import at.sleazlee.bmessentials.Containers.*;
+import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
+import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
@@ -26,11 +28,11 @@ import at.sleazlee.bmessentials.tpshop.*;
 import at.sleazlee.bmessentials.votesystem.*;
 import at.sleazlee.bmessentials.wild.*;
 import lombok.Getter;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -45,9 +47,6 @@ public class BMEssentials extends JavaPlugin {
 
     /** The RankUpManager for handling rank-up functionality. */
     private RankUpManager rankUpManager;
-
-    /** The economy service provider. */
-    private Economy economy = null;
 
     /** The database for the trophy system. */
     private TrophyDatabase trophiesDB;
@@ -97,6 +96,59 @@ public class BMEssentials extends JavaPlugin {
         String[] startArt = Art.startupArt().split("\n");
         for (String line : startArt) {
             getServer().getConsoleSender().sendMessage(ChatColor.AQUA + line);
+        }
+
+        // Enable PlayerData Systems
+        if (getConfig().getBoolean("Systems.PlayerData.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled PlayerData Systems");
+
+            // Initialize the database manager
+            PlayerDataDBManager = new PlayerDatabaseManager(this);
+            PlayerDataDBManager.initializeDatabase();
+
+            // Register the player join event listener
+            getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+
+            // Register PlaceholderAPI expansion if PlaceholderAPI is present
+            if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                new BMEPlaceholders(this).register();
+                new BMEChatPlaceholders(this).register();
+            } else {
+                getLogger().warning("PlaceholderAPI not found! Placeholders will not work.");
+            }
+
+            // Enable Economy Systems
+            if (getConfig().getBoolean("Systems.PlayerData.EconomySystems.Enabled")) {
+                getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Economy Systems");
+
+                // 1. Register our BMSEconomyProvider as an Economy
+                BMSEconomyProvider economyProvider = new BMSEconomyProvider(this, PlayerDataDBManager);
+                getServer().getServicesManager().register(
+                        net.milkbowl.vault2.economy.Economy.class,
+                        economyProvider,
+                        this,
+                        ServicePriority.High
+                );
+
+                // 2. Register the commands
+                getCommand("pay").setExecutor(new EconomyCommands(this));
+                getCommand("bal").setExecutor(new EconomyCommands(this));
+                getCommand("money").setExecutor(new EconomyCommands(this));
+                getCommand("baltop").setExecutor(new EconomyCommands(this));
+                getCommand("moneytop").setExecutor(new EconomyCommands(this));
+                getCommand("eco").setExecutor(new EconomyCommands(this));
+
+                // 3. Set tab completers
+                getCommand("pay").setTabCompleter(new EconomyCommands(this));
+                getCommand("bal").setTabCompleter(new EconomyCommands(this));
+                getCommand("baltop").setTabCompleter(new EconomyCommands(this));
+                getCommand("money").setTabCompleter(new EconomyCommands(this));
+                getCommand("moneytop").setTabCompleter(new EconomyCommands(this));
+                getCommand("eco").setTabCompleter(new EconomyCommands(this));
+
+            }
+
         }
 
         // TPShop System
@@ -284,17 +336,9 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // RankUp System
-        if (getConfig().getBoolean("Systems.Rankup.Enabled")) {
-            // Add the system enabled message.
+        if (config.getBoolean("Systems.Rankup.Enabled")) {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the RankUp System");
-
-            if (!setupEconomy()) {
-                getLogger().severe("Disabled due to no Vault dependency found!");
-                getServer().getPluginManager().disablePlugin(this);
-                return;
-            }
-
-            this.rankUpManager = new RankUpManager(this, economy);
+            this.rankUpManager = new RankUpManager(this);
         }
 
         // Enable Book Systems
@@ -313,27 +357,6 @@ public class BMEssentials extends JavaPlugin {
 
             HelpCommands commandsSystem = new HelpCommands(this);
             getCommand("commands").setExecutor(new CommandsCommand(commandsSystem));
-        }
-
-        // Enable PlayerData Systems
-        if (getConfig().getBoolean("Systems.PlayerData.Enabled")) {
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled PlayerData Systems");
-
-            // Initialize the database manager
-            PlayerDataDBManager = new PlayerDatabaseManager(this);
-            PlayerDataDBManager.initializeDatabase();
-
-            // Register the player join event listener
-            getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-
-            // Register PlaceholderAPI expansion if PlaceholderAPI is present
-            if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
-                new BMEPlaceholders(this).register();
-                new BMEChatPlaceholders(this).register();
-            } else {
-                getLogger().warning("PlaceholderAPI not found! Placeholders will not work.");
-            }
         }
 
 
@@ -369,38 +392,6 @@ public class BMEssentials extends JavaPlugin {
 
         // Log a message to indicate the plugin has been successfully disabled
         getLogger().info("BMEssentials has been disabled!");
-    }
-
-    /**
-     * Sets up the economy service using Vault.
-     *
-     * @return true if the economy service was successfully set up, false otherwise
-     */
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            getLogger().severe("Vault plugin not found!");
-            return false;
-        }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            getLogger().severe("No economy provider found via Vault!");
-            return false;
-        }
-        economy = rsp.getProvider();
-        return economy != null;
-    }
-
-    /**
-     * Retrieves the economy service provider.
-     *
-     * @return the Economy provider, or null if not found
-     */
-    private Economy getEconomyService() {
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return null;
-        }
-        return rsp.getProvider();
     }
 
 }

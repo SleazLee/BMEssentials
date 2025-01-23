@@ -1,98 +1,102 @@
 package at.sleazlee.bmessentials.rankup;
 
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
+
+import net.milkbowl.vault2.economy.Economy;  // We still use VaultUnlocked for economy
+import net.milkbowl.vault2.economy.EconomyResponse;
+
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.bukkit.Bukkit.getServer;
 
 /**
- * Manages rank-up functionalities and command execution.
+ * RankUpManager that uses LuckPerms directly for permission/group changes,
+ * while still using VaultUnlocked for economy.
  */
 public class RankUpManager implements CommandExecutor {
     private final JavaPlugin plugin;
-    public final Economy economy; // Made public for ConfigurationLoader access
-    private final Permission permission;
+
+    // VaultUnlocked Economy
+    private final Economy economy;
+
+    // LuckPerms API reference
+    private LuckPerms luckPerms;
+
     private final ConfigurationLoader configLoader;
     private final MessageHandler messageHandler;
     private final Map<String, Rank> ranks;
 
-    /**
-     * Initializes the RankUpManager with the provided plugin and economy instances.
-     *
-     * @param plugin  The main plugin instance.
-     * @param economy The economy instance from the main class.
-     */
-    public RankUpManager(JavaPlugin plugin, Economy economy) {
+    public RankUpManager(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.economy = economy;
-        this.permission = setupPermissions();
-        if (this.economy == null) {
-            plugin.getLogger().severe("Economy plugin not found! Disabling RankUpManager.");
+
+        // SET UP ECONOMY via VaultUnlocked
+        this.economy = setupVaultUnlockedEconomy();
+        if (this.economy == null || !this.economy.isEnabled()) {
+            plugin.getLogger().severe("VaultUnlocked Economy not found or not enabled! Disabling RankUpManager.");
             plugin.getServer().getPluginManager().disablePlugin(plugin);
-            throw new IllegalStateException("Economy plugin not found!");
+            throw new IllegalStateException("VaultUnlocked Economy not found!");
         }
-        if (this.permission == null) {
-            plugin.getLogger().severe("Permission plugin not found! Disabling RankUpManager.");
+
+        // SET UP LuckPerms (directly)
+        if (!setupLuckPerms()) {
+            plugin.getLogger().severe("LuckPerms not found or not loaded! Disabling RankUpManager.");
             plugin.getServer().getPluginManager().disablePlugin(plugin);
-            throw new IllegalStateException("Permission plugin not found!");
+            throw new IllegalStateException("LuckPerms not found!");
         }
-        this.configLoader = new ConfigurationLoader(plugin, this.economy); // Pass economy if needed
+
+        // Load rank configuration
+        this.configLoader = new ConfigurationLoader(plugin, economy);
         this.messageHandler = new MessageHandler();
         this.ranks = configLoader.loadRanks();
+
+        // Register /rankup command
         plugin.getCommand("rankup").setExecutor(this);
-        getServer().getConsoleSender().sendMessage(ChatColor.GRAY + "    Discovered " + ChatColor.DARK_GREEN + ranks.size() + ChatColor.GRAY + " Ranks!");
+
+        getServer().getConsoleSender().sendMessage(
+                ChatColor.GRAY + "    Discovered " +
+                        ChatColor.DARK_GREEN + ranks.size() +
+                        ChatColor.GRAY + " Ranks!");
     }
 
-    /**
-     * Handles the /rankup command.
-     *
-     * @param sender  The command sender.
-     * @param command The command being executed.
-     * @param label   The command label.
-     * @param args    Command arguments.
-     * @return True if the command was handled, false otherwise.
-     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // Ensure the command is run by a player
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "This command can only be run by a player.");
             return true;
         }
 
         Player player = (Player) sender;
-
-        // Check for necessary permission
         if (!player.hasPermission("bmessentials.rankup.use")) {
             player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return true;
         }
 
-        // Retrieve current rank
         String currentRankKey = getCurrentRank(player);
         if (currentRankKey == null) {
-            player.sendMessage(ChatColor.RED + "Your current rank could not be determined.");
-            plugin.getLogger().warning("Player " + player.getName() + " has no primary group.");
+            player.sendMessage(ChatColor.RED + "Your current rank could not be determined via LuckPerms.");
+            plugin.getLogger().warning("Player " + player.getName() + " has no primary group in LuckPerms?");
             return true;
         }
 
         Rank currentRank = ranks.get(currentRankKey);
         if (currentRank == null) {
             player.sendMessage(ChatColor.RED + "Your current rank is invalid.");
-            plugin.getLogger().warning("Invalid current rank for player " + player.getName() + ": " + currentRankKey);
+            plugin.getLogger().warning("Invalid current rank for " + player.getName() + ": " + currentRankKey);
             return true;
         }
 
-        // Retrieve next rank
+        // Next rank
         String nextRankKey = currentRank.getNextRank();
         if (nextRankKey == null || nextRankKey.equalsIgnoreCase("none")) {
             player.sendMessage(ChatColor.RED + "You have reached the highest rank.");
@@ -102,110 +106,116 @@ public class RankUpManager implements CommandExecutor {
         Rank nextRank = ranks.get(nextRankKey);
         if (nextRank == null) {
             player.sendMessage(ChatColor.RED + "The next rank is not configured properly.");
-            plugin.getLogger().warning("Next rank not found in config: " + nextRankKey);
+            plugin.getLogger().warning("Next rank not found: " + nextRankKey);
             return true;
         }
 
-        // Check requirements
-        List<String> unmetRequirements = new ArrayList<>();
-        for (Requirement requirement : currentRank.getRequirements()) {
-            if (!requirement.isMet(player)) {
-                unmetRequirements.add(requirement.getDenyMessage());
+        // Check Requirements
+        List<String> unmet = new ArrayList<>();
+        for (Requirement req : currentRank.getRequirements()) {
+            if (!req.isMet(player)) {
+                unmet.add(req.getDenyMessage());
             }
         }
-
-        if (!unmetRequirements.isEmpty()) {
-            // Just send the general rank deny message from ranks.yml
-            String rankDenyMsg = currentRank.getDenyMessage();
-            if (rankDenyMsg != null && !rankDenyMsg.isEmpty()) {
-                String formattedRankDenyMsg = messageHandler.formatMessage(rankDenyMsg, player);
-                player.sendMessage(formattedRankDenyMsg);
+        if (!unmet.isEmpty()) {
+            String deny = currentRank.getDenyMessage();
+            if (deny != null && !deny.isEmpty()) {
+                player.sendMessage(messageHandler.formatMessage(deny, player));
             }
-
             return true;
         }
-
 
         // Perform rank up
         performRankUp(player, currentRank, nextRank);
-
         return true;
     }
 
     /**
-     * Performs the rank-up process for the player.
-     *
-     * @param player      The player to rank up.
-     * @param currentRank The player's current rank.
-     * @param nextRank    The rank to assign to the player.
+     * Withdraw cost from player's balance, then set new rank in LuckPerms.
      */
     private void performRankUp(Player player, Rank currentRank, Rank nextRank) {
-        // Deduct economy cost if applicable
         double cost = currentRank.getCost();
         if (cost > 0) {
-            if (!economy.has(player, cost)) {
+            // VaultUnlocked's "has" check
+            if (!economy.has(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(cost))) {
                 player.sendMessage(ChatColor.RED + "You do not have enough money to rank up.");
                 return;
             }
-            boolean success = economy.withdrawPlayer(player, cost).transactionSuccess();
-            if (!success) {
-                player.sendMessage(ChatColor.RED + "Failed to deduct the required balance for rank up.");
-                plugin.getLogger().warning("Economy withdrawal failed for player " + player.getName() + " for rank " + nextRank.getName());
+
+            EconomyResponse resp = economy.withdraw(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(cost));
+            if (!resp.transactionSuccess()) {
+                player.sendMessage(ChatColor.RED + "Failed to deduct cost for rank up: " + resp.errorMessage);
+                plugin.getLogger().warning("Withdraw failed for " + player.getName() + " cost = " + cost);
                 return;
             }
         }
 
-        // Set the player's new rank
-        setPlayerRank(player, currentRank.getName(), nextRank.getName());
+        // Actually set rank in LuckPerms
+        setPlayerRankLuckPerms(player, currentRank.getName(), nextRank.getName());
 
-        // Send personal message
-        String personalMessage = currentRank.getPersonalMessage();
-        if (personalMessage != null && !personalMessage.isEmpty()) {
-            personalMessage = messageHandler.formatMessage(personalMessage, player);
-            player.sendMessage(personalMessage);
+        // Personal message
+        String personal = currentRank.getPersonalMessage();
+        if (personal != null && !personal.isEmpty()) {
+            player.sendMessage(messageHandler.formatMessage(personal, player));
         }
 
         // Broadcast message
-        String broadcastMessage = currentRank.getBroadcastMessage();
-        if (broadcastMessage != null && !broadcastMessage.isEmpty()) {
-            broadcastMessage = messageHandler.formatMessage(broadcastMessage, player);
-            plugin.getServer().broadcastMessage(broadcastMessage);
+        String broadcast = currentRank.getBroadcastMessage();
+        if (broadcast != null && !broadcast.isEmpty()) {
+            broadcast = messageHandler.formatMessage(broadcast, player);
+            plugin.getServer().broadcastMessage(broadcast);
         }
 
-        plugin.getLogger().info("Player " + player.getName() + " ranked up from " + currentRank.getName() + " to " + nextRank.getName());
+        plugin.getLogger().info("Player " + player.getName() + " ranked up from "
+                + currentRank.getName() + " to " + nextRank.getName());
     }
 
     /**
-     * Sets the player's rank using the permission plugin.
-     *
-     * @param player      The player to set the rank for.
-     * @param currentRank The player's current rank.
-     * @param nextRank    The rank to set.
-     */
-    private void setPlayerRank(Player player, String currentRank, String nextRank) {
-        permission.playerRemoveGroup(null, player, currentRank);
-        permission.playerAddGroup(null, player, nextRank);
-    }
-
-    /**
-     * Retrieves the player's current primary group using Vault permissions.
-     *
-     * @param player The player whose rank is to be retrieved.
-     * @return The current rank key as a string, or null if unable to determine.
+     * Use LuckPerms to get the player's current primary group (rank).
      */
     private String getCurrentRank(Player player) {
-        return permission.getPrimaryGroup(player);
+        // Load or get the LuckPerms user
+        User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+        // Primary group typically indicates the rank name in LuckPerms
+        return user.getPrimaryGroup();
     }
 
     /**
-     * Sets up the Permission service via Vault (LuckPerms in this case).
-     *
-     * @return The Permission instance, or null if not found.
+     * Use LuckPerms to set the player's new primary group (rank).
      */
-    private Permission setupPermissions() {
-        RegisteredServiceProvider<Permission> rsp = plugin.getServer().getServicesManager().getRegistration(Permission.class);
+    private void setPlayerRankLuckPerms(Player player, String oldRank, String newRank) {
+        User user = luckPerms.getPlayerAdapter(Player.class).getUser(player);
+
+        // Set primary group. This is the simplest approach,
+        // but you can also manage group nodes if you prefer more control.
+        user.setPrimaryGroup(newRank);
+
+        // Save changes back to LuckPerms
+        luckPerms.getUserManager().saveUser(user);
+    }
+
+    /**
+     * Grabs the LuckPerms API, returns false if not available.
+     */
+    private boolean setupLuckPerms() {
+        try {
+            this.luckPerms = LuckPermsProvider.get();
+            return true;
+        } catch (IllegalStateException e) {
+            // Thrown if LuckPerms isn't loaded or hooking is done too early
+            plugin.getLogger().severe("LuckPermsProvider not available: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Finds a VaultUnlocked economy from ServiceManager or returns null if not found.
+     */
+    private Economy setupVaultUnlockedEconomy() {
+        RegisteredServiceProvider<Economy> rsp =
+                plugin.getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
-            plugin.getLogger().severe("No Permission plugin found! Ensure Vault and LuckPerms are installed.");
+            plugin.getLogger().severe("No VaultUnlocked economy provider found!");
             return null;
         }
         return rsp.getProvider();

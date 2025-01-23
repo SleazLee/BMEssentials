@@ -88,7 +88,7 @@ public class HealCommand implements CommandExecutor {
 
 	private void healPlayer(Player player) {
 		// Heal the player to maximum health
-		double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue();
+		double maxHealth = Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue();
 		player.setHealth(maxHealth);
 
 		// Restore hunger to maximum

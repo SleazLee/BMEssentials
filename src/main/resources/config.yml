@@ -9,7 +9,7 @@
 
 serverName: "blockminer"
 
-`#The start of a list of Systems.
+#The start of a list of Systems.
 Systems:
 
   Discord:
@@ -225,3 +225,7 @@ Systems:
   # Enables the PlayerData Systems
   PlayerData:
     Enabled: true
+
+    # Enables the Economy Systems
+    EconomySystems:
+      Enabled: true

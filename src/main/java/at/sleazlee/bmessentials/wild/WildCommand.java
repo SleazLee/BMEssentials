@@ -192,34 +192,27 @@ public class WildCommand implements CommandExecutor {
                         HuskHomesAPIHook.timedTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
                     }
                 } else if (attempt == maxRetries) {
-                    // After max retries, proceed to generate a new location without checking
-                    logger.info("[Wild] Attempt " + attempt + ": Teleport location (" + finalX + ", " + (finalY - 1) + ", " + finalZ + ") is above water. Teleporting anyway.");
+                    // On the final attempt, just teleport anyway—even if there is water.
+                    logger.info("[Wild] Attempt " + attempt + ": Teleport location ("
+                            + finalX + ", " + (finalY - 1) + ", " + finalZ
+                            + ") is above water. Teleporting anyway.");
 
-                    // Generate a new random location without checking
-                    double newXOffset = random.nextDouble() * (2 * upper) - upper;
-                    double newZOffset = random.nextDouble() * (2 * upper) - upper;
-
-                    double newFinalX = centerX + newXOffset;
-                    double newFinalZ = centerZ + newZOffset;
-
-                    // Log the unconditional teleport
-                    logger.info("[Wild] Teleporting player " + player.getName()
-                            + " to version " + version
-                            + " at X=" + newFinalX + ", Z=" + newFinalZ + " without water check.");
-
-                    // Teleport the player using HuskHomes without water check
+                    // Reuse the finalX, finalZ that are already in-bounds
                     String worldName = "world";
                     String serverName = "blockminer";
 
                     if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")) {
                         // Instant teleport if in spawn region
-                        HuskHomesAPIHook.instantTeleportPlayer(player, newFinalX, finalY, newFinalZ, 0, 90, worldName, serverName);
+                        HuskHomesAPIHook.instantTeleportPlayer(
+                                player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
                     } else if (IsInWorldGuardRegion.isPlayerInRegion(player, "Shop")) {
                         // Instant teleport if in shop region
-                        HuskHomesAPIHook.instantTeleportPlayer(player, newFinalX, finalY, newFinalZ, 0, 90, worldName, serverName);
+                        HuskHomesAPIHook.instantTeleportPlayer(
+                                player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
                     } else {
                         // Timed teleport otherwise
-                        HuskHomesAPIHook.timedTeleportPlayer(player, newFinalX, finalY, newFinalZ, 0, 90, worldName, serverName);
+                        HuskHomesAPIHook.timedTeleportPlayer(
+                                player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
                     }
                 }
             }

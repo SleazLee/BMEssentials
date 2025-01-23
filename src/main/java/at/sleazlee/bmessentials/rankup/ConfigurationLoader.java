@@ -1,6 +1,6 @@
 package at.sleazlee.bmessentials.rankup;
 
-import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault2.economy.Economy; // <-- VaultUnlocked import
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Handles loading and parsing the ranks configuration.
+ * Handles loading and parsing the ranks configuration using VaultUnlocked.
  */
 public class ConfigurationLoader {
     private final JavaPlugin plugin;
-    private final Economy economy;
+    private final Economy economy; // This is now VaultUnlocked's Economy
     private final File configFile;
     private FileConfiguration config;
 
@@ -23,11 +23,11 @@ public class ConfigurationLoader {
      * Constructs a ConfigurationLoader and loads the configuration.
      *
      * @param plugin  The main plugin instance.
-     * @param economy The Economy instance from Vault.
+     * @param economy The VaultUnlocked Economy instance.
      */
     public ConfigurationLoader(JavaPlugin plugin, Economy economy) {
         this.plugin = plugin;
-        this.economy = economy;
+        this.economy = economy;  // net.milkbowl.vault2.economy.Economy
         this.configFile = new File(plugin.getDataFolder(), "ranks.yml");
         loadConfig();
     }
@@ -105,7 +105,8 @@ public class ConfigurationLoader {
             // Economy Balance Requirement
             double balanceRequirement = requirementsSection.getDouble("balance", 0);
             if (balanceRequirement > 0) {
-                requirements.add(new EconomyRequirement(balanceRequirement, economy));
+                // Pass plugin.getName() so EconomyRequirement can do economy.has("YourPluginName", uuid, BigDecimal)
+                requirements.add(new EconomyRequirement(plugin.getName(), balanceRequirement, economy));
             }
 
             // Playtime Requirement
