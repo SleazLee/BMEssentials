@@ -13,7 +13,7 @@ ranks:
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[1]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1]."
 
     default_one:
@@ -25,7 +25,7 @@ ranks:
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[2]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2]."
 
     default_two:
@@ -37,7 +37,7 @@ ranks:
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[3]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3]."
 
     default_three:
@@ -49,7 +49,7 @@ ranks:
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[4]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4]."
 
     default_four:
@@ -61,7 +61,7 @@ ranks:
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[5]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5]."
 
     default_five:
@@ -73,7 +73,7 @@ ranks:
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[6]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6]."
 
     default_six:
@@ -85,7 +85,7 @@ ranks:
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[7]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7]."
 
     default_seven:
@@ -97,7 +97,7 @@ ranks:
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[8]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8]."
 
     default_eight:
@@ -109,7 +109,7 @@ ranks:
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[9]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9]."
 
     default_nine:
@@ -121,7 +121,7 @@ ranks:
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[10]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10]."
 
     default_ten:
@@ -147,7 +147,7 @@ ranks:
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[1][Plus]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Plus]."
 
     plus_one:
@@ -159,7 +159,7 @@ ranks:
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[2][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Plus]."
 
     plus_two:
@@ -171,7 +171,7 @@ ranks:
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[3][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Plus]."
 
     plus_three:
@@ -183,7 +183,7 @@ ranks:
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[4][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Plus]."
 
     plus_four:
@@ -195,7 +195,7 @@ ranks:
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[5][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Plus]."
 
     plus_five:
@@ -207,7 +207,7 @@ ranks:
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[6][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Plus]."
 
     plus_six:
@@ -219,7 +219,7 @@ ranks:
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[7][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Plus]."
 
     plus_seven:
@@ -231,7 +231,7 @@ ranks:
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[8][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Plus]."
 
     plus_eight:
@@ -243,7 +243,7 @@ ranks:
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[9][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Plus]."
 
     plus_nine:
@@ -255,7 +255,7 @@ ranks:
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Plus]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Plus]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[10][Plus]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Plus]."
 
     plus_ten:
@@ -281,7 +281,7 @@ ranks:
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[1][Premium]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Premium]."
 
     premium_one:
@@ -293,7 +293,7 @@ ranks:
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[2][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Premium]."
 
     premium_two:
@@ -305,7 +305,7 @@ ranks:
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[3][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Premium]."
 
     premium_three:
@@ -317,7 +317,7 @@ ranks:
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[4][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Premium]."
 
     premium_four:
@@ -329,7 +329,7 @@ ranks:
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[5][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Premium]."
 
     premium_five:
@@ -341,7 +341,7 @@ ranks:
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[6][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Premium]."
 
     premium_six:
@@ -353,7 +353,7 @@ ranks:
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[7][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Premium]."
 
     premium_seven:
@@ -365,7 +365,7 @@ ranks:
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[8][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Premium]."
 
     premium_eight:
@@ -377,7 +377,7 @@ ranks:
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[9][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Premium]."
 
     premium_nine:
@@ -389,7 +389,7 @@ ranks:
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Premium]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Premium]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[10][Premium]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Premium]."
 
     premium_ten:
@@ -415,7 +415,7 @@ ranks:
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[1][Super]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Super]."
 
     super_one:
@@ -427,7 +427,7 @@ ranks:
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[2][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Super]."
 
     super_two:
@@ -439,7 +439,7 @@ ranks:
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[3][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Super]."
 
     super_three:
@@ -451,7 +451,7 @@ ranks:
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[4][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Super]."
 
     super_four:
@@ -463,7 +463,7 @@ ranks:
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[5][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Super]."
 
     super_five:
@@ -475,7 +475,7 @@ ranks:
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[6][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Super]."
 
     super_six:
@@ -487,7 +487,7 @@ ranks:
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[7][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Super]."
 
     super_seven:
@@ -499,7 +499,7 @@ ranks:
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[8][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Super]."
 
     super_eight:
@@ -511,7 +511,7 @@ ranks:
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[9][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Super]."
 
     super_nine:
@@ -523,7 +523,7 @@ ranks:
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Super]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Super]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[10][Super]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Super]."
 
     super_ten:
@@ -549,7 +549,7 @@ ranks:
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[1][Ultra]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Ultra]."
 
     ultra_one:
@@ -561,7 +561,7 @@ ranks:
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[2][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Ultra]."
 
     ultra_two:
@@ -573,7 +573,7 @@ ranks:
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[3][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Ultra]."
 
     ultra_three:
@@ -585,7 +585,7 @@ ranks:
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[4][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Ultra]."
 
     ultra_four:
@@ -597,7 +597,7 @@ ranks:
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[5][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Ultra]."
 
     ultra_five:
@@ -609,7 +609,7 @@ ranks:
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[6][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Ultra]."
 
     ultra_six:
@@ -621,7 +621,7 @@ ranks:
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[7][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Ultra]."
 
     ultra_seven:
@@ -633,7 +633,7 @@ ranks:
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[8][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Ultra]."
 
     ultra_eight:
@@ -645,7 +645,7 @@ ranks:
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[9][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Ultra]."
 
     ultra_nine:
@@ -657,7 +657,7 @@ ranks:
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Ultra]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Ultra]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[10][Ultra]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Ultra]."
 
     ultra_ten:
@@ -683,7 +683,7 @@ ranks:
         mcmmo_power_level: 0
       messages:
         personal: "You successfully ranked up to [1][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[1][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[1][Blockminer]&f!"
         deny: "&c&lRanks &cYou need &e30 minutes&c of playtime to rankup to [1][Blockminer]."
 
     blockminer_one:
@@ -695,7 +695,7 @@ ranks:
         mcmmo_power_level: 200
       messages:
         personal: "You successfully ranked up to [2][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[2][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[2][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100.00&c and a mcmmo power level of &6200&c to rankup to [2][Blockminer]."
 
     blockminer_two:
@@ -707,7 +707,7 @@ ranks:
         mcmmo_power_level: 300
       messages:
         personal: "You successfully ranked up to [3][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[3][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[3][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$500.00&c and a mcmmo power level of &6300&c to rankup to [3][Blockminer]."
 
     blockminer_three:
@@ -719,7 +719,7 @@ ranks:
         mcmmo_power_level: 500
       messages:
         personal: "You successfully ranked up to [4][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[4][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[4][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$2,500.00&c and a mcmmo power level of &6500&c to rankup to [4][Blockminer]."
 
     blockminer_four:
@@ -731,7 +731,7 @@ ranks:
         mcmmo_power_level: 700
       messages:
         personal: "You successfully ranked up to [5][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[5][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[5][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$10,000.00&c, &e1 Day&c of playtime, and a mcmmo power level of &6700&c to rankup to [5][Blockminer]."
 
     blockminer_five:
@@ -743,7 +743,7 @@ ranks:
         mcmmo_power_level: 1000
       messages:
         personal: "You successfully ranked up to [6][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[6][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[6][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$25,000.00&c, &e3 Days&c of playtime, and a mcmmo power level of &61000&c to rankup to [6][Blockminer]."
 
     blockminer_six:
@@ -755,7 +755,7 @@ ranks:
         mcmmo_power_level: 2000
       messages:
         personal: "You successfully ranked up to [7][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[7][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[7][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$50,000.00&c, &e5 Days&c of playtime, and a mcmmo power level of &62000&c to rankup to [7][Blockminer]."
 
     blockminer_seven:
@@ -767,7 +767,7 @@ ranks:
         mcmmo_power_level: 4000
       messages:
         personal: "You successfully ranked up to [8][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[8][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[8][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$100,000.00&c, &e10 Days&c of playtime, and a mcmmo power level of &64000&c to rankup to [8][Blockminer]."
 
     blockminer_eight:
@@ -779,7 +779,7 @@ ranks:
         mcmmo_power_level: 6000
       messages:
         personal: "You successfully ranked up to [9][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[9][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[9][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$200,000.00&c, &e15 Days&c of playtime, and a mcmmo power level of &66000&c to rankup to [9][Blockminer]."
 
     blockminer_nine:
@@ -791,7 +791,7 @@ ranks:
         mcmmo_power_level: 8000
       messages:
         personal: "You successfully ranked up to [10][Blockminer]!"
-        broadcast: "&b&lRanks&f Congratulate &c%chatcontrolred_nick%&f, they've ranked up to &b&l[10][Blockminer]&f!"
+        broadcast: "&b&lRanks&f Congratulate &c%chatcontrol_player_nick%&f, they've ranked up to &b&l[10][Blockminer]&f!"
         deny: "&c&lRanks &cYou need to have at least &a$300,000.00&c, &e25 Days&c of playtime, and a mcmmo power level of &68000&c to rankup to [10][Blockminer]."
 
     blockminer_ten:
