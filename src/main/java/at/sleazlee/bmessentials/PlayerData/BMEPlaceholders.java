@@ -100,15 +100,6 @@ public class BMEPlaceholders extends PlaceholderExpansion {
             return sdf.format(date);
         }
 
-        // Handle the %bme_centeredname% placeholder
-        if (identifier.equals("centeredname")) {
-            String centeredName = plugin.getPlayerDataDBManager().getCenteredName(uuid);
-            if (centeredName == null) {
-                return "";
-            }
-            return ChatColor.translateAlternateColorCodes('&', centeredName);
-        }
-
         // Handle the %bme_chunkinfo% placeholder
         if (identifier.equals("chunkinfo")) {
             // Get the version or region name where the player is located

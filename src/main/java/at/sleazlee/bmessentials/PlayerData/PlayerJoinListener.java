@@ -39,8 +39,7 @@ public class PlayerJoinListener implements Listener {
         // Check if the player data is already stored
         if (!dbManager.hasPlayerData(uuid)) {
             long joinDate = System.currentTimeMillis(); // Current timestamp
-            String centeredName = TextCenter.center(player.getName(), 29); // Center the player's name
-            dbManager.insertPlayerData(uuid, joinDate, centeredName); // Insert data into the database
+            dbManager.insertPlayerData(uuid, joinDate); // Insert data into the database
         }
     }
 }

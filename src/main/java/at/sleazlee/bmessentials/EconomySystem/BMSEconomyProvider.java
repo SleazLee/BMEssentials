@@ -145,7 +145,7 @@ public class BMSEconomyProvider implements Economy {
         // If the player doesn't exist, insert them into the DB with zero balances
         String uuidStr = accountID.toString();
         if (!db.hasPlayerData(uuidStr)) {
-            db.insertPlayerData(uuidStr, System.currentTimeMillis(), name);
+            db.insertPlayerData(uuidStr, System.currentTimeMillis());
         }
         return true;
     }
