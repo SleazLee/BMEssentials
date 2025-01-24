@@ -8,6 +8,7 @@ import at.sleazlee.bmessentials.CommandQueue.CommandQueueTabCompleter;
 import at.sleazlee.bmessentials.Containers.*;
 import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
+import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
 import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
@@ -130,6 +131,10 @@ public class BMEssentials extends JavaPlugin {
                         this,
                         ServicePriority.High
                 );
+
+                // Register legacy Vault provider
+                LegacyEconomyProvider legacyEconomyProvider = new LegacyEconomyProvider(this, PlayerDataDBManager);
+                getServer().getServicesManager().register(net.milkbowl.vault.economy.Economy.class, legacyEconomyProvider, this, ServicePriority.High);
 
                 // 2. Register the commands
                 getCommand("pay").setExecutor(new EconomyCommands(this));

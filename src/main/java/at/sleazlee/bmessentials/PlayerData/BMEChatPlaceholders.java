@@ -11,8 +11,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * This expansion provides the %bm_player_stats% placeholder which returns a
@@ -76,7 +78,10 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
     */
     private String getDollarsBalance(Player player) {
         double balance = plugin.getPlayerDataDBManager().getDollars(player.getUniqueId().toString());
-        return String.format("$%.2f", balance);
+        NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+        formatter.setMinimumFractionDigits(2);
+        formatter.setMaximumFractionDigits(2);
+        return "$" + formatter.format(balance);
     }
 
     /**
@@ -152,9 +157,8 @@ public class BMEChatPlaceholders extends PlaceholderExpansion {
 
         String line1 = ChatColor.translateAlternateColorCodes('&', "&7Name:&f " + player.getName() + " &7 &aPower LVL: " + mcmmoPower);
         String line2 = ChatColor.translateAlternateColorCodes('&', "&6First joined: &6" + joinDateStr);
-        String line3 = ChatColor.translateAlternateColorCodes('&', "&7Money: " + balanceDollars + " &8/ " + balanceVPs);
-        String line4 = ChatColor.translateAlternateColorCodes('&',
-                "&7Playtime: &c" + days + " Days &6" + hours + " Hours &e" + minutes + " Minutes");
+        String line3 = ChatColor.translateAlternateColorCodes('&', "&7Money:&b " + balanceDollars + " &8/ &e" + balanceVPs);
+        String line4 = ChatColor.translateAlternateColorCodes('&', "&7Playtime: &c" + days + " Days &6" + hours + " Hours &e" + minutes + " Minutes");
         String line5 = "";
         String line6 = ChatColor.translateAlternateColorCodes('&',
                 "&7Mined " + minedBlocks + " blocks &8/ &7Killed " + playerKills + " players");

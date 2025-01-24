@@ -4,6 +4,10 @@ import at.sleazlee.bmessentials.BMEssentials;
 
 import java.io.File;
 import java.sql.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class PlayerDatabaseManager {
     private BMEssentials plugin;
@@ -196,29 +200,28 @@ public class PlayerDatabaseManager {
     }
 
     /**
-     * Retrieve top balances for a given currency (dollars or votepoints).
-     * This is a simplistic example for /baltop or /moneytop.
+     * Get top balances with UUIDs
+     * @return List of entries with UUIDs and balances
      */
-    public String getTopBalances(String currencyColumn, int limit) {
-        StringBuilder sb = new StringBuilder();
+    public List<Map.Entry<String, Double>> getTopBalances(String currencyColumn, int limit) {
+        List<Map.Entry<String, Double>> results = new ArrayList<>();
         String sql = "SELECT uuid, " + currencyColumn + " as bal " +
-                "FROM playerdata " +
-                "ORDER BY bal DESC LIMIT ?";
+                "FROM playerdata ORDER BY bal DESC LIMIT ?";
+
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, limit);
             ResultSet rs = statement.executeQuery();
-            int rank = 1;
+
             while (rs.next()) {
                 String uuid = rs.getString("uuid");
                 double balance = rs.getDouble("bal");
-                sb.append(rank).append(". ").append(uuid).append(" - ").append(balance).append("\n");
-                rank++;
+                results.add(new AbstractMap.SimpleEntry<>(uuid, balance));
             }
             rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return sb.toString();
+        return results;
     }
 
     public Connection getConnection() {

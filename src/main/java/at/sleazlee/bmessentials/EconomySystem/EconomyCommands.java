@@ -22,6 +22,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     private final BMEssentials plugin;
     private final PlayerDatabaseManager db;
     private final Economy economy; // VaultUnlocked Economy
+    private final Map<UUID, Long> payCooldowns = new HashMap<>();
 
     public EconomyCommands(BMEssentials plugin) {
         this.plugin = plugin;
@@ -70,19 +71,32 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     }
 
     // -------------------------------------------------------------------------
-    // /pay <player> <amount> [currency]
-    // -------------------------------------------------------------------------
+// /pay <player> <amount> [currency] (with cooldown and self-payment check)
+// -------------------------------------------------------------------------
     private boolean handlePay(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Must be a player to use /pay!");
             return true;
         }
+
+        Player player = (Player) sender;
+        UUID playerUUID = player.getUniqueId();
+
+        // Check cooldown
+        long currentTime = System.currentTimeMillis();
+        if (payCooldowns.containsKey(playerUUID)) {
+            long lastUsed = payCooldowns.get(playerUUID);
+            if (currentTime - lastUsed < 3000) {
+                player.sendMessage(mini("<red>You must wait 3 seconds between payments!"));
+                return true;
+            }
+        }
+
         if (args.length < 2) {
-            sender.sendMessage("Usage: /pay <player> <amount> [currency]");
+            player.sendMessage(mini("Usage: /pay <player> <amount> [currency]"));
             return true;
         }
 
-        Player player = (Player) sender;
         String targetName = args[0];
         String amountStr = args[1];
         String currency = (args.length >= 3) ? args[2] : BMSEconomyProvider.CURRENCY_DOLLARS;
@@ -90,6 +104,12 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
         OfflinePlayer target = getOfflinePlayer(targetName);
         if (target == null || !target.hasPlayedBefore()) {
             player.sendMessage(mini("<red>Player not found!"));
+            return true;
+        }
+
+        // Prevent self-payment
+        if (target.getUniqueId().equals(playerUUID)) {
+            player.sendMessage(mini("<red><bold>ECO</bold> <red>You cannot pay yourself!"));
             return true;
         }
 
@@ -106,20 +126,21 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        // 1) Withdraw from sender
+        // Withdraw from sender
         EconomyResponse withdrawResp = economy.withdraw(
                 plugin.getName(),
-                player.getUniqueId(),
+                playerUUID,
                 "no_world",
                 currency,
                 BigDecimal.valueOf(amount)
         );
+
         if (!withdrawResp.transactionSuccess()) {
             player.sendMessage(mini("<red>Transaction failed: " + withdrawResp.errorMessage));
             return true;
         }
 
-        // 2) Deposit to receiver
+        // Deposit to receiver
         EconomyResponse depositResp = economy.deposit(
                 plugin.getName(),
                 target.getUniqueId(),
@@ -127,32 +148,51 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                 currency,
                 BigDecimal.valueOf(amount)
         );
+
         if (!depositResp.transactionSuccess()) {
-            // If deposit fails for some reason, rollback the sender's withdrawal
-            economy.deposit(plugin.getName(),
-                    player.getUniqueId(),
+            // Rollback withdrawal
+            economy.deposit(
+                    plugin.getName(),
+                    playerUUID,
                     "no_world",
                     currency,
-                    BigDecimal.valueOf(amount));
+                    BigDecimal.valueOf(amount)
+            );
             player.sendMessage(mini("<red>Payment failed: " + depositResp.errorMessage));
             return true;
         }
 
-        // 3) Success messages
-        double senderBalance = economy.balance(plugin.getName(), player.getUniqueId(), "no_world", currency).doubleValue();
-        player.sendMessage(mini("<gray>You paid <white>" + targetName +
-                " " + economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
-                "</white>. Your new balance: " +
-                economy.format(plugin.getName(), BigDecimal.valueOf(senderBalance), currency)));
+        // Update cooldown
+        payCooldowns.put(playerUUID, currentTime);
+
+        // Success messages
+        double senderBalance = economy.balance(
+                plugin.getName(),
+                playerUUID,
+                "no_world",
+                currency
+        ).doubleValue();
+
+        player.sendMessage(mini("<gray>You paid <white>" + targetName + " " +
+                economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
+                "</white>. New balance: " +
+                economy.format(plugin.getName(), BigDecimal.valueOf(senderBalance), currency))
+        );
 
         if (target.isOnline()) {
             Player onlineTarget = (Player) target;
-            double targetBalance = economy.balance(plugin.getName(), onlineTarget.getUniqueId(), "no_world", currency).doubleValue();
-            onlineTarget.sendMessage(mini("<gray>You received <white>" +
+            double targetBalance = economy.balance(
+                    plugin.getName(),
+                    onlineTarget.getUniqueId(),
+                    "no_world",
+                    currency
+            ).doubleValue();
+
+            onlineTarget.sendMessage(mini("<gray>Received <white>" +
                     economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
-                    "</white> from " + player.getName() +
-                    ". New balance: " +
-                    economy.format(plugin.getName(), BigDecimal.valueOf(targetBalance), currency)));
+                    "</white> from " + player.getName() + ". New balance: " +
+                    economy.format(plugin.getName(), BigDecimal.valueOf(targetBalance), currency))
+            );
         }
 
         return true;
@@ -183,8 +223,8 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     }
 
     // -------------------------------------------------------------------------
-    // /baltop [currency] OR /moneytop [currency]
-    // -------------------------------------------------------------------------
+// /baltop [currency] (now shows player names instead of UUIDs)
+// -------------------------------------------------------------------------
     private boolean handleBalTop(CommandSender sender, String[] args) {
         if (economy == null) {
             sender.sendMessage(mini("<red>Economy not available!"));
@@ -196,14 +236,35 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
             currency = BMSEconomyProvider.CURRENCY_VP;
         }
 
-        String column = currency.equalsIgnoreCase(BMSEconomyProvider.CURRENCY_VP) ? "votepoints" : "dollars";
-        String topList = db.getTopBalances(column, 10);
+        String column = currency.equals(BMSEconomyProvider.CURRENCY_VP) ? "votepoints" : "dollars";
+        List<Map.Entry<String, Double>> topEntries = db.getTopBalances(column, 10);
 
         sender.sendMessage(mini("<gold><bold>--- Top 10 " + currency + " ---</bold>"));
-        if (topList.isEmpty()) {
+
+        if (topEntries.isEmpty()) {
             sender.sendMessage(mini("<gray>No data available!"));
         } else {
-            sender.sendMessage(mini("<gray>" + topList));
+            int rank = 1;
+            for (Map.Entry<String, Double> entry : topEntries) {
+                String uuid = entry.getKey();
+                double balance = entry.getValue();
+
+                // Convert UUID to username
+                OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+                String name = (player.getName() != null) ?
+                        player.getName() :
+                        "Unknown (" + uuid.substring(0, 8) + ")"; // Truncate UUID for readability
+
+                String line = String.format(
+                        "%d. %s - %s",
+                        rank,
+                        name,
+                        economy.format(plugin.getName(), BigDecimal.valueOf(balance), currency)
+                );
+
+                sender.sendMessage(mini("<gray>" + line));
+                rank++;
+            }
         }
         return true;
     }
