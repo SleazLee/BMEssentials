@@ -10,6 +10,7 @@ import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -91,11 +92,15 @@ public class BMSEconomyProvider implements Economy {
     @NotNull
     @Override
     public String format(@NotNull String pluginName, @NotNull BigDecimal amount, @NotNull String currency) {
-        // Very simple format: $1.23 or 1.23 VP
         if (currency.equalsIgnoreCase(CURRENCY_VP)) {
-            return String.format("%.2f VP", amount);
+            // Round down to the nearest whole number for VP
+            BigDecimal vpAmount = amount.setScale(0, RoundingMode.DOWN);
+            long vp = vpAmount.longValueExact();
+            String suffix = vp == 1 ? "VP" : "VPs";
+            return String.format("%,d %s", vp, suffix);
         } else {
-            return String.format("$%.2f", amount);
+            // Format Dollars with commas and two decimal places
+            return String.format("$%,.2f", amount.doubleValue());
         }
     }
 

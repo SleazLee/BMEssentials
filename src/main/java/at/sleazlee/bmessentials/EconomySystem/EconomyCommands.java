@@ -3,6 +3,7 @@ package at.sleazlee.bmessentials.EconomySystem;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import at.sleazlee.bmessentials.TextUtils.TextCenter;
 import net.milkbowl.vault2.economy.Economy;
 import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.Bukkit;
@@ -71,8 +72,17 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     }
 
     // -------------------------------------------------------------------------
-// /pay <player> <amount> [currency] (with cooldown and self-payment check)
-// -------------------------------------------------------------------------
+    // /pay <player> <amount> [currency] (with cooldown and self-payment check)
+    // -------------------------------------------------------------------------
+    /**
+     * Handles the /pay command, allowing players to send currency to others.
+     * Validates cooldowns, target existence, and sufficient funds before processing transactions.
+     * Sends formatted success/error messages to both sender and receiver.
+     *
+     * @param sender The command sender (must be a player)
+     * @param args The command arguments [player, amount, currency?]
+     * @return true if the command was processed successfully
+     */
     private boolean handlePay(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Must be a player to use /pay!");
@@ -165,20 +175,31 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
         // Update cooldown
         payCooldowns.put(playerUUID, currentTime);
 
-        // Success messages
+        // Get formatted amounts and colors
+        String color = currency.equalsIgnoreCase(BMSEconomyProvider.CURRENCY_VP) ? "yellow" : "green";
+        String formattedAmount = economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency);
         double senderBalance = economy.balance(
                 plugin.getName(),
                 playerUUID,
                 "no_world",
                 currency
         ).doubleValue();
+        String formattedSenderBalance = economy.format(plugin.getName(), BigDecimal.valueOf(senderBalance), currency);
 
-        player.sendMessage(mini("<gray>You paid <white>" + targetName + " " +
-                economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
-                "</white>. New balance: " +
-                economy.format(plugin.getName(), BigDecimal.valueOf(senderBalance), currency))
+        // Build sender message
+        String senderMessage = String.format(
+                "<gray>You paid <white>%s</white> <%s>%s</%s><gray>. Your New balance is <%s>%s</%s><gray>.",
+                targetName,
+                color,
+                formattedAmount,
+                color,
+                color,
+                formattedSenderBalance,
+                color
         );
+        player.sendMessage(mini(senderMessage));
 
+        // Notify receiver if online
         if (target.isOnline()) {
             Player onlineTarget = (Player) target;
             double targetBalance = economy.balance(
@@ -187,12 +208,20 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                     "no_world",
                     currency
             ).doubleValue();
+            String formattedTargetBalance = economy.format(plugin.getName(), BigDecimal.valueOf(targetBalance), currency);
 
-            onlineTarget.sendMessage(mini("<gray>Received <white>" +
-                    economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
-                    "</white> from " + player.getName() + ". New balance: " +
-                    economy.format(plugin.getName(), BigDecimal.valueOf(targetBalance), currency))
+            // Build receiver message
+            String receiverMessage = String.format(
+                    "<gray>You received <%s>%s</%s><gray> from <white>%s</white><gray>. Your new balance is <%s>%s</%s><gray>.",
+                    color,
+                    formattedAmount,
+                    color,
+                    player.getName(),
+                    color,
+                    formattedTargetBalance,
+                    color
             );
+            onlineTarget.sendMessage(mini(receiverMessage));
         }
 
         return true;
@@ -239,7 +268,11 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
         String column = currency.equals(BMSEconomyProvider.CURRENCY_VP) ? "votepoints" : "dollars";
         List<Map.Entry<String, Double>> topEntries = db.getTopBalances(column, 10);
 
-        sender.sendMessage(mini("<gold><bold>--- Top 10 " + currency + " ---</bold>"));
+        // Header with dynamic currency color
+        String currencyColor = currency.equals(BMSEconomyProvider.CURRENCY_VP) ? "yellow" : "green";
+        String header = String.format("<bold><color:#ffd52b>Top Balances <dark_gray>(<%s>%s<dark_gray>)", currencyColor, currency);
+        String centeredHeader = TextCenter.center(header, 58, "dark_gray");
+        sender.sendMessage(mini(centeredHeader));
 
         if (topEntries.isEmpty()) {
             sender.sendMessage(mini("<gray>No data available!"));
@@ -249,23 +282,25 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                 String uuid = entry.getKey();
                 double balance = entry.getValue();
 
-                // Convert UUID to username
                 OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-                String name = (player.getName() != null) ?
-                        player.getName() :
-                        "Unknown (" + uuid.substring(0, 8) + ")"; // Truncate UUID for readability
+                String name = (player.getName() != null) ? player.getName() : "Unknown (" + uuid.substring(0, 8) + ")";
 
+                String formattedBalance = economy.format(plugin.getName(), BigDecimal.valueOf(balance), currency);
+                String balanceColor = currency.equals(BMSEconomyProvider.CURRENCY_VP) ? "yellow" : "green";
+
+                // Format each entry line
                 String line = String.format(
-                        "%d. %s - %s",
-                        rank,
-                        name,
-                        economy.format(plugin.getName(), BigDecimal.valueOf(balance), currency)
+                        "<white>%d. <color:#33d3d3>%s <gray>| <%s>%s</%s>",
+                        rank, name, balanceColor, formattedBalance, balanceColor
                 );
-
-                sender.sendMessage(mini("<gray>" + line));
+                sender.sendMessage(mini(line));
                 rank++;
             }
         }
+
+        // Footer line
+        String footer = "<dark_gray><st>                                                          </st>";
+        sender.sendMessage(mini(footer));
         return true;
     }
 
