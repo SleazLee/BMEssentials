@@ -1,0 +1,28 @@
+WishingWell:
+  prizes:
+    '0':
+      name: "CoolItem1"
+      type: "STONE_BRICKS"
+      amount: 10
+      rarity: 90
+    '1':
+      name: "CoolItem2"
+      type: "DIAMOND"
+      amount: 1
+      rarity: 10
+
+Obelisk:
+  prizes:
+    '0':
+      name: "AncientRelic"
+      type: "ANCIENT_DEBRIS"
+      amount: 2
+      rarity: 100
+
+HealingSprings:
+  prizes:
+    '0':
+      name: "HealingCrystal"
+      type: "GHAST_TEAR"
+      amount: 1
+      rarity: 100

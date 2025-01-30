@@ -7,28 +7,45 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import java.io.File;
 import java.util.*;
 
 /**
- * Manages altar interactions, token validation, reward processing, and animations for the server.
+ * Manages Altar interactions (via PlayerInteractEvent), token validation,
+ * reward selection from AltarPrizes.yml, and shared animation methods.
  */
 public class AltarManager implements Listener {
 
 	private final BMEssentials plugin;
+
+	/** Tracks the in-world location of each Altar by name, loaded from config. */
 	private final Map<String, Location> altarLocations = new HashMap<>();
-	private final Map<String, Long> lastUsedTime = new HashMap<>();
 
 	/**
-	 * Constructor for AltarManager. Loads altar locations from the configuration.
+	 * Records the last time (in milliseconds) each Altar was used.
+	 * Used to enforce a short cooldown so the animation isn't spammed.
+	 */
+	private final Map<String, Long> lastUsedTime = new HashMap<>();
+
+	/** For random selection of fallback commands or weighted prizes. */
+	private final Random random = new Random();
+
+	/**
+	 * Constructor for AltarManager. Loads Altar locations from plugin config.
 	 *
 	 * @param plugin Reference to the main plugin instance.
 	 */
@@ -38,7 +55,8 @@ public class AltarManager implements Listener {
 	}
 
 	/**
-	 * Loads altar locations and configurations from the server's config file.
+	 * Loads altar locations from the server's config file under:
+	 * "Systems.SpawnSystems.Altars.<AltarName>.<x|y|z>"
 	 */
 	private void loadAltarsFromConfig() {
 		FileConfiguration config = plugin.getConfig();
@@ -58,102 +76,123 @@ public class AltarManager implements Listener {
 	}
 
 	/**
-	 * Handles player right-click interactions with altars.
+	 * Event handler for when a player right-clicks a block.
+	 * Checks if the block is an Altar, if the player has the correct token,
+	 * and then triggers the relevant animation with the correct reward item.
 	 *
-	 * @param event The PlayerInteractEvent triggered by the interaction.
+	 * @param event The interact event.
 	 */
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) {
+		// We only care about right-clicking a block.
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+
+		// Avoid double-trigger from off-hand (1.9+).
+		if (event.getHand() != EquipmentSlot.HAND) {
+			return;
+		}
+
+		// Ensure the clicked block is valid.
+		if (event.getClickedBlock() == null) {
 			return;
 		}
 
 		Player player = event.getPlayer();
 		Location clickedLocation = event.getClickedBlock().getLocation();
 
-		// Iterate through altar locations to find which altar was clicked
+		// Check if the clicked block matches any known Altar location.
 		for (String altarName : altarLocations.keySet()) {
 			if (altarLocations.get(altarName).equals(clickedLocation)) {
 
-				// Prevent activation if the altar is on cooldown
-				Long lastUsed = lastUsedTime.getOrDefault(altarName, 0L);
+				// Check for short cooldown (~9.3s in this example).
+				long lastUsed = lastUsedTime.getOrDefault(altarName, 0L);
 				if (System.currentTimeMillis() - lastUsed < 9300) {
 					player.sendMessage("§x§F§F§3§3§0§0§lAltar §cPlease wait until this monument's activation sequence is complete.");
 					return;
 				}
 
-				// Validate the token and perform altar-specific actions
+				// Verify the player has the matching token for this Altar.
 				if (hasToken(player, altarName)) {
+					// Pick and give the prize item. We'll also get its Material for animation.
+					Material displayMaterial = pickAndGivePrize(player, altarName);
+
+					// Trigger the correct altar animation, passing the chosen Material.
 					switch (altarName.toLowerCase()) {
 						case "healingsprings":
-							HealingSprings.playHealingSpringsAnimation(plugin, clickedLocation);
+							HealingSprings.playHealingSpringsAnimation(plugin, clickedLocation, displayMaterial);
 							break;
 						case "wishingwell":
-							WishingWell.playWishingWellAnimation(plugin, clickedLocation);
+							WishingWell.playWishingWellAnimation(plugin, clickedLocation, displayMaterial);
 							break;
 						case "obelisk":
-							// Obelisk.playObeliskAnimation(plugin, clickedLocation);
+							Obelisk.playObeliskAnimation(plugin, clickedLocation, displayMaterial);
 							break;
 						default:
 							player.sendMessage("§cUnknown altar: " + altarName);
 							return;
 					}
 
-					// Execute the reward logic and update the cooldown timer
-					giveRandomReward(player);
+					// Record the use time for cooldown.
 					lastUsedTime.put(altarName, System.currentTimeMillis());
+
 				} else {
+					// Player does NOT have the proper token.
 					player.sendMessage("§x§F§F§3§3§0§0§lAltar §cYou don't have the proper token to activate this altar. §fUse §c/vote§f to earn tokens.");
 				}
-				break; // Stop checking the loop once the clicked altar is found
+				// Stop searching once we found the relevant altar.
+				return;
 			}
 		}
 	}
 
 	/**
-	 * Validates whether the player has the correct token for the given altar.
+	 * Checks if a player has the required token for the given Altar,
+	 * by matching both the Material and a unique text color in its display name.
+	 * If found, one token is consumed.
 	 *
-	 * @param player    The player interacting with the altar.
-	 * @param altarName The name of the altar.
-	 * @return True if the player has a valid token, false otherwise.
+	 * @param player    The player to check.
+	 * @param altarName The Altar name (e.g. "WishingWell").
+	 * @return true if the player has a matching token, false otherwise.
 	 */
 	private boolean hasToken(Player player, String altarName) {
 		Token token = Token.getByAltarName(altarName);
-		if (token != null) {
-			for (ItemStack item : player.getInventory().getContents()) {
-				if (item != null && item.getType() == token.getMaterial()) {
-					ItemMeta meta = item.getItemMeta();
-					if (meta != null && meta.hasDisplayName()) {
-						Component displayNameComponent = meta.displayName();
+		if (token == null) {
+			return false; // No known token for this altar name.
+		}
 
-						// Check the display name component for the token's unique hex color
-						if (containsHexColor(displayNameComponent, token.getUniqueHexColor())) {
-							item.setAmount(item.getAmount() - 1);
-							if (item.getAmount() <= 0) {
-								player.getInventory().remove(item);
-							}
-							return true; // Token successfully validated
+		for (ItemStack item : player.getInventory().getContents()) {
+			if (item != null && item.getType() == token.getMaterial()) {
+				ItemMeta meta = item.getItemMeta();
+				if (meta != null && meta.hasDisplayName()) {
+					Component displayNameComponent = meta.displayName();
+					if (containsHexColor(displayNameComponent, token.getUniqueHexColor())) {
+						// Found the valid token, consume 1 from the stack.
+						item.setAmount(item.getAmount() - 1);
+						if (item.getAmount() <= 0) {
+							player.getInventory().remove(item);
 						}
+						return true;
 					}
 				}
 			}
 		}
-		return false; // Token not found or invalid
+		return false;
 	}
 
 	/**
-	 * Recursively searches a Component hierarchy for a specific hex color.
+	 * Checks if a Component (and its children) contains a specific hex color.
 	 *
-	 * @param component   The Adventure Component to search.
-	 * @param targetColor The TextColor (hex code) to look for.
-	 * @return True if the target color is found, false otherwise.
+	 * @param component   The component to inspect.
+	 * @param targetColor The TextColor to look for.
+	 * @return true if found, false otherwise.
 	 */
 	private boolean containsHexColor(Component component, TextColor targetColor) {
 		TextColor componentColor = component.style().color();
 		if (componentColor != null && componentColor.equals(targetColor)) {
 			return true;
 		}
-
 		for (Component child : component.children()) {
 			if (containsHexColor(child, targetColor)) {
 				return true;
@@ -163,53 +202,152 @@ public class AltarManager implements Listener {
 	}
 
 	/**
-	 * Displays a floating animation of the reward item above the altar.
+	 * Selects and dispatches a reward from AltarPrizes.yml (if present) for the given Altar,
+	 * returning the Material that should appear in the final floating animation.
 	 *
-	 * @param plugin The main plugin instance.
-	 * @param center The location of the altar.
-	 * @param world  The world where the animation takes place.
+	 * @param player    The player receiving the reward.
+	 * @param altarName The name of the altar, e.g. "WishingWell".
+	 * @return The Material to display in the item-floating animation.
 	 */
-	public static void showItemAnimation(BMEssentials plugin, Location center, World world) {
-		ItemStack rewardItem = new ItemStack(Material.DIAMOND); // Example reward item
-		Location adjustedCenter = center.clone().add(0.0, -0.3, 0.0); // Slightly adjust the spawn location
-		Item floatingItem = world.dropItem(adjustedCenter, rewardItem);
+	private Material pickAndGivePrize(Player player, String altarName) {
+		// Attempt to load from AltarPrizes.yml
+		File prizesFile = new File(plugin.getDataFolder(), "AltarPrizes.yml");
+		if (!prizesFile.exists()) {
+			// If file doesn't exist, fallback to random vanilla command
+			giveRandomReward(player);
+			return Material.DIAMOND; // fallback material for display
+		}
 
-		// Set item properties to prevent movement/interference
-		floatingItem.setGravity(false);
-		floatingItem.setInvulnerable(true);
-		floatingItem.setVelocity(new Vector(0, 0, 0));
-		floatingItem.setPickupDelay(Integer.MAX_VALUE);
+		YamlConfiguration prizeConfig = YamlConfiguration.loadConfiguration(prizesFile);
 
-		// Remove the floating item after 4 seconds (80 ticks)
-		Scheduler.runLater(floatingItem::remove, 80L);
+		ConfigurationSection altSection = prizeConfig.getConfigurationSection(altarName + ".prizes");
+		if (altSection == null) {
+			// If no prizes listed for this altar, fallback
+			giveRandomReward(player);
+			return Material.DIAMOND;
+		}
+
+		// Parse the sub-keys (prize entries).
+		List<Prize> allPrizes = new ArrayList<>();
+		for (String key : altSection.getKeys(false)) {
+			ConfigurationSection singlePrize = altSection.getConfigurationSection(key);
+			if (singlePrize == null) continue;
+
+			String name = singlePrize.getString("name", "UnknownItem");
+			String type = singlePrize.getString("type", "STONE");
+			int amount = singlePrize.getInt("amount", 1);
+			int rarity = singlePrize.getInt("rarity", 100);
+
+			allPrizes.add(new Prize(name, type, amount, rarity));
+		}
+
+		// If none found, fallback
+		if (allPrizes.isEmpty()) {
+			giveRandomReward(player);
+			return Material.DIAMOND;
+		}
+
+		// Weighted random selection
+		Prize chosen = getWeightedRandomPrize(allPrizes);
+		if (chosen == null) {
+			giveRandomReward(player);
+			return Material.DIAMOND;
+		}
+
+		// Dispatch the actual command to give the item: "/si give <itemName> <amount> <player>"
+		String cmd = String.format("si give %s %d %s", chosen.getName(), chosen.getAmount(), player.getName());
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+
+		// Return the Material to display in the floating animation
+		try {
+			return Material.valueOf(chosen.getType().toUpperCase());
+		} catch (IllegalArgumentException e) {
+			// If the config type was invalid, fallback
+			return Material.DIAMOND;
+		}
 	}
 
 	/**
-	 * Provides the player with a random reward using server commands.
+	 * Simple fallback method for older "random reward" commands
+	 * if AltarPrizes.yml is missing or misconfigured.
 	 *
-	 * @param player The player to receive the reward.
+	 * @param player The player receiving the reward.
 	 */
 	private void giveRandomReward(Player player) {
-		String command = getRandomRewardCommand();
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("<player>", player.getName()));
-	}
-
-	/**
-	 * Returns a random reward command to execute.
-	 *
-	 * @return The reward command string.
-	 */
-	private String getRandomRewardCommand() {
 		String[] commands = {
 				"give <player> minecraft:diamond 1",
 				"give <player> minecraft:emerald 1",
 				"give <player> minecraft:gold_ingot 5"
 		};
-		return commands[new Random().nextInt(commands.length)];
+		String command = commands[random.nextInt(commands.length)];
+		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("<player>", player.getName()));
 	}
 
 	/**
-	 * Enum to handle altar tokens, including defining their material and unique hex color.
+	 * Selects one prize from a list of possible prizes using each prize's 'rarity' as a weight.
+	 *
+	 * @param allPrizes A list of Prize objects to choose from.
+	 * @return The selected Prize, or null if the list is empty.
+	 */
+	private Prize getWeightedRandomPrize(List<Prize> allPrizes) {
+		int totalWeight = allPrizes.stream().mapToInt(Prize::getRarity).sum();
+		if (totalWeight <= 0) {
+			return null;
+		}
+
+		int roll = random.nextInt(totalWeight) + 1;
+		int running = 0;
+		for (Prize p : allPrizes) {
+			running += p.getRarity();
+			if (roll <= running) {
+				return p;
+			}
+		}
+		return null; // Should not happen unless totalWeight=0
+	}
+
+	/**
+	 * Displays a glowing floating item above the altar for ~4 seconds.
+	 * Typically called by Altar animation classes in their final reveal step.
+	 *
+	 * @param plugin       Reference to the main plugin instance.
+	 * @param center       The location at which to show the item.
+	 * @param world        The world in which to drop the item.
+	 * @param displayType  Which Material to display. Must not be null.
+	 */
+	public static void showItemAnimation(BMEssentials plugin, Location center, World world, Material displayType) {
+		if (displayType == null) {
+			displayType = Material.DIAMOND;
+		}
+
+		ItemStack rewardItem = new ItemStack(displayType, 1);
+
+		// Give it a "glowing" enchant effect
+		ItemMeta meta = rewardItem.getItemMeta();
+		if (meta != null) {
+			meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
+			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			rewardItem.setItemMeta(meta);
+		}
+
+		// Slightly adjust spawn location
+		Location adjustedCenter = center.clone().add(0.0, -0.3, 0.0);
+		Item floatingItem = world.dropItem(adjustedCenter, rewardItem);
+
+		floatingItem.setGravity(false);
+		floatingItem.setInvulnerable(true);
+		floatingItem.setVelocity(new Vector(0, 0, 0));
+		floatingItem.setPickupDelay(Integer.MAX_VALUE);
+
+		// Remove item after ~4 seconds (80 ticks).
+		Scheduler.runLater(floatingItem::remove, 80L);
+	}
+
+	/**
+	 * Enumeration of possible Altar tokens, each with:
+	 * - The altar name
+	 * - The required Bukkit Material
+	 * - A unique hex color to match the item display name
 	 */
 	public enum Token {
 		HEALINGSprings("healingsprings", Material.GHAST_TEAR, TextColor.color(0x33cc66)),
@@ -238,11 +376,53 @@ public class AltarManager implements Listener {
 			return uniqueHexColor;
 		}
 
+		/**
+		 * Finds a matching token by altar name, ignoring case.
+		 *
+		 * @param altarName The name of the altar (e.g. "WishingWell").
+		 * @return The corresponding Token, or null if none.
+		 */
 		public static Token getByAltarName(String altarName) {
-			for (Token token : Token.values()) {
-				if (token.getAltarName().equalsIgnoreCase(altarName)) return token;
+			for (Token token : values()) {
+				if (token.getAltarName().equalsIgnoreCase(altarName)) {
+					return token;
+				}
 			}
 			return null;
+		}
+	}
+
+	/**
+	 * Represents a Prize entry loaded from AltarPrizes.yml,
+	 * including the ItemEdit name, display Material type, amount, and rarity weight.
+	 */
+	private static class Prize {
+		private final String name;   // The ItemEdit name used in /si give
+		private final String type;   // Material type for display
+		private final int amount;    // How many items to give
+		private final int rarity;    // Weighted chance of awarding (e.g. 90 vs 10)
+
+		public Prize(String name, String type, int amount, int rarity) {
+			this.name = name;
+			this.type = type;
+			this.amount = amount;
+			this.rarity = rarity;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public int getAmount() {
+			return amount;
+		}
+
+		public int getRarity() {
+			return rarity;
 		}
 	}
 }

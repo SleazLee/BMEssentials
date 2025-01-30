@@ -2,6 +2,8 @@ package at.sleazlee.bmessentials;
 
 import at.sleazlee.bmessentials.AltarSystem.AltarManager;
 import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
+import at.sleazlee.bmessentials.AltarSystem.Obelisk;
+import at.sleazlee.bmessentials.AltarSystem.WishingWell;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueTabCompleter;
@@ -210,6 +212,8 @@ public class BMEssentials extends JavaPlugin {
             AltarManager altarManager = new AltarManager(this);
             getServer().getPluginManager().registerEvents(altarManager, this);
             HealingSprings.startHealingSpringsAmbient(this);
+            WishingWell.startWishingWellAmbient(this);
+            Obelisk.startObeliskAmbient(this);
         }
 
         // Common Commands
