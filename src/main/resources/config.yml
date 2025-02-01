@@ -229,3 +229,7 @@ Systems:
     # Enables the Economy Systems
     EconomySystems:
       Enabled: true
+
+  # Enables the AntiTrample Systems
+  AntiTrample:
+    Enabled: true

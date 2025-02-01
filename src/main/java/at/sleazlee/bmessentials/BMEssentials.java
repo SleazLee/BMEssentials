@@ -368,6 +368,14 @@ public class BMEssentials extends JavaPlugin {
             getCommand("commands").setExecutor(new CommandsCommand(commandsSystem));
         }
 
+        // AntiTrample System
+        if (getConfig().getBoolean("Systems.AntiTrample.Enabled")) {
+            // Add the system enabled message.
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled AntiTrample Systems");
+
+            // Register the CropTrampleListener to disable crop trampling by both players and mobs
+            getServer().getPluginManager().registerEvents(new CropTrampleListener(), this);
+        }
 
 
 
