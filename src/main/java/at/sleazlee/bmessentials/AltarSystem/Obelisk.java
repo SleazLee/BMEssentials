@@ -19,7 +19,7 @@ public class Obelisk {
     // Coordinates for Obelisk top/base, as well as altar location.
     // The world is set dynamically in playObeliskAnimation(...)
     private static final Location OBELISK_TOP = new Location(null, 328, 108, 288);
-    private static final Location OBELISK_BASE = new Location(null, 328, 71, 288);
+    private static final Location OBELISK_BASE = new Location(null, 328.5, 71, 288.5);
     private static final Location ALTAR_LOCATION = new Location(null, 323, 72, 288);
 
     /**
@@ -112,7 +112,7 @@ public class Obelisk {
             for (int i = 0; i <= waveSteps; i++) {
                 final int step = i;
                 Scheduler.runLater(() -> {
-                    double radius = 4 * (double) step / waveSteps;
+                    double radius = 5 * (double) step / waveSteps;
                     for (int j = 0; j < 30; j++) {
                         double angle = 2 * Math.PI * j / 30;
                         double x = OBELISK_BASE.getX() + radius * Math.cos(angle);

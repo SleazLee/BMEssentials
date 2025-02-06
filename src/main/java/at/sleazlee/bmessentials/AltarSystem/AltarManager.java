@@ -220,7 +220,6 @@ public class AltarManager implements Listener {
 			// Fallback to a random reward command
 			String cmd = getRandomRewardCommand(player);
 			pendingPrizeCommands.put(player.getUniqueId(), cmd);
-			plugin.getLogger().info("Stored fallback command: " + cmd);
 			return Material.DIAMOND; // fallback material for display
 		}
 
@@ -229,7 +228,6 @@ public class AltarManager implements Listener {
 		if (prizesList.isEmpty()) {
 			String cmd = getRandomRewardCommand(player);
 			pendingPrizeCommands.put(player.getUniqueId(), cmd);
-			plugin.getLogger().info("Stored fallback command: " + cmd);
 			return Material.DIAMOND;
 		}
 
@@ -280,9 +278,8 @@ public class AltarManager implements Listener {
 		}
 
 		// Create the prize command but do not execute it now.
-		String cmd = String.format("si give %s %d %s", chosen.getName(), prizeAmount, player.getName());
+		String cmd = String.format("si give %s %d %s true", chosen.getName(), prizeAmount, player.getName());
 		pendingPrizeCommands.put(player.getUniqueId(), cmd);
-		plugin.getLogger().info("Stored prize command: " + cmd);
 
 		// Return the Material to display (for the animation).
 		try {
@@ -365,7 +362,6 @@ public class AltarManager implements Listener {
 		// Retrieve and execute the pending command for this player.
 		String command = pendingPrizeCommands.remove(player.getUniqueId());
 		if (command != null) {
-			plugin.getLogger().info("Dispatching command: " + command);
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 		} else {
 			plugin.getLogger().info("No pending prize command found for player " + player.getName());

@@ -97,7 +97,7 @@ public class WildCommand implements CommandExecutor {
      * @param version a specific version or "all" to choose randomly from config
      */
     public void randomLocation(Player player, String version) {
-        // 1) Determine which version's bounds we'll use
+        // 1) Choose the version’s bounds
         WildData.CoordinateBounds bounds;
         Random random = new Random();
 
@@ -108,7 +108,6 @@ public class WildCommand implements CommandExecutor {
                 return;
             }
         } else {
-            // Pick a random version from the set
             Set<String> versionSet = wildData.getVersions();
             if (versionSet.isEmpty()) {
                 player.sendMessage("§c§lWild §cNo versions defined in config.");
@@ -117,105 +116,92 @@ public class WildCommand implements CommandExecutor {
             List<String> versionsList = new ArrayList<>(versionSet);
             String chosen = versionsList.get(random.nextInt(versionsList.size()));
             bounds = wildData.getBounds(chosen);
-            version = chosen; // For logging purposes
+            version = chosen; // For logging
         }
-
         if (bounds == null) {
             player.sendMessage("§c§lWild §cCould not find ring bounds for version: " + version);
             return;
         }
 
-        // 2) Retrieve Lower, Upper, and center coordinates
+        // 2) Get the Lower/Upper values and center coordinates.
         double lower = bounds.getLower();
         double upper = bounds.getUpper();
-
         double centerX = wildData.getCenterX();
         double centerZ = wildData.getCenterZ();
+        double finalY = 345; // fixed Y-coordinate
 
-        // 3) Initialize variables for teleport location
+        // 3) Try generating a valid location.
+        int maxRetries = 5;  // maximum water-check attempts
+        int attempts = 0;    // count only candidates that are in bounds
         double finalX = 0;
         double finalZ = 0;
-        double finalY = 345; // Fixed Y-coordinate for safety
-        int maxRetries = 5;   // Maximum number of attempts to find a suitable location
-        int attempt = 0;
-        boolean validLocation = false;
 
-        while (attempt < maxRetries && !validLocation) {
-            attempt++;
-
-            // 4) Randomly select X and Z offsets within [-Upper, Upper]
+        // Use an infinite loop and break once we have a candidate.
+        while (true) {
+            // Generate random offsets in [-Upper, Upper]
             double xOffset = random.nextDouble() * (2 * upper) - upper;
             double zOffset = random.nextDouble() * (2 * upper) - upper;
-
-            // 5) Calculate Chebyshev distance from the center
             double chebDist = Math.max(Math.abs(xOffset), Math.abs(zOffset));
 
-            // 6) Check if the distance is within [Lower, Upper]
-            if (chebDist >= lower && chebDist <= upper) {
-                // 7) Calculate the absolute teleport coordinates
-                finalX = centerX + xOffset;
-                finalZ = centerZ + zOffset;
+            // Only accept coordinates within the defined ring.
+            if (chebDist < lower || chebDist > upper) {
+                continue; // not in bounds; try again without counting this attempt
+            }
 
-                // 8) Check if any block from Y=0 up to Y=344 is water at (finalX, y, finalZ)
+            // Increase the count for a valid candidate
+            attempts++;
+            finalX = centerX + xOffset;
+            finalZ = centerZ + zOffset;
+
+            // If we are still within our allowed water-check attempts, check for water.
+            if (attempts <= maxRetries) {
                 boolean isAboveWater = false;
+                // Check from Y=0 up to (but not including) finalY.
                 for (int y = 0; y < finalY; y++) {
                     Location checkLocation = new Location(player.getWorld(), finalX, y, finalZ);
                     Material blockType = checkLocation.getBlock().getType();
                     if (blockType == Material.WATER) {
                         isAboveWater = true;
-                        logger.info("[Wild] Attempt " + attempt + ": Teleport location (" + finalX + ", " + y + ", " + finalZ + ") is above water. Retrying...");
+                        logger.info("[Wild] Attempt " + attempts + ": Teleport location ("
+                                + finalX + ", " + y + ", " + finalZ + ") is above water. Retrying...");
                         break;
                     }
                 }
-
+                // If water was not found, we’ve got a valid candidate.
                 if (!isAboveWater) {
-                    // Suitable location found
-                    validLocation = true;
-
-                    // Log the successful teleport attempt
-                    logger.info("[Wild] Teleporting player " + player.getName()
-                            + " to version " + version
-                            + " at X=" + finalX + ", Z=" + finalZ);
-
-                    // Teleport the player using HuskHomes
-                    String worldName = "world";
-                    String serverName = "blockminer";
-
-                    if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")) {
-                        // Instant teleport if in spawn region
-                        HuskHomesAPIHook.instantTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
-                    } else if (IsInWorldGuardRegion.isPlayerInRegion(player, "Shop")) {
-                        // Instant teleport if in shop region
-                        HuskHomesAPIHook.instantTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
-                    } else {
-                        // Timed teleport otherwise
-                        HuskHomesAPIHook.timedTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
-                    }
-                } else if (attempt == maxRetries) {
-                    // On the final attempt, just teleport anyway—even if there is water.
-                    logger.info("[Wild] Attempt " + attempt + ": Teleport location ("
+                    break;
+                }
+                // If this was our final allowed attempt, break out and teleport anyway.
+                else if (attempts == maxRetries) {
+                    logger.info("[Wild] Attempt " + attempts + ": Teleport location ("
                             + finalX + ", " + (finalY - 1) + ", " + finalZ
                             + ") is above water. Teleporting anyway.");
-
-                    // Reuse the finalX, finalZ that are already in-bounds
-                    String worldName = "world";
-                    String serverName = "blockminer";
-
-                    if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")) {
-                        // Instant teleport if in spawn region
-                        HuskHomesAPIHook.instantTeleportPlayer(
-                                player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
-                    } else if (IsInWorldGuardRegion.isPlayerInRegion(player, "Shop")) {
-                        // Instant teleport if in shop region
-                        HuskHomesAPIHook.instantTeleportPlayer(
-                                player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
-                    } else {
-                        // Timed teleport otherwise
-                        HuskHomesAPIHook.timedTeleportPlayer(
-                                player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
-                    }
+                    break;
                 }
             }
+            // If we somehow exceed maxRetries (should not happen since we break at maxRetries),
+            // break and use the candidate regardless.
+            else {
+                logger.info("[Wild] Exceeded water-check attempts. Teleporting without further checks.");
+                break;
+            }
+        }
+
+        // 4) Teleport the player using HuskHomesAPIHook.
+        logger.info("[Wild] Teleporting player " + player.getName() + " to version " + version
+                + " at X=" + finalX + ", Z=" + finalZ);
+
+        String worldName = "world";
+        String serverName = "blockminer";
+
+        if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")
+                || IsInWorldGuardRegion.isPlayerInRegion(player, "Shop")) {
+            // Instant teleport if in spawn or shop region
+            HuskHomesAPIHook.instantTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
+        } else {
+            // Timed teleport otherwise
+            HuskHomesAPIHook.timedTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
         }
     }
+
 }
