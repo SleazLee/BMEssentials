@@ -29,7 +29,7 @@ public class Obelisk {
      * @param altarBlockLocation The location of the block that was clicked to activate the altar.
      * @param displayType       The Material to show in the final floating animation.
      */
-    public static void playObeliskAnimation(BMEssentials plugin, Location altarBlockLocation, Material displayType) {
+    public static void playObeliskAnimation(BMEssentials plugin, Player player, Location altarBlockLocation, Material displayType) {
         World world = altarBlockLocation.getWorld();
         if (world == null) return;
 
@@ -147,7 +147,7 @@ public class Obelisk {
             world.spawnParticle(Particle.FLASH, altarCenter, 10, 0.5, 0.5, 0.5, 0);
 
             // Show the final floating item with the chosen Material.
-            AltarManager.showItemAnimation(plugin, altarCenter, world, displayType);
+            AltarManager.showItemAnimation(plugin, player, altarCenter, world, displayType);
             createEnchantVortex(world, altarCenter);
 
             for (Player p : Bukkit.getOnlinePlayers()) {

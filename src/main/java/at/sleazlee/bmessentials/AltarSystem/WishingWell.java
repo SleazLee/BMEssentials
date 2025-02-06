@@ -33,7 +33,7 @@ public class WishingWell {
      * @param altarBlockLocation The location of the block that was clicked.
      * @param displayType       The Material to display in the final floating animation.
      */
-    public static void playWishingWellAnimation(BMEssentials plugin, Location altarBlockLocation, Material displayType) {
+    public static void playWishingWellAnimation(BMEssentials plugin, Player player, Location altarBlockLocation, Material displayType) {
         altarActivated = true;
 
         World world = altarBlockLocation.getWorld();
@@ -148,7 +148,7 @@ public class WishingWell {
             if (!altarActivated) return;
 
             Location prizeLocation = altarCenter.clone().add(0, 0.6, 0);
-            AltarManager.showItemAnimation(plugin, prizeLocation, world, displayType);
+            AltarManager.showItemAnimation(plugin, player, prizeLocation, world, displayType);
 
             // Extra visuals
             world.spawnParticle(Particle.FALLING_WATER, prizeLocation, 100, 0.5, 0.5, 0.5, 0.5);

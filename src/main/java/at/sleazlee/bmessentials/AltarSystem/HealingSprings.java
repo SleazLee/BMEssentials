@@ -95,7 +95,7 @@ public class HealingSprings {
      * @param location    The location of the block that was clicked.
      * @param displayType The Material to display in the final floating animation.
      */
-    public static void playHealingSpringsAnimation(BMEssentials plugin, Location location, Material displayType) {
+    public static void playHealingSpringsAnimation(BMEssentials plugin, Player player, Location location, Material displayType) {
         World world = location.getWorld();
         if (world == null) {
             return;
@@ -118,14 +118,14 @@ public class HealingSprings {
         }
 
         // Step 3: Initial sounds
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player players : Bukkit.getOnlinePlayers()) {
             player.playSound(center, Sound.BLOCK_BEACON_AMBIENT, SoundCategory.AMBIENT, 0.8f, 0.7f);
             player.playSound(center, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 1.0f);
         }
 
         // Step 4: Additional ambient sound after a short delay
         Scheduler.runLater(() -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player players : Bukkit.getOnlinePlayers()) {
                 Location adjustedCenter = center.clone().add(0.0, 0.4, 0.0);
                 player.playSound(adjustedCenter, Sound.BLOCK_AMETHYST_CLUSTER_FALL, SoundCategory.AMBIENT, 2.0f, 0.3f);
             }
@@ -164,15 +164,15 @@ public class HealingSprings {
 
         // Step 7: Conduit activation sound
         Scheduler.runLater(() -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
+            for (Player players : Bukkit.getOnlinePlayers()) {
                 player.playSound(center, Sound.BLOCK_CONDUIT_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 0.3f);
             }
         }, 100L);
 
         // Step 8: Show the reward item (using the chosen Material).
         Scheduler.runLater(() ->
-                        AltarManager.showItemAnimation(plugin, center, world, displayType),
-                100L
+                        AltarManager.showItemAnimation(plugin, player, center, world, displayType),
+        100L
         );
 
         // Step 9: Puff of smoke and final sound

@@ -1,28 +1,776 @@
 WishingWell:
   prizes:
-    '0':
-      name: "CoolItem1"
-      type: "STONE_BRICKS"
-      amount: 10
-      rarity: 90
-    '1':
-      name: "CoolItem2"
-      type: "DIAMOND"
+    - name: "Lead"
+      type: "LEAD"
+      amount: 16
+      rarity: 50
+    - name: "GlowItemFrame"
+      type: "GLOW_ITEM_FRAME"
+      amount: 16
+      rarity: 50
+    - name: "WaxedExposedCopper"
+      type: "WAXED_EXPOSED_COPPER"
+      amount: 64
+      rarity: 50
+    - name: "WaxedWeatheredCopper"
+      type: "WAXED_WEATHERED_COPPER"
+      amount: 64
+      rarity: 50
+    - name: "Jukebox"
+      type: "JUKEBOX"
       amount: 1
-      rarity: 10
+      rarity: 50
+    - name: "RawCod"
+      type: "COD"
+      amount: 32
+      rarity: 42
+    - name: "Pufferfish"
+      type: "PUFFERFISH"
+      amount: 16
+      rarity: 39
+    - name: "TropicalFish"
+      type: "TROPICAL_FISH"
+      amount: 32
+      rarity: 39
+    - name: "RawSalmon"
+      type: "SALMON"
+      amount: 32
+      rarity: 39
+    - name: "BucketofTropicalFish"
+      type: "TROPICAL_FISH_BUCKET"
+      amount: 1
+      rarity: 39
+    - name: "LavaBucket"
+      type: "LAVA_BUCKET"
+      amount: 1
+      rarity: 39
+    - name: "BucketofPufferfish"
+      type: "PUFFERFISH_BUCKET"
+      amount: 1
+      rarity: 39
+    - name: "BucketofCod"
+      type: "COD_BUCKET"
+      amount: 1
+      rarity: 39
+    - name: "BucketofSalmon"
+      type: "SALMON_BUCKET"
+      amount: 1
+      rarity: 39
+    - name: "apple"
+      type: "APPLE"
+      amount: 64
+      rarity: 28
+    - name: "NautilusShell"
+      type: "NAUTILUS_SHELL"
+      amount: 15
+      rarity: 15
+    - name: "FreshHoney"
+      type: "HONEY_BOTTLE"
+      amount: 16
+      rarity: 15
+    - name: "EnchantmentBottle"
+      type: "EXPERIENCE_BOTTLE"
+      amount: 64
+      rarity: 15
+    - name: "BedrockBock"
+      type: "POTION"
+      amount: 1
+      rarity: 15
+    - name: "Mead"
+      type: "POTION"
+      amount: 1
+      rarity: 15
+    - name: "AngelsEnvy"
+      type: "POTION"
+      amount: 1
+      rarity: 15
+    - name: "SnoutPattern"
+      type: "PIGLIN_BANNER_PATTERN"
+      amount: 1
+      rarity: 15
+    - name: "CursedStew"
+      type: "SUSPICIOUS_STEW"
+      amount: 1
+      rarity: 15
+    - name: "AntimatterStew"
+      type: "SUSPICIOUS_STEW"
+      amount: 1
+      rarity: 15
+    - name: "GlowBerryStew"
+      type: "SUSPICIOUS_STEW"
+      amount: 1
+      rarity: 15
+    - name: "BMRocket"
+      type: "FIREWORK_ROCKET"
+      amount: 64
+      rarity: 9
+    - name: "RainbowRocket"
+      type: "FIREWORK_ROCKET"
+      amount: 64
+      rarity: 9
+    - name: "CrossbowofTheRogue"
+      type: "CROSSBOW"
+      amount: 1
+      rarity: 9
+    - name: "ToySword"
+      type: "DIAMOND_SWORD"
+      amount: 1
+      rarity: 9
+    - name: "GreatPickaxe"
+      type: "IRON_PICKAXE"
+      amount: 1
+      rarity: 9
+    - name: "AxeofAffliction"
+      type: "IRON_AXE"
+      amount: 1
+      rarity: 9
+    - name: "ShinyFishingRod"
+      type: "FISHING_ROD"
+      amount: 1
+      rarity: 9
+    - name: "BookofMending"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 9
+    - name: "PegasusArmor"
+      type: "LEATHER_HORSE_ARMOR"
+      amount: 1
+      rarity: 9
+    - name: "CreeperCharge"
+      type: "CREEPER_BANNER_PATTERN"
+      amount: 1
+      rarity: 9
+    - name: "SecretSet1"
+      type: "LEATHER_HELMET"
+      amount: 1
+      rarity: 8
+    - name: "SecretSet2"
+      type: "LEATHER_CHESTPLATE"
+      amount: 1
+      rarity: 8
+    - name: "SecretSet3"
+      type: "LEATHER_LEGGINGS"
+      amount: 1
+      rarity: 8
+    - name: "SecretSet4"
+      type: "LEATHER_BOOTS"
+      amount: 1
+      rarity: 8
+    - name: "TheThing"
+      type: "MOJANG_BANNER_PATTERN"
+      amount: 1
+      rarity: 7
+    - name: "GreatHelm"
+      type: "LEATHER_HELMET"
+      amount: 1
+      rarity: 6
+    - name: "GreatChestpiece"
+      type: "LEATHER_CHESTPLATE"
+      amount: 1
+      rarity: 6
+    - name: "GreatLeggings"
+      type: "LEATHER_LEGGINGS"
+      amount: 1
+      rarity: 6
+    - name: "GreatBoots"
+      type: "LEATHER_BOOTS"
+      amount: 1
+      rarity: 6
+    - name: "FakeDiamondHelmet"
+      type: "LEATHER_HELMET"
+      amount: 1
+      rarity: 6
+    - name: "FakeDiamondChestplate"
+      type: "LEATHER_CHESTPLATE"
+      amount: 1
+      rarity: 6
+    - name: "FakeDiamondLeggings"
+      type: "LEATHER_LEGGINGS"
+      amount: 1
+      rarity: 6
+    - name: "FakeDiamondBoots"
+      type: "LEATHER_BOOTS"
+      amount: 1
+      rarity: 6
+    - name: "TitaniumLighter"
+      type: "FLINT_AND_STEEL"
+      amount: 1
+      rarity: 6
+    - name: "HeartoftheSea"
+      type: "HEART_OF_THE_SEA"
+      amount: 1
+      rarity: 6
+    - name: "SpecialNametag"
+      type: "NAME_TAG"
+      amount: 1
+      rarity: 6
+    - name: "Conduit"
+      type: "CONDUIT"
+      amount: 1
+      rarity: 6
+    - name: "BootsofTheExplorer"
+      type: "LEATHER_BOOTS"
+      amount: 1
+      rarity: 6
+    - name: "DivingHelmet"
+      type: "TURTLE_HELMET"
+      amount: 1
+      rarity: 6
+    - name: "DogfishAle"
+      type: "POTION"
+      amount: 1
+      rarity: 6
+    - name: "LavaElixer"
+      type: "POTION"
+      amount: 1
+      rarity: 6
+    - name: "TearGas"
+      type: "SPLASH_POTION"
+      amount: 1
+      rarity: 6
+    - name: "WackyStick"
+      type: "STICK"
+      amount: 1
+      rarity: 6
+    - name: "MysteriousScythe"
+      type: "IRON_HOE"
+      amount: 1
+      rarity: 2
+    - name: "KingsCrown"
+      type: "GOLDEN_HELMET"
+      amount: 1
+      rarity: 2
+    - name: "PillagersPoppet"
+      type: "TOTEM_OF_UNDYING"
+      amount: 1
+      rarity: 2
+    - name: "TotemOfAgility"
+      type: "FEATHER"
+      amount: 1
+      rarity: 2
+    - name: "TotemOfFrenzy"
+      type: "PRISMARINE_SHARD"
+      amount: 1
+      rarity: 2
 
 Obelisk:
   prizes:
-    '0':
-      name: "AncientRelic"
-      type: "ANCIENT_DEBRIS"
-      amount: 2
-      rarity: 100
+    - name: "TNT"
+      type: "TNT"
+      amount: 32
+      rarity: 84
+    - name: "Slimeball"
+      type: "SLIME_BALL"
+      amount: 32
+      rarity: 84
+    - name: "SharpnessV"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 80
+    - name: "FireAspectII"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 80
+    - name: "ShulkerShell"
+      type: "SHULKER_SHELL"
+      amount: 4
+      rarity: 80
+    - name: "PhantomMembrane"
+      type: "PHANTOM_MEMBRANE"
+      amount: 32
+      rarity: 80
+    - name: "ArrowOfHarming"
+      type: "TIPPED_ARROW"
+      amount: 64
+      rarity: 80
+    - name: "EnderPearl"
+      type: "ENDER_PEARL"
+      amount: 16
+      rarity: 78.4
+    - name: "StickyPiston"
+      type: "STICKY_PISTON"
+      amount: 16
+      rarity: 78.4
+    - name: "BlockofIron"
+      type: "IRON_BLOCK"
+      amount: 32
+      rarity: 78.4
+    - name: "GoldenCarrot"
+      type: "GOLDEN_CARROT"
+      amount: 32
+      rarity: 78.4
+    - name: "BlockofCoal"
+      type: "COAL_BLOCK"
+      amount: 64
+      rarity: 78.4
+    - name: "EfficiencyV"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 48
+    - name: "FortuneIII"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 48
+    - name: "BottleOEnchanting"
+      type: "EXPERIENCE_BOTTLE"
+      amount: 16
+      rarity: 48
+    - name: "ChorusFlower"
+      type: "CHORUS_FLOWER"
+      amount: 16
+      rarity: 48
+    - name: "NetheriteScrap"
+      type: "NETHERITE_SCRAP"
+      amount: 32
+      rarity: 48
+    - name: "LuckyStout"
+      type: "POTION"
+      amount: 1
+      rarity: 21.6
+    - name: "CharismaCocktail"
+      type: "POTION"
+      amount: 1
+      rarity: 21.6
+    - name: "ReallyGoodPickaxe"
+      type: "IRON_PICKAXE"
+      amount: 1
+      rarity: 20.2
+    - name: "MendingBook"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 20.2
+    - name: "GoldenApple"
+      type: "GOLDEN_APPLE"
+      amount: 16
+      rarity: 20.2
+    - name: "NetheriteIngot"
+      type: "NETHERITE_INGOT"
+      amount: 16
+      rarity: 20.2
+    - name: "Emerald"
+      type: "EMERALD"
+      amount: 64
+      rarity: 20.2
+    - name: "AxeofAffliction"
+      type: "IRON_AXE"
+      amount: 1
+      rarity: 16.8
+    - name: "EnchantedGoldenApple"
+      type: "ENCHANTED_GOLDEN_APPLE"
+      amount: 5
+      rarity: 16.8
+    - name: "ReallyGoodSabatons"
+      type: "LEATHER_BOOTS"
+      amount: 1
+      rarity: 15.7
+    - name: "ReallyGoodChestplate"
+      type: "LEATHER_CHESTPLATE"
+      amount: 1
+      rarity: 15.7
+    - name: "ReallyGoodHelmet"
+      type: "LEATHER_HELMET"
+      amount: 1
+      rarity: 15.7
+    - name: "ReallyGoodPantaloons"
+      type: "LEATHER_LEGGINGS"
+      amount: 1
+      rarity: 15.7
+    - name: "BlockOfEmerald"
+      type: "EMERALD_BLOCK"
+      amount: 32
+      rarity: 15.7
+    - name: "MysteriousScythe"
+      type: "IRON_HOE"
+      amount: 1
+      rarity: 12
+    - name: "AdventurersSpyglass"
+      type: "SPYGLASS"
+      amount: 1
+      rarity: 12
+    - name: "FreezingConcoction"
+      type: "SPLASH_POTION"
+      amount: 1
+      rarity: 12
+    - name: "BlockofDiamond"
+      type: "DIAMOND_BLOCK"
+      amount: 16
+      rarity: 12
+    - name: "ArmorPlatedElytra"
+      type: "ELYTRA"
+      amount: 1
+      rarity: 10
+    - name: "EndCrystal"
+      type: "END_CRYSTAL"
+      amount: 1
+      rarity: 10
+    - name: "NetherStar"
+      type: "NETHER_STAR"
+      amount: 1
+      rarity: 10
+    - name: "MoltenDiamond"
+      type: "POTION"
+      amount: 1
+      rarity: 10
+    - name: "BlockOfNetherite"
+      type: "NETHERITE_BLOCK"
+      amount: 1
+      rarity: 10
+    - name: "WitherSkeletonSkull"
+      type: "WITHER_SKELETON_SKULL"
+      amount: 1
+      rarity: 10
+    - name: "IsolatedCaffeine"
+      type: "POTION"
+      amount: 1
+      rarity: 10
+    - name: "AnnihilatorMissle"
+      type: "CROSSBOW"
+      amount: 1
+      rarity: 10
+    - name: "WitherRose"
+      type: "WITHER_ROSE"
+      amount: 16
+      rarity: 10
+    - name: "Elven Longbow"
+      type: "BOW"
+      amount: 1
+      rarity: 6
+    - name: "cursedhide"
+      type: "LEATHER_HORSE_ARMOR"
+      amount: 1
+      rarity: 6
+    - name: "ShieldOfBattle"
+      type: "SHIELD"
+      amount: 1
+      rarity: 4
+    - name: "TotemOfHardness"
+      type: "NETHER_BRICK"
+      amount: 1
+      rarity: 4
+    - name: "TotemOfPain"
+      type: "QUARTZ"
+      amount: 1
+      rarity: 4
 
 HealingSprings:
   prizes:
-    '0':
-      name: "HealingCrystal"
-      type: "GHAST_TEAR"
+    - name: "pumpkinpie"
+      type: "PUMPKIN_PIE"
+      amount: 64
+      rarity: 16.5
+    - name: "purpur_block"
+      type: "PURPUR_BLOCK"
+      amount: 64
+      rarity: 16.5
+    - name: "GoldenCarrot"
+      type: "GOLDEN_CARROT"
+      amount: 64
+      rarity: 18
+    - name: "apple"
+      type: "APPLE"
+      amount: 64
+      rarity: 33
+    - name: "bakedpotato"
+      type: "BAKED_POTATO"
+      amount: 64
+      rarity: 33
+    - name: "bread"
+      type: "BREAD"
+      amount: 64
+      rarity: 33
+    - name: "beef"
+      type: "COOKED_BEEF"
+      amount: 64
+      rarity: 33
+    - name: "chicken"
+      type: "COOKED_CHICKEN"
+      amount: 64
+      rarity: 33
+    - name: "cod"
+      type: "COOKED_COD"
+      amount: 64
+      rarity: 33
+    - name: "mutton"
+      type: "COOKED_MUTTON"
+      amount: 64
+      rarity: 33
+    - name: "porkchop"
+      type: "COOKED_PORKCHOP"
+      amount: 64
+      rarity: 33
+    - name: "rabbit"
+      type: "COOKED_RABBIT"
+      amount: 64
+      rarity: 33
+    - name: "salmon"
+      type: "COOKED_SALMON"
+      amount: 64
+      rarity: 33
+    - name: "melon"
+      type: "MELON_SLICE"
+      amount: 64
+      rarity: 33.6
+    - name: "cookie"
+      type: "COOKIE"
+      amount: 64
+      rarity: 33.6
+    - name: "ink_sac"
+      type: "INK_SAC"
+      amount: 32
+      rarity: 6
+    - name: "pumpkinpie"
+      type: "PUMPKIN_PIE"
+      amount: 32
+      rarity: 16.5
+    - name: "BlockofCoal"
+      type: "COAL_BLOCK"
+      amount: 32
+      rarity: 16.5
+    - name: "purpur_block"
+      type: "PURPUR_BLOCK"
+      amount: 32
+      rarity: 16.5
+    - name: "GoldenCarrot"
+      type: "GOLDEN_CARROT"
+      amount: 32
+      rarity: 18
+    - name: "melon"
+      type: "MELON_SLICE"
+      amount: 32
+      rarity: 37.8
+    - name: "cookie"
+      type: "COOKIE"
+      amount: 32
+      rarity: 37.8
+    - name: "apple"
+      type: "APPLE"
+      amount: 32
+      rarity: 39
+    - name: "bakedpotato"
+      type: "BAKED_POTATO"
+      amount: 32
+      rarity: 39
+    - name: "bread"
+      type: "BREAD"
+      amount: 32
+      rarity: 39
+    - name: "beef"
+      type: "COOKED_BEEF"
+      amount: 32
+      rarity: 39
+    - name: "chicken"
+      type: "COOKED_CHICKEN"
+      amount: 32
+      rarity: 39
+    - name: "cod"
+      type: "COOKED_COD"
+      amount: 32
+      rarity: 39
+    - name: "mutton"
+      type: "COOKED_MUTTON"
+      amount: 32
+      rarity: 39
+    - name: "porkchop"
+      type: "COOKED_PORKCHOP"
+      amount: 32
+      rarity: 39
+    - name: "rabbit"
+      type: "COOKED_RABBIT"
+      amount: 32
+      rarity: 39
+    - name: "salmon"
+      type: "COOKED_SALMON"
+      amount: 32
+      rarity: 39
+    - name: "melon"
+      type: "MELON_SLICE"
+      amount: 16
+      rarity: 33.6
+    - name: "cookie"
+      type: "COOKIE"
+      amount: 16
+      rarity: 33.6
+    - name: "splashhealth"
+      type: "SPLASH_POTION"
+      amount: 12
+      rarity: 33.6
+    - name: "SplashBreathing"
+      type: "SPLASH_POTION"
+      amount: 12
+      rarity: 33.6
+    - name: "pothealth"
+      type: "POTION"
+      amount: 12
+      rarity: 33.6
+    - name: "sponge"
+      type: "SPONGE"
+      amount: 10
+      rarity: 9
+    - name: "dragon_breath"
+      type: "DRAGON_BREATH"
+      amount: 8
+      rarity: 3.8
+    - name: "ink_sac"
+      type: "INK_SAC"
+      amount: 8
+      rarity: 6
+    - name: "phantom_membrane"
+      type: "PHANTOM_MEMBRANE"
+      amount: 8
+      rarity: 9
+    - name: "glow_ink_sac"
+      type: "GLOW_INK_SAC"
+      amount: 8
+      rarity: 9
+    - name: "BlockofIron"
+      type: "IRON_BLOCK"
+      amount: 8
+      rarity: 16.5
+    - name: "BlockofCoal"
+      type: "COAL_BLOCK"
+      amount: 8
+      rarity: 16.5
+    - name: "small_dripleaf"
+      type: "SMALL_DRIPLEAF"
+      amount: 8
+      rarity: 16.5
+    - name: "arrowofhealing"
+      type: "TIPPED_ARROW"
+      amount: 8
+      rarity: 18
+    - name: "cmorphinearrow"
+      type: "TIPPED_ARROW"
+      amount: 8
+      rarity: 18
+    - name: "sea_pickle"
+      type: "SEA_PICKLE"
+      amount: 8
+      rarity: 33.6
+    - name: "splashhealth"
+      type: "SPLASH_POTION"
+      amount: 6
+      rarity: 37.8
+    - name: "SplashBreathing"
+      type: "SPLASH_POTION"
+      amount: 6
+      rarity: 37.8
+    - name: "pothealth"
+      type: "POTION"
+      amount: 6
+      rarity: 37.8
+    - name: "lingeringhealth"
+      type: "LINGERING_POTION"
+      amount: 3
+      rarity: 49.5
+    - name: "lingeringwaterbreathing"
+      type: "LINGERING_POTION"
+      amount: 3
+      rarity: 49.5
+    - name: "cdeployabletrampoline"
+      type: "LINGERING_POTION"
+      amount: 2
+      rarity: 18.8
+    - name: "sea_pickle"
+      type: "SEA_PICKLE"
+      amount: 2
+      rarity: 33.6
+    - name: "Cwackystick"
+      type: "STICK"
       amount: 1
-      rarity: 100
+      rarity: 14.4
+    - name: "CharismaCocktail"
+      type: "POTION"
+      amount: 1
+      rarity: 14.4
+    - name: "Ctotemofhealth"
+      type: "AMETHYST_SHARD"
+      amount: 1
+      rarity: 15
+    - name: "totemofhardness"
+      type: "NETHER_BRICK"
+      amount: 1
+      rarity: 15
+    - name: "Cgoodhelm"
+      type: "LEATHER_HELMET"
+      amount: 1
+      rarity: 15.3
+    - name: "Cgoodshirt"
+      type: "LEATHER_CHESTPLATE"
+      amount: 1
+      rarity: 15.3
+    - name: "Cgoodpants"
+      type: "LEATHER_LEGGINGS"
+      amount: 1
+      rarity: 15.3
+    - name: "Cgoodshoes"
+      type: "LEATHER_BOOTS"
+      amount: 1
+      rarity: 15.3
+    - name: "Csingleuseshovel"
+      type: "STONE_SHOVEL"
+      amount: 1
+      rarity: 18.8
+    - name: "goldenapple"
+      type: "GOLDEN_APPLE"
+      amount: 1
+      rarity: 18.8
+    - name: "totemofundying"
+      type: "TOTEM_OF_UNDYING"
+      amount: 1
+      rarity: 18.8
+    - name: "CondensedPotionofHealing"
+      type: "POTION"
+      amount: 1
+      rarity: 18.8
+    - name: "angelsenvy"
+      type: "POTION"
+      amount: 1
+      rarity: 18.8
+    - name: "Csusstew"
+      type: "SUSPICIOUS_STEW"
+      amount: 1
+      rarity: 18.8
+    - name: "trident"
+      type: "TRIDENT"
+      amount: 1
+      rarity: 21
+    - name: "AxeofAffliction"
+      type: "IRON_AXE"
+      amount: 1
+      rarity: 21
+    - name: "cmead"
+      type: "POTION"
+      amount: 1
+      rarity: 21
+    - name: "Cleadweight"
+      type: "CHARCOAL"
+      amount: 1
+      rarity: 21
+    - name: "Cgoodpickaxe"
+      type: "IRON_PICKAXE"
+      amount: 1
+      rarity: 21
+    - name: "Cbirthdaycake"
+      type: "CAKE"
+      amount: 1
+      rarity: 21
+    - name: "cake"
+      type: "CAKE"
+      amount: 1
+      rarity: 49.5
+    - name: "DepthStriderIII"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 54
+    - name: "LuckoftheSeaII"
+      type: "ENCHANTED_BOOK"
+      amount: 1
+      rarity: 54
+    - name: "ccraftsmanspickaxe"
+      type: "WOODEN_PICKAXE"
+      amount: 1
+      rarity: 54
+    - name: "tropical_fish_bucket"
+      type: "TROPICAL_FISH_BUCKET"
+      amount: 1
+      rarity: 105

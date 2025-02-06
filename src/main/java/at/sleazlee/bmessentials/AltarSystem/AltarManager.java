@@ -35,6 +35,10 @@ public class AltarManager implements Listener {
 	/** Tracks the in-world location of each Altar by name, loaded from config. */
 	private final Map<String, Location> altarLocations = new HashMap<>();
 
+	// Store pending prize commands keyed by the player's UUID.
+	private static final Map<UUID, String> pendingPrizeCommands = new HashMap<>();
+
+
 	/**
 	 * Records the last time (in milliseconds) each Altar was used.
 	 * Used to enforce a short cooldown so the animation isn't spammed.
@@ -121,13 +125,13 @@ public class AltarManager implements Listener {
 					// Trigger the correct altar animation, passing the chosen Material.
 					switch (altarName.toLowerCase()) {
 						case "healingsprings":
-							HealingSprings.playHealingSpringsAnimation(plugin, clickedLocation, displayMaterial);
+							HealingSprings.playHealingSpringsAnimation(plugin, player, clickedLocation, displayMaterial);;
 							break;
 						case "wishingwell":
-							WishingWell.playWishingWellAnimation(plugin, clickedLocation, displayMaterial);
+							WishingWell.playWishingWellAnimation(plugin, player, clickedLocation, displayMaterial);
 							break;
 						case "obelisk":
-							Obelisk.playObeliskAnimation(plugin, clickedLocation, displayMaterial);
+							Obelisk.playObeliskAnimation(plugin, player, clickedLocation, displayMaterial);
 							break;
 						default:
 							player.sendMessage("§cUnknown altar: " + altarName);
@@ -213,59 +217,96 @@ public class AltarManager implements Listener {
 		// Attempt to load from AltarPrizes.yml
 		File prizesFile = new File(plugin.getDataFolder(), "AltarPrizes.yml");
 		if (!prizesFile.exists()) {
-			// If file doesn't exist, fallback to random vanilla command
-			giveRandomReward(player);
+			// Fallback to a random reward command
+			String cmd = getRandomRewardCommand(player);
+			pendingPrizeCommands.put(player.getUniqueId(), cmd);
+			plugin.getLogger().info("Stored fallback command: " + cmd);
 			return Material.DIAMOND; // fallback material for display
 		}
 
 		YamlConfiguration prizeConfig = YamlConfiguration.loadConfiguration(prizesFile);
-
-		ConfigurationSection altSection = prizeConfig.getConfigurationSection(altarName + ".prizes");
-		if (altSection == null) {
-			// If no prizes listed for this altar, fallback
-			giveRandomReward(player);
+		List<Map<?, ?>> prizesList = prizeConfig.getMapList(altarName + ".prizes");
+		if (prizesList.isEmpty()) {
+			String cmd = getRandomRewardCommand(player);
+			pendingPrizeCommands.put(player.getUniqueId(), cmd);
+			plugin.getLogger().info("Stored fallback command: " + cmd);
 			return Material.DIAMOND;
 		}
 
-		// Parse the sub-keys (prize entries).
+		// Parse prizes from the list
 		List<Prize> allPrizes = new ArrayList<>();
-		for (String key : altSection.getKeys(false)) {
-			ConfigurationSection singlePrize = altSection.getConfigurationSection(key);
-			if (singlePrize == null) continue;
-
-			String name = singlePrize.getString("name", "UnknownItem");
-			String type = singlePrize.getString("type", "STONE");
-			int amount = singlePrize.getInt("amount", 1);
-			int rarity = singlePrize.getInt("rarity", 100);
-
+		for (Map<?, ?> prizeMap : prizesList) {
+			String name = prizeMap.get("name") != null ? prizeMap.get("name").toString() : "UnknownItem";
+			String type = prizeMap.get("type") != null ? prizeMap.get("type").toString() : "STONE";
+			int amount = 1;
+			if (prizeMap.get("amount") instanceof Number) {
+				amount = ((Number) prizeMap.get("amount")).intValue();
+			} else {
+				try {
+					amount = Integer.parseInt(prizeMap.get("amount").toString());
+				} catch (Exception e) { }
+			}
+			int rarity = 100;
+			if (prizeMap.get("rarity") instanceof Number) {
+				rarity = ((Number) prizeMap.get("rarity")).intValue();
+			} else {
+				try {
+					rarity = Integer.parseInt(prizeMap.get("rarity").toString());
+				} catch (Exception e) { }
+			}
 			allPrizes.add(new Prize(name, type, amount, rarity));
 		}
 
-		// If none found, fallback
 		if (allPrizes.isEmpty()) {
-			giveRandomReward(player);
+			String cmd = getRandomRewardCommand(player);
+			pendingPrizeCommands.put(player.getUniqueId(), cmd);
+			plugin.getLogger().info("Stored fallback command: " + cmd);
 			return Material.DIAMOND;
 		}
 
-		// Weighted random selection
+		// Weighted random selection of a prize
 		Prize chosen = getWeightedRandomPrize(allPrizes);
 		if (chosen == null) {
-			giveRandomReward(player);
+			String cmd = getRandomRewardCommand(player);
+			pendingPrizeCommands.put(player.getUniqueId(), cmd);
+			plugin.getLogger().info("Stored fallback command: " + cmd);
 			return Material.DIAMOND;
 		}
 
-		// Dispatch the actual command to give the item: "/si give <itemName> <amount> <player>"
-		String cmd = String.format("si give %s %d %s", chosen.getName(), chosen.getAmount(), player.getName());
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+		// If the configured amount is greater than 1, pick a random number between 1 and that maximum.
+		int prizeAmount = chosen.getAmount();
+		if (prizeAmount > 1) {
+			prizeAmount = random.nextInt(prizeAmount) + 1;
+		}
 
-		// Return the Material to display in the floating animation
+		// Create the prize command but do not execute it now.
+		String cmd = String.format("si give %s %d %s", chosen.getName(), prizeAmount, player.getName());
+		pendingPrizeCommands.put(player.getUniqueId(), cmd);
+		plugin.getLogger().info("Stored prize command: " + cmd);
+
+		// Return the Material to display (for the animation).
 		try {
 			return Material.valueOf(chosen.getType().toUpperCase());
 		} catch (IllegalArgumentException e) {
-			// If the config type was invalid, fallback
 			return Material.DIAMOND;
 		}
 	}
+
+
+
+	/**
+	 * Returns a random fallback reward command with the player placeholder replaced.
+	 */
+	private String getRandomRewardCommand(Player player) {
+		String[] commands = {
+				"give <player> minecraft:diamond 1",
+				"give <player> minecraft:emerald 1",
+				"give <player> minecraft:gold_ingot 5"
+		};
+		String command = commands[random.nextInt(commands.length)];
+		return command.replace("<player>", player.getName());
+	}
+
 
 	/**
 	 * Simple fallback method for older "random reward" commands
@@ -275,9 +316,9 @@ public class AltarManager implements Listener {
 	 */
 	private void giveRandomReward(Player player) {
 		String[] commands = {
-				"give <player> minecraft:diamond 1",
-				"give <player> minecraft:emerald 1",
-				"give <player> minecraft:gold_ingot 5"
+				"give <player> minecraft:dirt 1",
+				"give <player> minecraft:cobblestone 1",
+				"give <player> minecraft:stone 5"
 		};
 		String command = commands[random.nextInt(commands.length)];
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("<player>", player.getName()));
@@ -307,22 +348,31 @@ public class AltarManager implements Listener {
 	}
 
 	/**
-	 * Displays a glowing floating item above the altar for ~4 seconds.
-	 * Typically called by Altar animation classes in their final reveal step.
+	 * Displays a glowing floating item above the altar for ~4 seconds and
+	 * dispatches the stored prize command for the given player.
 	 *
 	 * @param plugin       Reference to the main plugin instance.
+	 * @param player       The player to receive the prize.
 	 * @param center       The location at which to show the item.
 	 * @param world        The world in which to drop the item.
-	 * @param displayType  Which Material to display. Must not be null.
+	 * @param displayType  The Material to display. Must not be null.
 	 */
-	public static void showItemAnimation(BMEssentials plugin, Location center, World world, Material displayType) {
+	public static void showItemAnimation(BMEssentials plugin, Player player, Location center, World world, Material displayType) {
 		if (displayType == null) {
 			displayType = Material.DIAMOND;
 		}
 
-		ItemStack rewardItem = new ItemStack(displayType, 1);
+		// Retrieve and execute the pending command for this player.
+		String command = pendingPrizeCommands.remove(player.getUniqueId());
+		if (command != null) {
+			plugin.getLogger().info("Dispatching command: " + command);
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+		} else {
+			plugin.getLogger().info("No pending prize command found for player " + player.getName());
+		}
 
-		// Give it a "glowing" enchant effect
+		// Create the display item for the animation.
+		ItemStack rewardItem = new ItemStack(displayType, 1);
 		ItemMeta meta = rewardItem.getItemMeta();
 		if (meta != null) {
 			meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
@@ -330,18 +380,18 @@ public class AltarManager implements Listener {
 			rewardItem.setItemMeta(meta);
 		}
 
-		// Slightly adjust spawn location
+		// Adjust the spawn location and drop the item.
 		Location adjustedCenter = center.clone().add(0.0, -0.3, 0.0);
 		Item floatingItem = world.dropItem(adjustedCenter, rewardItem);
-
 		floatingItem.setGravity(false);
 		floatingItem.setInvulnerable(true);
 		floatingItem.setVelocity(new Vector(0, 0, 0));
 		floatingItem.setPickupDelay(Integer.MAX_VALUE);
 
-		// Remove item after ~4 seconds (80 ticks).
+		// Remove the item after ~4 seconds (80 ticks).
 		Scheduler.runLater(floatingItem::remove, 80L);
 	}
+
 
 	/**
 	 * Enumeration of possible Altar tokens, each with:
