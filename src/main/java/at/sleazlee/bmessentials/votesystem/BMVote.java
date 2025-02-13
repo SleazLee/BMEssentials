@@ -12,7 +12,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.Particle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -26,7 +25,8 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import static org.bukkit.Particle.*;
+import static org.bukkit.Particle.DUST;
+import static org.bukkit.Particle.DustOptions;
 
 public class BMVote implements Listener, CommandExecutor {
     private final BMEssentials plugin;
@@ -226,25 +226,25 @@ public class BMVote implements Listener, CommandExecutor {
                 case "obelisk":
                     player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§C§A§6§5§0§0 §lObelisk§7§l Token§f!");
                     commandOne = "si give obeliskkey 1 " + playerName;
-                    commandTwo = "eco give " + playerName + " 1 VP";
+                    commandTwo = "eco give " + playerName + " 1 VotePoints";
                     hexCode = "#CA6500";
                     break;
                 case "wishingwell":
                     player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§3§2§C§A§F§C §lWishing-Well§7§l Token§f!");
                     commandOne = "si give wishingwellkey 1 " + playerName;
-                    commandTwo = "eco give " + playerName + " 1 VP";
+                    commandTwo = "eco give " + playerName + " 1 VotePoints";
                     hexCode = "#32CAFC";
                     break;
                 case "healingsprings":
                     player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§3§2§C§A§6§5 §lHealing Springs§7§l Token§f!");
                     commandOne = "si give healingspringskey 1 " + playerName;
-                    commandTwo = "eco give " + playerName + " 1 VP";
+                    commandTwo = "eco give " + playerName + " 1 VotePoints";
                     hexCode = "#32CA65";
                     break;
                 default:
                     player.sendMessage("§d§lVote §fYou just received §e2 VPs§f!");
                     commandOne = "none";
-                    commandTwo = "eco give " + playerName + " 2 VPs";
+                    commandTwo = "eco give " + playerName + " 2 VotePoints";
                     hexCode = "#AAAAAA";
                     break;
             }
