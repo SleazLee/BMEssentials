@@ -1,5 +1,7 @@
-package at.sleazlee.bmessentials.AltarSystem;
+package at.sleazlee.bmessentials.AltarSystem.Altars;
 
+import at.sleazlee.bmessentials.AltarSystem.AltarManager;
+import at.sleazlee.bmessentials.AltarSystem.Rewards.DiamondCatch;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.*;
@@ -149,6 +151,10 @@ public class WishingWell {
 
             Location prizeLocation = altarCenter.clone().add(0, 0.6, 0);
             AltarManager.showItemAnimation(plugin, player, prizeLocation, world, displayType);
+
+            // give random Diamond reward
+            DiamondCatch diamondCatch = new DiamondCatch(plugin);
+            diamondCatch.diamondcatch(player);
 
             // Extra visuals
             world.spawnParticle(Particle.FALLING_WATER, prizeLocation, 100, 0.5, 0.5, 0.5, 0.5);

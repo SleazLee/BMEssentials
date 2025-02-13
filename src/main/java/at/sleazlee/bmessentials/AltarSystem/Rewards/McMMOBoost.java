@@ -1,19 +1,16 @@
-package at.sleazlee.bmessentials.SpawnSystems;
+package at.sleazlee.bmessentials.AltarSystem.Rewards;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class McMMOBoost implements CommandExecutor {
+public class McMMOBoost {
 
 	private final BMEssentials plugin;
 
@@ -21,57 +18,31 @@ public class McMMOBoost implements CommandExecutor {
 		this.plugin = plugin;
 	}
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender instanceof ConsoleCommandSender) {
-			if (args.length > 0) {
-				String playerName = args[0];
-				Player player = Bukkit.getPlayer(playerName);
-				double randomValue = Math.random();
-				double totalChance = plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.TotalChance");
-
-				if (player != null) {
-					if (randomValue <= totalChance) {
-						mcmmoboost(player, playerName);
-					}
-				} else {
-					sender.sendMessage("§c§lBM §cPlayer not found or not online.");
-				}
-			} else {
-				sender.sendMessage("§c§lBM §cInvalid Syntax! §7Try §b/mcmmobonus <player>§7.");
-			}
-			return true;
-		} else {
-			// Inform the player that this command can only be executed by the console
-			sender.sendMessage("§c§lBM §cThis command can only be executed by the console.");
-
-			return true;
+	/**
+	 * Attempts to give the player a McMMO boost based on a random chance (defined by TotalChance in the config)
+	 * and further random selection between different boost types.
+	 *
+	 * @param player The player to receive the boost.
+	 */
+	public void mcmmoboost(Player player) {
+		String playerName = player.getName();
+		double chanceValue = Math.random();
+		double totalChance = plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.TotalChance");
+		if (chanceValue > totalChance) {
+			// Chance failed; no boost is given.
+			return;
 		}
-	}
 
-	public void mcmmoboost(Player player, String playerName) {
 		double randomValue = Math.random();
-		boolean has10Percent = false;
-		boolean has50Percent = false;
-		boolean has150Percent = false;
-		boolean hasDouble = false;
+		boolean has10Percent = player.hasPermission("mcmmo.perks.xp.10percentboost.*");
+		boolean has50Percent = player.hasPermission("mcmmo.perks.xp.50percentboost.*");
+		boolean has150Percent = player.hasPermission("mcmmo.perks.xp.150percentboost.*");
+		boolean hasDouble = player.hasPermission("mcmmo.perks.xp.double.*");
 		String newReward;
-		double tenPercentChance = plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.TenPercentChance");
-		double fiftyPercentChance = (tenPercentChance + plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.FiftyPercentChance"));
-		double oneHundredFiftyPercentChance = (fiftyPercentChance + plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.OneHundredFiftyPercentChance"));
 
-		if (player.hasPermission("mcmmo.perks.xp.10percentboost.*")) {
-			has10Percent = true;
-		}
-		if (player.hasPermission("mcmmo.perks.xp.50percentboost.*")) {
-			has50Percent = true;
-		}
-		if (player.hasPermission("mcmmo.perks.xp.150percentboost.*")) {
-			has150Percent = true;
-		}
-		if (player.hasPermission("mcmmo.perks.xp.double.*")) {
-			hasDouble = true;
-		}
+		double tenPercentChance = plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.TenPercentChance");
+		double fiftyPercentChance = tenPercentChance + plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.FiftyPercentChance");
+		double oneHundredFiftyPercentChance = fiftyPercentChance + plugin.getConfig().getDouble("Systems.SpawnSystems.McmmoBoost.OneHundredFiftyPercentChance");
 
 		if (randomValue <= tenPercentChance) {
 			newReward = "10Percent";
@@ -83,7 +54,7 @@ public class McMMOBoost implements CommandExecutor {
 			newReward = "Double";
 		}
 
-		switch(newReward) {
+		switch (newReward) {
 			case "10Percent":
 				if (has10Percent) {
 					switchAndUpdate("mcmmo.perks.xp.10percentboost.*", 120, player, playerName, "10% boost");
@@ -117,41 +88,61 @@ public class McMMOBoost implements CommandExecutor {
 				}
 				break;
 			default:
-
+				break;
 		}
 	}
 
+	/**
+	 * Removes the temporary permission and reassigns it with an updated expiration time.
+	 *
+	 * @param permission The permission node to update.
+	 * @param minutes    The additional minutes to add.
+	 * @param player     The player whose permission is being updated.
+	 * @param playerName The player's name.
+	 * @param boostName  The display name for the boost.
+	 */
 	public void switchAndUpdate(String permission, int minutes, Player player, String playerName, String boostName) {
 		String parsedTime = PlaceholderAPI.setPlaceholders(player, "%luckperms_expiry_time_" + permission + "%");
 		int hour = hoursExtract(parsedTime);
 		int min = ((minuteExtract(parsedTime) + minutes) + 1);
 		String formattedTimeResult = formatTime(hour, min);
 
-
 		player.sendMessage("§6§lMcMMO §7Nice! §7Your §a" + boostName + "§7 was extended and has §b" + formattedTimeResult + "§7 remaining!");
-		// player.sendMessage("String: (" + parsedTime + "), Hours: (" + hour + "), Minutes: " + min );
 
-		// unsets the permission
+		// Remove the temporary permission first
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		String unSetCommandBuilder = "lp user " + playerName + " permission unsettemp " + permission;
 		Bukkit.dispatchCommand(console, unSetCommandBuilder);
 
-		// sets the permission
-		String setCommandBuilder = "lp user " + playerName + " permission settemp "+ permission + " true " + hour + "h" + min +"m";
+		// Reassign the permission with the updated time
+		String setCommandBuilder = "lp user " + playerName + " permission settemp " + permission + " true " + hour + "h" + min + "m";
 		Scheduler.runLater(new Runnable() {
 			@Override
 			public void run() {
 				Bukkit.dispatchCommand(console, setCommandBuilder);
 			}
-		}, 20L); // Delay in ticks, 20 ticks = 1 second
+		}, 20L); // Delay in ticks (20 ticks = 1 second)
 	}
 
+	/**
+	 * Assigns the temporary permission reward to the player.
+	 *
+	 * @param permission The permission node.
+	 * @param minutes    The duration in minutes.
+	 * @param playerName The player's name.
+	 */
 	public void giveReward(String permission, int minutes, String playerName) {
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-		String setCommandBuilder = "lp user " + playerName + " permission settemp " + permission + " true " + minutes +"m";
+		String setCommandBuilder = "lp user " + playerName + " permission settemp " + permission + " true " + minutes + "m";
 		Bukkit.dispatchCommand(console, setCommandBuilder);
 	}
 
+	/**
+	 * Extracts the hours value from a string (expects a format like "2h" somewhere in the string).
+	 *
+	 * @param timeString The string to search.
+	 * @return The extracted number of hours, or 0 if not found.
+	 */
 	public int hoursExtract(String timeString) {
 		int hours = 0;
 		Pattern hourPattern = Pattern.compile("(\\d+)h");
@@ -162,6 +153,12 @@ public class McMMOBoost implements CommandExecutor {
 		return hours;
 	}
 
+	/**
+	 * Extracts the minutes value from a string (expects a format like "30m" somewhere in the string).
+	 *
+	 * @param timeString The string to search.
+	 * @return The extracted number of minutes, or 0 if not found.
+	 */
 	public int minuteExtract(String timeString) {
 		int minutes = 0;
 		Pattern minutePattern = Pattern.compile("(\\d+)m");
@@ -172,15 +169,18 @@ public class McMMOBoost implements CommandExecutor {
 		return minutes;
 	}
 
+	/**
+	 * Formats a given time (in hours and minutes) into a readable string.
+	 *
+	 * @param hours   The number of hours.
+	 * @param minutes The number of minutes.
+	 * @return A formatted string (e.g., "1 hour and 30 minutes").
+	 */
 	public String formatTime(int hours, int minutes) {
-		// Add the additional minutes to the total time
 		int totalMinutes = hours * 60 + minutes;
-
-		// Convert the total minutes back to hours and minutes format
 		int formattedHours = totalMinutes / 60;
 		int formattedMinutes = totalMinutes % 60;
 
-		// Construct the formatted time string
 		String formattedTime = "";
 		if (formattedHours > 0) {
 			formattedTime += formattedHours + (formattedHours == 1 ? " hour" : " hours");
@@ -194,6 +194,4 @@ public class McMMOBoost implements CommandExecutor {
 
 		return formattedTime;
 	}
-
-
 }

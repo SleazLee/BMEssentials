@@ -1,5 +1,7 @@
-package at.sleazlee.bmessentials.AltarSystem;
+package at.sleazlee.bmessentials.AltarSystem.Altars;
 
+import at.sleazlee.bmessentials.AltarSystem.AltarManager;
+import at.sleazlee.bmessentials.AltarSystem.Rewards.McMMOBoost;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.*;
@@ -148,6 +150,11 @@ public class Obelisk {
 
             // Show the final floating item with the chosen Material.
             AltarManager.showItemAnimation(plugin, player, altarCenter, world, displayType);
+
+            // give random Diamond reward
+            McMMOBoost mcMMOBoost = new McMMOBoost(plugin);
+            mcMMOBoost.mcmmoboost(player);
+
             createEnchantVortex(world, altarCenter);
 
             for (Player p : Bukkit.getOnlinePlayers()) {

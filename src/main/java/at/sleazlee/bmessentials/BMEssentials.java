@@ -1,9 +1,9 @@
 package at.sleazlee.bmessentials;
 
 import at.sleazlee.bmessentials.AltarSystem.AltarManager;
-import at.sleazlee.bmessentials.AltarSystem.HealingSprings;
-import at.sleazlee.bmessentials.AltarSystem.Obelisk;
-import at.sleazlee.bmessentials.AltarSystem.WishingWell;
+import at.sleazlee.bmessentials.AltarSystem.Altars.HealingSprings;
+import at.sleazlee.bmessentials.AltarSystem.Altars.Obelisk;
+import at.sleazlee.bmessentials.AltarSystem.Altars.WishingWell;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueTabCompleter;
@@ -11,30 +11,35 @@ import at.sleazlee.bmessentials.Containers.*;
 import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
-import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
+import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.HelpCommands;
-import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.BMEChatPlaceholders;
+import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
 import at.sleazlee.bmessentials.PlayerData.PlayerJoinListener;
-import at.sleazlee.bmessentials.SpawnSystems.*;
+import at.sleazlee.bmessentials.SpawnSystems.FirstJoinCommand;
+import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
 import at.sleazlee.bmessentials.art.Art;
-import at.sleazlee.bmessentials.rankup.RankUpManager;
-import at.sleazlee.bmessentials.trophyroom.*;
-import at.sleazlee.bmessentials.vot.*;
 import at.sleazlee.bmessentials.bmefunctions.*;
-import at.sleazlee.bmessentials.bungeetell.BungeeTellCommand;
-import at.sleazlee.bmessentials.maps.*;
-import at.sleazlee.bmessentials.tpshop.*;
-import at.sleazlee.bmessentials.votesystem.*;
+import at.sleazlee.bmessentials.VTell.VTellCommand;
+import at.sleazlee.bmessentials.maps.MapCommand;
+import at.sleazlee.bmessentials.maps.MapTabCompleter;
+import at.sleazlee.bmessentials.rankup.RankUpManager;
+import at.sleazlee.bmessentials.tpshop.TPShopCommand;
+import at.sleazlee.bmessentials.tpshop.TPShopTabCompleter;
+import at.sleazlee.bmessentials.trophyroom.*;
+import at.sleazlee.bmessentials.vot.PlayerEventListener;
+import at.sleazlee.bmessentials.vot.VotTabCompleter;
+import at.sleazlee.bmessentials.vot.VoteCommand;
+import at.sleazlee.bmessentials.votesystem.BMVote;
+import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -206,8 +211,6 @@ public class BMEssentials extends JavaPlugin {
 
             this.getCommand("firstjoinmessage").setExecutor(new FirstJoinCommand(this));
             this.getCommand("springsheal").setExecutor(new HealCommand(this));
-            this.getCommand("mcmmoboost").setExecutor(new McMMOBoost(this));
-            this.getCommand("diamondcatch").setExecutor(new DiamondCatch(this));
 
             AltarManager altarManager = new AltarManager(this);
             getServer().getPluginManager().registerEvents(altarManager, this);
@@ -262,13 +265,13 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("anvil").setExecutor(new AnvilCommand());
         }
 
-        // BungeeTell System
-        if (config.getBoolean("Systems.BungeeTell.Enabled")) {
+        // Velocity Tell System
+        if (config.getBoolean("Systems.VTell.Enabled")) {
             // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled BungeeTell System");
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled VTell System");
 
-            this.getCommand("bungeetell").setExecutor(new BungeeTellCommand(this));
-            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:bungeetell");
+            this.getCommand("vtell").setExecutor(new VTellCommand(this));
+            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:vtell");
         }
 
         // Map System

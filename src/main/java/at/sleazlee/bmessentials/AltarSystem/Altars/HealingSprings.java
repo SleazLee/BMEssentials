@@ -1,5 +1,6 @@
-package at.sleazlee.bmessentials.AltarSystem;
+package at.sleazlee.bmessentials.AltarSystem.Altars;
 
+import at.sleazlee.bmessentials.AltarSystem.AltarManager;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;

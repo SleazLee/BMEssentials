@@ -1,5 +1,8 @@
 package at.sleazlee.bmessentials.AltarSystem;
 
+import at.sleazlee.bmessentials.AltarSystem.Altars.HealingSprings;
+import at.sleazlee.bmessentials.AltarSystem.Altars.Obelisk;
+import at.sleazlee.bmessentials.AltarSystem.Altars.WishingWell;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import net.kyori.adventure.text.Component;
@@ -112,7 +115,26 @@ public class AltarManager implements Listener {
 
 				// Check for short cooldown (~9.3s in this example).
 				long lastUsed = lastUsedTime.getOrDefault(altarName, 0L);
-				if (System.currentTimeMillis() - lastUsed < 9300) {
+
+				// set cooldown
+				long cooldown;
+				switch (altarName.toLowerCase()) {
+					case "healingsprings":
+						cooldown = 9050;
+						break;
+					case "wishingwell":
+						cooldown = 10550;
+						break;
+					case "obelisk":
+						cooldown = 11550;
+						break;
+					default:
+						cooldown = 11550;
+						return;
+				}
+
+
+				if (System.currentTimeMillis() - lastUsed < cooldown) {
 					player.sendMessage("§x§F§F§3§3§0§0§lAltar §cPlease wait until this monument's activation sequence is complete.");
 					return;
 				}
@@ -302,23 +324,6 @@ public class AltarManager implements Listener {
 		};
 		String command = commands[random.nextInt(commands.length)];
 		return command.replace("<player>", player.getName());
-	}
-
-
-	/**
-	 * Simple fallback method for older "random reward" commands
-	 * if AltarPrizes.yml is missing or misconfigured.
-	 *
-	 * @param player The player receiving the reward.
-	 */
-	private void giveRandomReward(Player player) {
-		String[] commands = {
-				"give <player> minecraft:dirt 1",
-				"give <player> minecraft:cobblestone 1",
-				"give <player> minecraft:stone 5"
-		};
-		String command = commands[random.nextInt(commands.length)];
-		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("<player>", player.getName()));
 	}
 
 	/**

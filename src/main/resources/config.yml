@@ -162,8 +162,8 @@ Systems:
   Containers:
     Enabled: true
 
-  # Enables the bungeetell system.
-  BungeeTell:
+  # Enables the Velocity Tell system.
+  VTell:
     Enabled: true
 
   # Enables the Map system.

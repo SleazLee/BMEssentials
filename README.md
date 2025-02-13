@@ -30,7 +30,7 @@
 - Spawn Systems: Features like first join messages, healing springs, and more.
 - Common Commands: Commands like playtime, lag, and Discord info.
 - Trash System: Commands for trash and disposal.
-- BungeeTell: Cross-server messaging system.
+- VTell: Cross-server messaging system.
 - Maps: Map-related commands with tab completion.
 - Punishments: Ban and mute systems with BungeeCord support.
 - Donations: Donation-related commands.
@@ -60,8 +60,8 @@
 ### Trash System
 - `/trash`, `/disposal`: Opens a trash chest.
 
-### BungeeTell
-- `/bungeetell`: Sends a message to all players on the network.
+### Velocity Tell
+- `/vtell`: Sends a message to all players on the network.
 
 ### Maps
 - `/map`, `/maps`: Server map link.

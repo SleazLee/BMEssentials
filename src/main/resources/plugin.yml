@@ -95,9 +95,9 @@ commands:
       - openanvil
       - anv
 
-  bungeetell:
+  vtell:
     description: Sends a message to all players on the network.
-    usage: /bungeetell
+    usage: /vtell
 
   adminvote:
     description: Sends a testvote to the player given.
@@ -126,14 +126,6 @@ commands:
   bmdiscord:
     description: Gives the player a discord link.
     usage: /bmdiscord
-
-  mcmmoboost:
-    description: gives a mcmmo boost to a player.
-    usage: /mcmmobonus <player>
-
-  diamondcatch:
-    description: gives a random ammount of diamonds to a player.
-    usage: /diamondcatch <player>
 
   autoban:
     description: Bans the player for hacking.
