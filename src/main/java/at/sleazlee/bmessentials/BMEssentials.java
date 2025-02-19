@@ -178,6 +178,10 @@ public class BMEssentials extends JavaPlugin {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vote Systems");
 
+            // Register BMVote as the listener for incoming plugin messages on the "bmessentials:vote" channel.
+            this.getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:vote", new BMVote(this));
+            this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:vote");
+
             this.getCommand("adminvote").setExecutor(new BMVote(this));
             this.getCommand("adminvote").setTabCompleter(new TestVoteTabCompleter());
         }
@@ -338,10 +342,10 @@ public class BMEssentials extends JavaPlugin {
         }
 
 
-        // Vote System
+        // Vot System
         if (getConfig().getBoolean("Systems.Vot.Enabled")) {
             // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vote System");
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vot System");
 
             getCommand("vot").setExecutor(new VoteCommand(this));
             this.getCommand("vot").setTabCompleter(new VotTabCompleter());

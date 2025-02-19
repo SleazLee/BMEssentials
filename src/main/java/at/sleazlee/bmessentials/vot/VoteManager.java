@@ -45,7 +45,7 @@ public class VoteManager {
     private Player voteInitiator; // New field to track vote initiator
 
     private final BMEssentials plugin;
-    private int voteDurationSeconds;
+    private int votDurationSeconds;
     private long cooldownMilliseconds;
 
     /**
@@ -60,12 +60,8 @@ public class VoteManager {
         }
 
         // Load configurable values
-        voteDurationSeconds = plugin.getConfig().getInt("Systems.Vot.VoteDurationSeconds", 60);
+        votDurationSeconds = plugin.getConfig().getInt("Systems.Vot.VotDurationSeconds", 60);
         cooldownMilliseconds = plugin.getConfig().getInt("Systems.Vot.CooldownMinutes", 15) * 60 * 1000;
-
-        // Log the loaded configuration values
-        plugin.getLogger().info("VoteManager initialized with voteDurationSeconds: " + voteDurationSeconds
-                + " seconds, cooldownMilliseconds: " + cooldownMilliseconds + " milliseconds");
     }
 
     /**
@@ -423,7 +419,7 @@ public class VoteManager {
                 Component.text().append(Component.text("Voting for ", NamedTextColor.GRAY))
                         .append(Component.text(capitalizedOption, NamedTextColor.GREEN, TextDecoration.BOLD))
                         .append(Component.text("! | ", NamedTextColor.GRAY))
-                        .append(Component.text(voteDurationSeconds + "s", NamedTextColor.AQUA))
+                        .append(Component.text(votDurationSeconds + "s", NamedTextColor.AQUA))
                         .build(),
                 1.0f,
                 BossBar.Color.BLUE,
@@ -441,10 +437,10 @@ public class VoteManager {
      */
     private void startVoteCountdown(String option) {
         String capitalizedOption = StringUtils.capitalize(option);
-        AtomicLong timeLeft = new AtomicLong(voteDurationSeconds);
+        AtomicLong timeLeft = new AtomicLong(votDurationSeconds);
 
         scheduledVoteEndTask = Scheduler.runTimer(() -> {
-            float progress = timeLeft.get() / (float) voteDurationSeconds;
+            float progress = timeLeft.get() / (float) votDurationSeconds;
             bossBar.progress(progress);
 
             long secsLeft = timeLeft.decrementAndGet();

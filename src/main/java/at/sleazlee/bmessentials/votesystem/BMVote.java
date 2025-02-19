@@ -1,45 +1,57 @@
 package at.sleazlee.bmessentials.votesystem;
 
 import at.sleazlee.bmessentials.BMEssentials;
-import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.art.Art;
-import com.vexsoftware.votifier.model.VotifierEvent;
-import org.bukkit.*;
+import at.sleazlee.bmessentials.Scheduler;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
-import java.util.logging.Level;
 
-import static org.bukkit.Particle.DUST;
-import static org.bukkit.Particle.DustOptions;
+/**
+ * Handles awarding vote rewards for the BMEssentials plugin.
+ * <p>
+ * This class no longer deals with Votifier events or vote storage.
+ * It only provides methods to give vote rewards and a command to manually trigger them for testing.
+ * </p>
+ */
+public class BMVote implements CommandExecutor, PluginMessageListener {
 
-public class BMVote implements Listener, CommandExecutor {
     private final BMEssentials plugin;
-    private FileConfiguration votesConfig;
-    private File votesFile;
 
+    /**
+     * Constructs a new BMVote instance.
+     *
+     * @param plugin the BMEssentials plugin instance.
+     */
     public BMVote(BMEssentials plugin) {
         this.plugin = plugin;
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-        createVotesFile();
-        cleanOldVotes();
+        // No event registrations here since vote handling is triggered via plugin messages from Velocity.
     }
 
+    /**
+     * Executes the vote command for manual testing.
+     * <p>
+     * Usage: /adminvote [playerName]
+     * If no player is specified, the sender is used.
+     * </p>
+     *
+     * @param sender  the command sender.
+     * @param command the command.
+     * @param label   the command label.
+     * @param args    command arguments.
+     * @return true if the command processed successfully.
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
@@ -47,12 +59,11 @@ public class BMVote implements Listener, CommandExecutor {
                 String otherPlayer = args[0];
                 givePrize(otherPlayer);
             } else {
-            sender.sendMessage("Too few args, try adding a player name!");
+                sender.sendMessage("Too few args, try adding a player name!");
             }
             return true;
         }
         Player player = (Player) sender;
-
         if (!player.hasPermission("bme.testvote")) {
             player.sendMessage(ChatColor.RED + "BM You do not have permission to use this command.");
             return true;
@@ -66,131 +77,60 @@ public class BMVote implements Listener, CommandExecutor {
         return true;
     }
 
-    private void createVotesFile() {
-        // Create the plugin data folder if it doesn't exist
-        if (!plugin.getDataFolder().exists()) {
-            plugin.getDataFolder().mkdirs();
-        }
+    /**
+     * Handles incoming plugin messages.
+     * <p>
+     * Expects a payload in the format "uuid;count". For each vote in the count,
+     * the reward is awarded to the player corresponding to the given UUID.
+     * </p>
+     *
+     * @param channel the channel name.
+     * @param player  the player associated with the message.
+     * @param message the message payload.
+     */
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (!channel.equals("bmessentials:vote")) return;
 
-        // Create a File object for the votes file
-        votesFile = new File(plugin.getDataFolder(), "vote.yml");
+        // Debug log to show receipt of the message
+        Bukkit.getLogger().info("BMVote: Received plugin message on channel " + channel + " from " + player.getName() +
+                " with payload: " + new String(message));
 
-        // Copy the default vote.yml to the data folder if it doesn't exist
-        if (!votesFile.exists()) {
-            try (InputStream resource = plugin.getResource("vote.yml")) {
-                if (resource != null) {
-                    Files.copy(resource, votesFile.toPath());
-                } else {
-                    plugin.getLogger().warning("Default vote.yml not found in resources!");
-                }
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, "Failed to copy default vote.yml", e);
-            }
-        }
-
-        // Load the file into a FileConfiguration object so it can be used
-        votesConfig = YamlConfiguration.loadConfiguration(votesFile);
-    }
-
-    private void cleanOldVotes() {
-        // Iterate over all stored votes
-        for (String key : votesConfig.getKeys(false)) {
-            // Retrieve the timestamp of the vote
-            Date voteDate = (Date) votesConfig.get(key + ".timestamp");
-
-            // If the voteDate is not null and the vote is older than 30 days, remove it
-            if (voteDate != null && Date.from(Instant.now().minusSeconds(60 * 60 * 24 * 30)).after(voteDate)) {
-                votesConfig.set(key, null);
-            }
-        }
-
-        // Save any changes to the file
+        String data = new String(message);
+        String[] parts = data.split(";");
+        if (parts.length != 2) return;
+        String uuidString = parts[0];
+        int voteCount;
         try {
-            votesConfig.save(votesFile);
-        } catch (IOException e) {
-            e.printStackTrace();
+            voteCount = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        for (int i = 0; i < voteCount; i++) {
+            givePrizeByUUID(uuidString);
         }
     }
 
 
-    @EventHandler
-    public void onVotifierEvent(VotifierEvent event) {
-        // Get the name of the player who voted
-        String playerName = event.getVote().getUsername();
-
-        // Get the UUID of the player
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-        UUID playerUUID = offlinePlayer.getUniqueId();
-
-        // Convert UUID to String for storage
-        String uuidString = playerUUID.toString();
-
-        // Check if the player is currently online
-        Player player = offlinePlayer.getPlayer();
-
-        if (player != null) { // Player is online
-
-            // gives the player their prize
-            givePrize(playerName);
-
-        } else { // Player is offline
-            // Get the current number of votes for the player, or 0 if they have no votes
-            int voteCount = votesConfig.getInt(uuidString + ".count", 0);
-
-            // Increment the vote count
-            votesConfig.set(uuidString + ".count", voteCount + 1);
-
-            // Store the current date and time as the timestamp for the vote
-            votesConfig.set(uuidString + ".timestamp", Date.from(Instant.now()));
-
-            // Save any changes to the file
-            try {
-                votesConfig.save(votesFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    /**
+     * Gives a prize to the player identified by the provided UUID string.
+     *
+     * @param uuidString the player's UUID as a string.
+     */
+    public void givePrizeByUUID(String uuidString) {
+        Player target = Bukkit.getPlayer(UUID.fromString(uuidString));
+        if (target == null) {
+            // Player is offline or not found.
+            return;
         }
+        givePrize(target.getName());
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        // Get the player who joined
-        Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-
-        // Convert UUID to String for checking
-        String uuidString = playerUUID.toString();
-
-        // Check if the player has a stored vote
-        if (votesConfig.contains(uuidString)) {
-            // Get the timestamp of the vote
-            Date voteDate = (Date) votesConfig.get(uuidString + ".timestamp");
-
-            // Get the number of votes
-            int voteCount = votesConfig.getInt(uuidString + ".count", 0);
-
-            // Check if the vote is less than 30 days old
-            if (Date.from(Instant.now().minusSeconds(60 * 60 * 24 * 30)).before(voteDate)) {
-
-                // Execute the reward commands
-                for (int i = 0; i < voteCount; i++) {
-
-                    Scheduler.runLater(() -> givePrize(player.getName()), 40L); // 40 ticks delay
-
-
-                }
-            }
-
-            // Remove the vote from the config
-            votesConfig.set(uuidString, null);
-            try {
-                votesConfig.save(votesFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
+    /**
+     * Randomly selects a reward key.
+     *
+     * @return a string representing the reward key.
+     */
     public String randomKey() {
         double randomValue = Math.random();
 
@@ -287,8 +227,14 @@ public class BMVote implements Listener, CommandExecutor {
         }
     }
 
+    /**
+     * Spawns a falling particle sphere at the player's location.
+     *
+     * @param player  the player.
+     * @param hexCode the hex color code for the particles.
+     */
     public void spawnFallingParticleSphere(Player player, String hexCode) {
-        DustOptions dustOptions = Art.createDustOptions(hexCode);
+        Particle.DustOptions dustOptions = Art.createDustOptions(hexCode);
         double radius = plugin.getConfig().getDouble("Systems.VoteSystem.Particles.Radius");
         Location location = player.getLocation();
 
@@ -307,7 +253,7 @@ public class BMVote implements Listener, CommandExecutor {
                     Location particleLocation = location.clone().add(x, 0, z);
 
                     // Spawn the particle
-                    particleLocation.getWorld().spawnParticle(DUST, particleLocation, 1, 0, 0, 0, dustOptions);
+                    particleLocation.getWorld().spawnParticle(Particle.DUST, particleLocation, 1, 0, 0, 0, dustOptions);
                 }
                 y -= radius / 8; // Lower the y-coordinate each tick
             }
@@ -321,7 +267,4 @@ public class BMVote implements Listener, CommandExecutor {
             }
         }, 60L); // Adjust the delay here to match your needs, 60 ticks for 3 seconds as per original requirement
     }
-
-
-
 }
