@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -45,12 +46,11 @@ public class HelpBooks {
      * After loading, logs the number of books found.
      */
     private void loadBooksConfig() {
-        InputStream inputStream = plugin.getResource("books.yml");
-        if (inputStream == null) {
-            plugin.getLogger().severe("Could not find books.yml in plugin resources!");
-            return;
+        File booksFile = new File(plugin.getDataFolder(), "books.yml");
+        if (!booksFile.exists()) {
+            plugin.saveResource("books.yml", false);
         }
-        booksConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
+        booksConfig = YamlConfiguration.loadConfiguration(booksFile);
 
         // Get the number of books and log it
         if (booksConfig.contains("Books")) {
@@ -61,6 +61,7 @@ public class HelpBooks {
             getServer().getConsoleSender().sendMessage(ChatColor.RED + "    No books found in books.yml!");
         }
     }
+
 
     /**
      * Opens a book for the specified player.
@@ -123,4 +124,9 @@ public class HelpBooks {
         book.setItemMeta(meta);
         player.openBook(book);
     }
+
+    public void reloadBooksConfig() {
+        loadBooksConfig();
+    }
+
 }

@@ -238,3 +238,36 @@ Commands:
     - "<click:SUGGEST_COMMAND:/shop item><hover:show_text:'&aClick to Copy!'>&a/shop item &8-&7 Change shop item of a shop.</hover></click>"
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
+
+  landscommands1:
+    - "{center color='dark_gray'}<green>Lands Commands{/center}"
+    - '<gray></gray>'
+    - '<click:run_command:"/l"><hover:show_text:"<green>Click to Run!</green>"><green>/l</green><gray>,</gray> <green>/land</green><gray>,</gray> <green>/lands</green> <dark_gray>-</dark_gray> <gray>Open the Lands menu.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l accept "><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l accept</green> <dark_gray><</dark_gray><green>land</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Accept Land Invites.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l ban "><hover:show_text:"<green>Click to Copy!</green>"><green>/l ban</green> <dark_gray><</dark_gray><green>player</green><dark_gray>></dark_gray> <dark_gray>[</dark_gray><gray>area</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Ban a player.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l claim"><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l claim</green> <dark_gray>[</dark_gray><gray>land</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Claim chunks.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l create "><hover:show_text:"<green>Click to Copy!</green>"><green>/l create</green> <dark_gray><</dark_gray><green>name</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Create a Land.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l delete "><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l delete</green> <dark_gray><</dark_gray><green>land</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Delete a Land.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l deny "><hover:show_text:"<green>Click to Copy!</green>"><green>/l deny</green> <dark_gray><</dark_gray><green>land</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Deny Land Invites.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l info "><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l info</green> <dark_gray>[</dark_gray><gray>land</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>View Info about a land.</gray></hover></click>'
+    - '<click:run_command:"/l invites"><hover:show_text:"<green>Click to Run!</green>"><green>/l invites</green> <dark_gray>-</dark_gray> <gray>Show received invites.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l leave "><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l leave</green> <dark_gray>[</dark_gray><gray>land</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Leave a land or area.</gray></hover></click>'
+    - '<click:run_command:"/l map"><hover:show_text:"<green>Click to Run!</green>"><green>/l map</green> <dark_gray>-</dark_gray> <gray>View a Chat based map.</gray></hover></click>'
+    - '<gray></gray>'
+    - '<dark_gray><st>                              </st></dark_gray> <click:run_command:"/landscommands2"><hover:show_text:"<dark_green><bold>Next Page</bold></dark_green>"><yellow> → → Page 1 → → </yellow><gray></gray></hover></click> <dark_gray><st>                              </st></dark_gray>'
+
+  landscommands2:
+    - "{center color='dark_gray'}<green>Lands Commands{/center}"
+    - '<gray></gray>'
+    - '<click:copy_to_clipboard:"/l rename "><hover:show_text:"<green>Click to Copy!</green>"><green>/l rename</green> <dark_gray><</dark_gray><green>name</green><dark_gray>></dark_gray> <dark_gray><</dark_gray><green>new name</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Rename a Land.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l setowner "><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l setowner</green> <dark_gray><</dark_gray><green>player</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Transfer ownership.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l setrole "><hover:show_text:"<green>Click to Copy!</green>"><green>/l setrole</green> <dark_gray><</dark_gray><green>player</green><dark_gray>></dark_gray> <dark_gray><</dark_gray><green>area</green><dark_gray>></dark_gray> <dark_gray><</dark_gray><green>role</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Set roles.</gray></hover></click>'
+    - '<click:run_command:"/l setspawn"><hover:show_text:"<gray>Click to Run!</gray>"><green>/l setspawn</green> <dark_gray>-</dark_gray> <gray>Set a Lands spawnpoint.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l spawn "><hover:show_text:"<green>Click to Copy!</green>"><green>/l spawn</green> <dark_gray><</dark_gray><green>land</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Teleports to a lands spawn.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l trust "><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l trust</green> <dark_gray><</dark_gray><green>player</green><dark_gray>></dark_gray> <dark_gray>[</dark_gray><gray>area</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Trust player.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l unban "><hover:show_text:"<green>Click to Copy!</green>"><green>/l unban</green> <dark_gray><</dark_gray><green>player</green><dark_gray>></dark_gray> <dark_gray>[</dark_gray><gray>area</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Unban a player.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l unclaim"><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l unclaim</green> <dark_gray>-</dark_gray> <gray>Unclaim a chunk.</gray></hover></click>'
+    - '<click:copy_to_clipboard:"/l untrust"><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l untrust</green> <dark_gray>[</dark_gray><gray>area</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Untrust a player.</gray></hover></click>'
+    - '<click:run_command:"/l view"><hover:show_text:"<gray>Click to Run!</gray>"><green>/l view</green> <dark_gray>[</dark_gray><gray>disable</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Info about claims.</gray></hover></click>'
+    - '<gray></gray>'
+    - '<dark_gray><st>                              </st></dark_gray> <click:run_command:"/landscommands1"><hover:show_text:"<dark_green><bold>Previous Page</bold></dark_green>"><yellow> ← ← Page 2 ← ← </yellow><gray></gray></hover></click> <dark_gray><st>                              </st></dark_gray>'

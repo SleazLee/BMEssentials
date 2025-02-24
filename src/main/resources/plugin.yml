@@ -147,7 +147,8 @@ commands:
   vot:
     description: Initiates a vote or casts a vote for changing time or weather.
     usage: /vot <day|night|clear|rain|thunder|yes|no|reset>
-    aliases: [ vote ]
+    aliases:
+      - vote
     permission: bmessentials.vot.use
     permission-message: '&cYou do not have permission to use this command.'
 
@@ -188,11 +189,14 @@ commands:
 
   bal:
     description: Show your balance
-    aliases: [money]
+    aliases:
+      - money
+      - balance
 
   baltop:
     description: Show top balances
-    aliases: [moneytop]
+    aliases:
+      - moneytop
 
   eco:
     description: OP economy commands
