@@ -14,8 +14,10 @@ import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
+import at.sleazlee.bmessentials.Help.Commands.TextCommand;
 import at.sleazlee.bmessentials.Help.HelpBooks;
-import at.sleazlee.bmessentials.Help.HelpCommands;
+import at.sleazlee.bmessentials.Help.HelpText;
+import at.sleazlee.bmessentials.Help.TabCompleter.CommandTabCompleter;
 import at.sleazlee.bmessentials.PlayerData.BMEChatPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
@@ -37,6 +39,8 @@ import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
+import at.sleazlee.bmessentials.Help.Commands.HelpCommand;
+import at.sleazlee.bmessentials.Help.TabCompleter.HelpTabCompleter;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -358,22 +362,25 @@ public class BMEssentials extends JavaPlugin {
             this.rankUpManager = new RankUpManager(this);
         }
 
-        // Enable Book Systems
-        if (getConfig().getBoolean("Systems.Help.Books.Enabled")) {
+        // Enable Help Systems
+        if (getConfig().getBoolean("Systems.Help.Enabled")) {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Book Systems");
 
             HelpBooks books = new HelpBooks(this);
             getCommand("book").setExecutor(new BookCommand(books));
-        }
 
-        // Enable Commands System
-        if (getConfig().getBoolean("Systems.Help.Commands.Enabled")) {
+            getCommand("help").setExecutor(new HelpCommand());
+            getCommand("help").setTabCompleter(new HelpTabCompleter());
+
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Commands System");
 
-            HelpCommands commandsSystem = new HelpCommands(this);
-            getCommand("commands").setExecutor(new CommandsCommand(commandsSystem));
+            HelpText textSystem = new HelpText(this);
+            getCommand("text").setExecutor(new TextCommand(textSystem));
+
+            getCommand("commands").setExecutor(new CommandsCommand(textSystem));
+            getCommand("commands").setTabCompleter(new CommandTabCompleter());
         }
 
         // AntiTrample System

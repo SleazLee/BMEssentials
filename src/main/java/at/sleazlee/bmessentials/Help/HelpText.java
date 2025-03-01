@@ -10,8 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -23,7 +22,7 @@ import static org.bukkit.Bukkit.getServer;
  * Handles the Commands system, allowing players to get command information.
  * Loads the commands configuration from the plugin resources.
  */
-public class HelpCommands {
+public class HelpText {
 
     private final BMEssentials plugin;
     private FileConfiguration commandsConfig;
@@ -33,7 +32,7 @@ public class HelpCommands {
      *
      * @param plugin The main plugin instance.
      */
-    public HelpCommands(BMEssentials plugin) {
+    public HelpText(BMEssentials plugin) {
         this.plugin = plugin;
         loadCommandsConfig();
     }
@@ -43,12 +42,12 @@ public class HelpCommands {
      * After loading, logs the number of commands found.
      */
     private void loadCommandsConfig() {
-        InputStream inputStream = plugin.getResource("commands.yml");
-        if (inputStream == null) {
-            plugin.getLogger().severe("Could not find commands.yml in plugin resources!");
-            return;
+        File commandsFile = new File(plugin.getDataFolder(), "commands.yml");
+        if (!commandsFile.exists()) {
+            plugin.saveResource("commands.yml", false);
         }
-        commandsConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream));
+        commandsConfig = YamlConfiguration.loadConfiguration(commandsFile);
+
         // Get the number of commands and log it
         if (commandsConfig.contains("Commands")) {
             Set<String> commands = commandsConfig.getConfigurationSection("Commands").getKeys(false);
@@ -157,4 +156,9 @@ public class HelpCommands {
         }
         return message;
     }
+
+    public void reloadCommandConfig() {
+        loadCommandsConfig();
+    }
+
 }

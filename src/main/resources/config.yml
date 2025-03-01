@@ -214,12 +214,6 @@ Systems:
 
   # The Help Menu Systems
   Help:
-    # Enables the Help Books System
-    Books:
-      Enabled: true
-
-    # Enables the Help Commands System
-    Commands:
       Enabled: true
 
   # Enables the PlayerData Systems

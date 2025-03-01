@@ -56,6 +56,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                 return handlePay(sender, args);
 
             case "bal":
+            case "balance":
             case "money":
                 return handleBal(sender);
 
@@ -585,6 +586,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
 
             // /bal OR /money (no arguments)
             case "bal":
+            case "balance":
             case "money":
                 return Collections.emptyList();
 

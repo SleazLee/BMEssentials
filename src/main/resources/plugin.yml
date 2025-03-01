@@ -168,14 +168,6 @@ commands:
     description: Runs the command queue
     usage: /commandqueue run <player/console> <delay>
 
-  book:
-    description: Opens a help book.
-    usage: /book <book name>
-
-  commands:
-    description: Displays command information.
-    usage: /commands <command name>
-
   version:
     description: Check what chunk version you are in.
     usage: /version
@@ -189,17 +181,37 @@ commands:
 
   bal:
     description: Show your balance
-    aliases:
-      - money
-      - balance
+
+  money:
+    description: Show your balance
+
+  balance:
+    description: Show your balance
 
   baltop:
     description: Show top balances
-    aliases:
-      - moneytop
+
+  moneytop:
+    description: Show top balances
 
   eco:
     description: OP economy commands
+
+  help:
+    description: Shows help for BMEssentials.
+    usage: /help
+
+  commands:
+    description: Shows text commands for BMEssentials.
+    usage: /commands
+
+  book:
+    description: Opens a help book.
+    usage: /book <book name>
+
+  text:
+    description: Displays command information.
+    usage: /text <text name>
 
 
 

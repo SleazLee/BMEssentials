@@ -58,7 +58,7 @@ Commands:
   mcmmohelp:
     - "&6&lMcMMO &r&7For info on everything mcmmo &bhttps://wiki.mcmmo.org/"
 
-  basicinfocommands:
+  basics:
     - "{center color='dark_gray'}<gold>Server Info CMDs{/center}"
     - "&7"
     - "<click:run_command:/help337><hover:show_text:'&6Click to Run!'>&6/help &8-&7 Opens the main Help menu.</hover></click>"
@@ -72,7 +72,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  trophyhelpandcommands:
+  trophies:
     - "{center color='dark_gray'}<light_purple>Trophy Commands{/center}"
     - "&7"
     - "{center}Trophies can be obtained from server events,{/center}"
@@ -84,7 +84,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  tpcommands:
+  teleportation:
     - "{center color='dark_gray'}<blue>Teleportation CMDs{/center}"
     - "&7"
     - "<click:run_command:/spawn><hover:show_text:'&9Click to Run!'>&9/spawn &8-&7 Teleport to the server spawn.</hover></click>"
@@ -103,7 +103,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  chatcommands:
+  communication:
     - "{center color='dark_gray'}<light_purple>Chat Commands{/center}"
     - "&7"
     - "<click:SUGGEST_COMMAND:/msg ><hover:show_text:'&dClick to Copy!'>&d/msg &8<&dplayer&8> <&dmessage&8> -&7 PM another player.</hover></click>"
@@ -129,7 +129,7 @@ Commands:
     - "<click:SUGGEST_COMMAND:/party rename ><hover:show_text:'&aClick to Copy!'>&a/party rename &8<&anew name&8> -&7 Rename the party.</hover></click>"
     - "{fullLineStrike color='dark_gray'}"
 
-  funcommands:
+  fun:
     - "{center color='dark_gray'}<dark_aqua>Fun/Other CMDs{/center}"
     - "&7"
     - "<click:run_command:/sit><hover:show_text:'&3Click to Run!'>&3/sit &8-&7 Sit down.</hover></click>"
@@ -138,7 +138,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  mcmmocommands:
+  mcmmo:
     - "{center color='dark_gray'}<gold>McMMO Commands{/center}"
     - "&7"
     - "<click:SUGGEST_COMMAND:/inspect ><hover:show_text:'&6Click to Copy!'>&6/inspect &8<&6player&8> -&7 Shows the stats of another player.</hover></click>"
@@ -154,7 +154,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  basicsettingscommands:
+  settings:
     - "{center color='dark_gray'}<blue>Basic Settings{/center}"
     - "&7"
     - "<click:run_command:/treeassist><hover:show_text:'&9Click to Run!'>&9/treeassist &8-&7 Toggle if trees are auto chopped down.</hover></click>"
@@ -164,7 +164,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  abilitiescommands:
+  abilities:
     - "{center color='dark_gray'}<light_purple>Unlockable Abilities{/center}"
     - "&7"
     - "{center}Abilities are unlocked through ranking up,{/center}"
@@ -178,7 +178,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  rankscommands:
+  unlocks:
     - "{center color='dark_gray'}<aqua>Rank Unlocks{/center}"
     - "&7"
     - "{center}These shortcuts are unlocked through ranking up,{/center}"
@@ -196,7 +196,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  vipcommands:
+  vip:
     - "{center color='dark_gray'}<red>VIP Abilities{/center}"
     - "&7"
     - "{center}These are cosmetic abilities unlockable only to donors.{/center}"
@@ -215,20 +215,20 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  bmscommands:
-    - "{center color='dark_gray'}<aqua>Blockminer Shops{/center}"
+  arm:
+    - "{center color='dark_gray'}<aqua>Advanced Region Market{/center}"
     - "&7"
-    - "<click:run_command:/bms gui><hover:show_text:'&bClick to Run!'>&b/bms gui &8-&7 Opens your shop Menu.</hover></click>"
-    - "<click:run_command:/bms info><hover:show_text:'&7Click to Run!'>&b/bms info &8-&7 Info about the shop you're at.</hover></click>"
-    - "<click:run_command:/bms extend><hover:show_text:'&bClick to Run!'>&b/bms extend &8-&7 Extend your shop's rent.</hover></click>"
-    - "<click:SUGGEST_COMMAND:/bms tp ><hover:show_text:'&7Click to Copy!'>&b/bms tp &8<&b###&8> -&7 TP to a Shop.</hover></click>"
-    - "<click:SUGGEST_COMMAND:/bms sellback ><hover:show_text:'&bClick to Copy!'>&b/bms sellback &8<&b###&8> -&7 Remove your Shop!</hover></click>"
-    - "<click:SUGGEST_COMMAND:/bms addmember ><hover:show_text:'&7Click to Copy!'>&b/bms addmember &8<&bplayer&8> -&7 Trust a player (allows editing)</hover></click>"
-    - "<click:SUGGEST_COMMAND:/bms removemember ><hover:show_text:'&bClick to Copy!'>&b/bms removemember &8<&bplayer&8> -&7 UnTrust a player.</hover></click>"
+    - "<click:run_command:/arm gui><hover:show_text:'&bClick to Run!'>&b/arm gui &8-&7 Opens your shop Menu.</hover></click>"
+    - "<click:run_command:/arm info><hover:show_text:'&7Click to Run!'>&b/arm info &8-&7 Info about the shop you're at.</hover></click>"
+    - "<click:run_command:/arm extend><hover:show_text:'&bClick to Run!'>&b/arm extend &8-&7 Extend your shop's rent.</hover></click>"
+    - "<click:SUGGEST_COMMAND:/arm tp ><hover:show_text:'&7Click to Copy!'>&b/arm tp &8<&b###&8> -&7 TP to a Shop.</hover></click>"
+    - "<click:SUGGEST_COMMAND:/arm sellback ><hover:show_text:'&bClick to Copy!'>&b/arm sellback &8<&b###&8> -&7 Remove your Shop!</hover></click>"
+    - "<click:SUGGEST_COMMAND:/arm addmember ><hover:show_text:'&7Click to Copy!'>&b/arm addmember &8<&bplayer&8> -&7 Trust a player (allows editing)</hover></click>"
+    - "<click:SUGGEST_COMMAND:/arm removemember ><hover:show_text:'&bClick to Copy!'>&b/arm removemember &8<&bplayer&8> -&7 UnTrust a player.</hover></click>"
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  quickshopcommands:
+  quickshop:
     - "{center color='dark_gray'}<green>Chest Shop CMDs{/center}"
     - "&7"
     - "<click:SUGGEST_COMMAND:/shop buy><hover:show_text:'&aClick to Copy!'>&a/shop buy &8-&7 Changes the shop to &cBUY&7 mode.</hover></click>"
@@ -239,7 +239,7 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  landscommands1:
+  lands1:
     - "{center color='dark_gray'}<green>Lands Commands{/center}"
     - '<gray></gray>'
     - '<click:run_command:"/l"><hover:show_text:"<green>Click to Run!</green>"><green>/l</green><gray>,</gray> <green>/land</green><gray>,</gray> <green>/lands</green> <dark_gray>-</dark_gray> <gray>Open the Lands menu.</gray></hover></click>'
@@ -254,9 +254,9 @@ Commands:
     - '<click:copy_to_clipboard:"/l leave "><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l leave</green> <dark_gray>[</dark_gray><gray>land</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Leave a land or area.</gray></hover></click>'
     - '<click:run_command:"/l map"><hover:show_text:"<green>Click to Run!</green>"><green>/l map</green> <dark_gray>-</dark_gray> <gray>View a Chat based map.</gray></hover></click>'
     - '<gray></gray>'
-    - '<dark_gray><st>                              </st></dark_gray> <click:run_command:"/landscommands2"><hover:show_text:"<dark_green><bold>Next Page</bold></dark_green>"><yellow> → → Page 1 → → </yellow><gray></gray></hover></click> <dark_gray><st>                              </st></dark_gray>'
+    - '<dark_gray><st>                            </st></dark_gray> <click:run_command:"/text lands2"><hover:show_text:"<dark_green><bold>Next Page</bold></dark_green>"><yellow> → → Page 1 → → </yellow><gray></gray></hover></click> <dark_gray><st>                            </st></dark_gray>'
 
-  landscommands2:
+  lands2:
     - "{center color='dark_gray'}<green>Lands Commands{/center}"
     - '<gray></gray>'
     - '<click:copy_to_clipboard:"/l rename "><hover:show_text:"<green>Click to Copy!</green>"><green>/l rename</green> <dark_gray><</dark_gray><green>name</green><dark_gray>></dark_gray> <dark_gray><</dark_gray><green>new name</green><dark_gray>></dark_gray> <dark_gray>-</dark_gray> <gray>Rename a Land.</gray></hover></click>'
@@ -270,4 +270,4 @@ Commands:
     - '<click:copy_to_clipboard:"/l untrust"><hover:show_text:"<gray>Click to Copy!</gray>"><green>/l untrust</green> <dark_gray>[</dark_gray><gray>area</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Untrust a player.</gray></hover></click>'
     - '<click:run_command:"/l view"><hover:show_text:"<gray>Click to Run!</gray>"><green>/l view</green> <dark_gray>[</dark_gray><gray>disable</gray><dark_gray>]</dark_gray> <dark_gray>-</dark_gray> <gray>Info about claims.</gray></hover></click>'
     - '<gray></gray>'
-    - '<dark_gray><st>                              </st></dark_gray> <click:run_command:"/landscommands1"><hover:show_text:"<dark_green><bold>Previous Page</bold></dark_green>"><yellow> ← ← Page 2 ← ← </yellow><gray></gray></hover></click> <dark_gray><st>                              </st></dark_gray>'
+    - '<dark_gray><st>                            </st></dark_gray> <click:run_command:"/text lands1"><hover:show_text:"<dark_green><bold>Previous Page</bold></dark_green>"><yellow> ← ← Page 2 ← ← </yellow><gray></gray></hover></click> <dark_gray><st>                            </st></dark_gray>'
