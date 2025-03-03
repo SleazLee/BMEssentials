@@ -66,9 +66,11 @@ public class CommandsCommand implements CommandExecutor {
 
                 if (args[0].equalsIgnoreCase("chat")) {
                     commands.sendCommandInfo(player, "communication");
+                    return true;
                 }
                 if (args[0].equalsIgnoreCase("lands")) {
                     commands.sendCommandInfo(player, "lands1");
+                    return true;
                 }
 
                 String textName = args[0];
