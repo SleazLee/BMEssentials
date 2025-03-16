@@ -1,6 +1,8 @@
 package at.sleazlee.bmessentials.Help.Commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,11 +25,19 @@ public class HelpCommand implements CommandExecutor {
         // If no subcommand: /help
         if (args.length == 0) {
             Bukkit.dispatchCommand(player, "book help");
+
+            // Play a sound
+            Location location = player.getLocation();
+            player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
             return true;
         }
 
         // /help <subcommand>
         if (args.length == 1) {
+
+            // Play a sound
+            Location location = player.getLocation();
+            player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
 
             // Example: /help claiming => we run "/book claiming"
             if (args[0].equalsIgnoreCase("claiming")) {

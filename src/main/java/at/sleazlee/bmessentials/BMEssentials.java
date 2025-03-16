@@ -151,6 +151,7 @@ public class BMEssentials extends JavaPlugin {
                 // 2. Register the commands
                 getCommand("pay").setExecutor(new EconomyCommands(this));
                 getCommand("bal").setExecutor(new EconomyCommands(this));
+                getCommand("balance").setExecutor(new EconomyCommands(this));
                 getCommand("money").setExecutor(new EconomyCommands(this));
                 getCommand("baltop").setExecutor(new EconomyCommands(this));
                 getCommand("moneytop").setExecutor(new EconomyCommands(this));
@@ -159,6 +160,7 @@ public class BMEssentials extends JavaPlugin {
                 // 3. Set tab completers
                 getCommand("pay").setTabCompleter(new EconomyCommands(this));
                 getCommand("bal").setTabCompleter(new EconomyCommands(this));
+                getCommand("balance").setTabCompleter(new EconomyCommands(this));
                 getCommand("baltop").setTabCompleter(new EconomyCommands(this));
                 getCommand("money").setTabCompleter(new EconomyCommands(this));
                 getCommand("moneytop").setTabCompleter(new EconomyCommands(this));
@@ -353,6 +355,8 @@ public class BMEssentials extends JavaPlugin {
 
             getCommand("vot").setExecutor(new VoteCommand(this));
             this.getCommand("vot").setTabCompleter(new VotTabCompleter());
+            getCommand("v").setExecutor(new VoteCommand(this));
+            this.getCommand("v").setTabCompleter(new VotTabCompleter());
             getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
         }
 

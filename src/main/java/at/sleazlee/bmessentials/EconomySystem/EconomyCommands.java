@@ -58,7 +58,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
             case "bal":
             case "balance":
             case "money":
-                return handleBal(sender);
+                return handleBal(sender, args);
 
             case "baltop":
             case "moneytop":
@@ -231,26 +231,86 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     // -------------------------------------------------------------------------
     // /bal OR /money
     // -------------------------------------------------------------------------
-    private boolean handleBal(CommandSender sender) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("Must be a player to use /bal or /money!");
-            return true;
-        }
-        Player player = (Player) sender;
+    private boolean handleBal(CommandSender sender, String[] args) {
+        // First, check if the economy is loaded at all
         if (economy == null) {
-            player.sendMessage(mini("<red>Economy not available!"));
+            sender.sendMessage(mini("<red>Economy not available!"));
             return true;
         }
 
-        double dollars = economy.balance(plugin.getName(), player.getUniqueId(), "no_world", BMSEconomyProvider.CURRENCY_DOLLARS).doubleValue();
-        double votePoints = economy.balance(plugin.getName(), player.getUniqueId(), "no_world", BMSEconomyProvider.CURRENCY_VP).doubleValue();
+        // If no arguments, show sender's own balance
+        if (args.length == 0) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(mini("<red>Usage: /balance <playerName>"));
+                return true;
+            }
+            Player player = (Player) sender;
 
-        player.sendMessage(mini(
-                "<aqua><bold>BM</bold> <gray>Your balance is <green>$" + String.format("%.2f", dollars) +
-                        "</green> <gray>and <yellow>" + String.format("%.2f", votePoints) + "VP</yellow><gray>."
-        ));
-        return true;
+            double dollars = economy.balance(
+                    plugin.getName(),
+                    player.getUniqueId(),
+                    "no_world",
+                    BMSEconomyProvider.CURRENCY_DOLLARS
+            ).doubleValue();
+            double votePoints = economy.balance(
+                    plugin.getName(),
+                    player.getUniqueId(),
+                    "no_world",
+                    BMSEconomyProvider.CURRENCY_VP
+            ).doubleValue();
+
+            player.sendMessage(mini(
+                    "<aqua><bold>BM</bold> <gray>Your balance is <green>$" + String.format("%.2f", dollars) +
+                            "</green> <gray>and <yellow>" + String.format("%.2f", votePoints) + "VP</yellow><gray>."
+            ));
+            return true;
+
+            // If exactly one argument, interpret it as a target player's name
+        } else if (args.length == 1) {
+            String targetName = args[0];
+            OfflinePlayer targetOffline = getOfflinePlayer(targetName);
+
+            // If the server doesn't even recognize the name, or the target never joined
+            if (targetOffline == null || !targetOffline.hasPlayedBefore()) {
+                sender.sendMessage(mini("<red>Player not found."));
+                return true;
+            }
+
+            // If the plugin's economy DB doesn't have them
+            UUID targetUUID = targetOffline.getUniqueId();
+            if (!economy.hasAccount(targetUUID, "world")) {
+                sender.sendMessage(mini("<red>Player not found."));
+                return true;
+            }
+
+            // Now fetch their balances
+            double dollars = economy.balance(
+                    plugin.getName(),
+                    targetUUID,
+                    "no_world",
+                    BMSEconomyProvider.CURRENCY_DOLLARS
+            ).doubleValue();
+            double votePoints = economy.balance(
+                    plugin.getName(),
+                    targetUUID,
+                    "no_world",
+                    BMSEconomyProvider.CURRENCY_VP
+            ).doubleValue();
+
+            sender.sendMessage(mini("<aqua><bold>BM</bold> <gray>" +
+                    "Balance for <white>" + targetName + "</white><gray>: " +
+                    "<green>$" + String.format("%.2f", dollars) +
+                    "</green><gray>, <yellow>" + String.format("%.2f", votePoints) + "VP</yellow>"
+            ));
+            return true;
+
+            // If multiple arguments, just show usage
+        } else {
+            sender.sendMessage(mini("<gray>Usage: /balance [playerName]"));
+            return true;
+        }
     }
+
 
     // -------------------------------------------------------------------------
 // /baltop [currency] (now shows player names instead of UUIDs)
@@ -584,11 +644,13 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
             case "pay":
                 return tabCompletePay(args);
 
-            // /bal OR /money (no arguments)
+            // /bal OR /money
             case "bal":
             case "balance":
             case "money":
-                return Collections.emptyList();
+                // If args.length == 1, suggest player names
+                return getOnlinePlayerNames(args[0]);
+
 
             // /baltop [currency] OR /moneytop [currency]
             case "baltop":
