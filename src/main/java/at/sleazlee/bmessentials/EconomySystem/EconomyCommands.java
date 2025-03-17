@@ -278,7 +278,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
 
             // If the plugin's economy DB doesn't have them
             UUID targetUUID = targetOffline.getUniqueId();
-            if (!economy.hasAccount(targetUUID, "world")) {
+            if (!economy.hasAccount(targetUUID, "no_world")) {
                 sender.sendMessage(mini("<red>Player not found."));
                 return true;
             }

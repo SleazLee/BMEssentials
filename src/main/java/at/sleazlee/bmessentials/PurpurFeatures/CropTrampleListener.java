@@ -1,4 +1,4 @@
-package at.sleazlee.bmessentials.bmefunctions;
+package at.sleazlee.bmessentials.PurpurFeatures;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;

@@ -224,6 +224,6 @@ Systems:
     EconomySystems:
       Enabled: true
 
-  # Enables the AntiTrample Systems
-  AntiTrample:
+  # Enables all Purpur feature Systems
+  PurpurFeatures:
     Enabled: true

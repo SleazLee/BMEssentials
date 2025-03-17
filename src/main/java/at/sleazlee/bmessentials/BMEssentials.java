@@ -14,19 +14,24 @@ import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
 import at.sleazlee.bmessentials.Help.Commands.BookCommand;
 import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
+import at.sleazlee.bmessentials.Help.Commands.HelpCommand;
 import at.sleazlee.bmessentials.Help.Commands.TextCommand;
 import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.HelpText;
 import at.sleazlee.bmessentials.Help.TabCompleter.CommandTabCompleter;
+import at.sleazlee.bmessentials.Help.TabCompleter.HelpTabCompleter;
 import at.sleazlee.bmessentials.PlayerData.BMEChatPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
 import at.sleazlee.bmessentials.PlayerData.PlayerJoinListener;
+import at.sleazlee.bmessentials.PurpurFeatures.*;
 import at.sleazlee.bmessentials.SpawnSystems.FirstJoinCommand;
 import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
-import at.sleazlee.bmessentials.art.Art;
-import at.sleazlee.bmessentials.bmefunctions.*;
 import at.sleazlee.bmessentials.VTell.VTellCommand;
+import at.sleazlee.bmessentials.art.Art;
+import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
+import at.sleazlee.bmessentials.bmefunctions.BMRestart;
+import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
 import at.sleazlee.bmessentials.maps.MapCommand;
 import at.sleazlee.bmessentials.maps.MapTabCompleter;
 import at.sleazlee.bmessentials.rankup.RankUpManager;
@@ -39,8 +44,6 @@ import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
-import at.sleazlee.bmessentials.Help.Commands.HelpCommand;
-import at.sleazlee.bmessentials.Help.TabCompleter.HelpTabCompleter;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -387,14 +390,27 @@ public class BMEssentials extends JavaPlugin {
             getCommand("commands").setTabCompleter(new CommandTabCompleter());
         }
 
-        // AntiTrample System
-        if (getConfig().getBoolean("Systems.AntiTrample.Enabled")) {
-            // Add the system enabled message.
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled AntiTrample Systems");
+        // Purpur feature Systems
+        if (config.getBoolean("Systems.PurpurFeatures.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the all Purpur feature Systems");
 
-            // Register the CropTrampleListener to disable crop trampling by both players and mobs
+            // totem-of-undying-works-in-inventory
+            Bukkit.getServer().getPluginManager().registerEvents(new totemWorksAnywhere(), this);
+
+            // disable-trampling
             getServer().getPluginManager().registerEvents(new CropTrampleListener(), this);
+
+            // disables dragon egg teleportation
+            getServer().getPluginManager().registerEvents(new DragonEggTPFix(), this);
+
+            // Makes Skeleton Horses 10x more rare
+            Bukkit.getPluginManager().registerEvents(new SuperRareSkeletonHorses(), this);
+
+            // Allows SilkTouch mines Mob Spawners
+            getServer().getPluginManager().registerEvents(new MobSpawnerSystem(this), this);
         }
+
+
 
 
 
