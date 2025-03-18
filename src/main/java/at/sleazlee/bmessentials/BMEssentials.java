@@ -408,6 +408,13 @@ public class BMEssentials extends JavaPlugin {
 
             // Allows SilkTouch mines Mob Spawners
             getServer().getPluginManager().registerEvents(new MobSpawnerSystem(this), this);
+
+            // Prevents fall damage when a player lands on a hay block
+            getServer().getPluginManager().registerEvents(new NoFallDamageOnHay(), this);
+
+
+            // You can break individual slabs in a double slab block while sneaking
+            getServer().getPluginManager().registerEvents(new SneakSlabBreak(), this);
         }
 
 

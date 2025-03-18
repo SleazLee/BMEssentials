@@ -41,10 +41,28 @@ public class MobSpawnerSystem implements Listener {
             // Remove the spawner block
             block.setType(Material.AIR);
 
+            // Split the mob type name on underscores and convert each word to title case
+            String[] parts = spawnedType.name().split("_");
+            StringBuilder mobNameBuilder = new StringBuilder();
+            for (int i = 0; i < parts.length; i++) {
+                String word = parts[i];
+                if (!word.isEmpty()) {
+                    mobNameBuilder.append(word.substring(0, 1).toUpperCase())
+                            .append(word.substring(1).toLowerCase());
+                    if (i < parts.length - 1) {
+                        mobNameBuilder.append(" ");
+                    }
+                }
+            }
+            String mobName = mobNameBuilder.toString();
+
+            // Create the colored display name using ChatColor
+            String displayName = org.bukkit.ChatColor.translateAlternateColorCodes('&', "&b" + mobName + " &fSpawner");
+
             // Create a new spawner item with custom data
             ItemStack spawnerItem = new ItemStack(Material.SPAWNER, 1);
             ItemMeta meta = spawnerItem.getItemMeta();
-            meta.setDisplayName("Spawner: " + spawnedType.name());
+            meta.setDisplayName(displayName);
             // Store the mob type using the persistent data container
             meta.getPersistentDataContainer().set(spawnerKey, PersistentDataType.STRING, spawnedType.name());
             spawnerItem.setItemMeta(meta);
@@ -53,6 +71,8 @@ public class MobSpawnerSystem implements Listener {
             block.getWorld().dropItemNaturally(block.getLocation(), spawnerItem);
         }
     }
+
+
 
     // Handle placing spawner items, restoring the mob type.
     @EventHandler
