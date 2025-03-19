@@ -4,6 +4,10 @@ public class SearchRank {
 
 	static RankBuilder[] listOfRanks = new RankBuilder[67];
 
+	static {
+		loadRanks();
+	}
+
 	/**
 	 * Searches the list of Rank objects for a rank with the desired name and returns the value of the specified attribute.
 	 * @param desiredRank The name of the rank to search for.
@@ -11,12 +15,12 @@ public class SearchRank {
 	 * @return The value of the specified attribute for the rank with the desired name, or -1 if the rank was not found.
 	 */
 	public static int searchRank(String desiredRank, String lookForWhat) {
-
 		for (RankBuilder listOfRank : listOfRanks) {
 			if (listOfRank.getRank().equals(desiredRank)) {
 				switch (lookForWhat) {
 					case "Ranking":
 						return listOfRank.getranking();
+					// add other cases if needed
 				}
 			}
 		}
@@ -25,13 +29,10 @@ public class SearchRank {
 		return -1;
 	}
 
-	/** Loads a list of Ranks in an Array called listOfRanks
-	 *
-	 * This list is in order to be more efficient for linear search,
-	 * I did however add comments on each rank so that I'll be able to
-	 * order them back in an Excel/Sheet doc.
+	/**
+	 * Loads a list of Ranks in an array called listOfRanks.
 	 */
-	private void loadRanks() {
+	private static void loadRanks() {
 		listOfRanks[0] = new RankBuilder("default", 0); //0
 		listOfRanks[1] = new RankBuilder("[1]", 1); //1
 		listOfRanks[2] = new RankBuilder("[2]", 2); //2

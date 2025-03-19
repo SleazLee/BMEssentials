@@ -153,7 +153,7 @@ public class DonationCommand implements CommandExecutor {
 		Player player = Bukkit.getPlayer(playerName);
 		String displayName = player.getDisplayName();
 
-		String line1 = "<dark_gray>[<gradient:#43d1d1:#4d5a5a><bold>BLOCKMINER CELEBRATION</gradient></bold><dark_gray>]";
+		String line1 = "<dark_gray>[<gradient:#43d1d1:#4d5a5a><bold>BLOCKMINER CELEBRATION</bold></gradient><dark_gray>]";
 		String line3 = "<gray>Unbelievable! <aqua>" + displayName + "<gray> is now <gradient:#43d1d1:#4e5b5b>[BLOCKMINER]</gradient>&f <gray>rank!";
 		String line4 = "<gray>Your <underlined>grand</underlined><gray> generosity will evolve our server!";
 
