@@ -217,6 +217,8 @@ commands:
     description: Displays command information.
     usage: /text <text name>
 
+  afk:
+    description: Toggle your AFK status.
 
 
 permissions:

@@ -3,10 +3,7 @@ package at.sleazlee.bmessentials.DonationSystem;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.VTell.VTellCommand;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.Sound;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,7 +11,7 @@ import static at.sleazlee.bmessentials.DonationSystem.DonationRankMethods.player
 import static at.sleazlee.bmessentials.TextUtils.TextCenter.center;
 import static at.sleazlee.bmessentials.TextUtils.TextCenter.fullLineStrike;
 
-public class DonationCommand implements CommandExecutor {
+public class DonationCommand {
 
 
 	private final BMEssentials plugin;
@@ -23,22 +20,16 @@ public class DonationCommand implements CommandExecutor {
 		this.plugin = plugin;
 	}
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-		if (sender instanceof Player) {
-			sender.sendMessage(ChatColor.RED + "This command can only be run from the console.");
-			return true;
+	public void processDonationCommand(String playerName, String donationPackage) {
+		if (playerName == null || donationPackage == null) {
+			throw new IllegalArgumentException("Player name and donation package must not be null.");
 		}
 
-		if (args.length <= 1) {
-			return false;
-		}
+		// Play sound for all players
+		playSoundForEveryone();
 
-		String playerName = args[0];
-		String donationPackage = args[1].toLowerCase();
 
-		switch (donationPackage) {
+		switch (donationPackage.toLowerCase()) {
 			case "freepotatoes":
 				buyFreePotatoes(playerName);
 				break;
@@ -64,8 +55,9 @@ public class DonationCommand implements CommandExecutor {
 				buyBlockminerRank(playerName);
 				break;
 			default:
+				System.out.println("Invalid donation package: " + donationPackage);
+				break;
 		}
-		return true;
 	}
 
 	public void buyFreePotatoes(String playerName) {
@@ -74,7 +66,7 @@ public class DonationCommand implements CommandExecutor {
 
 		VTellCommand.broadcastMessage("<aqua><bold>Shop</bold><white> <red>" + displayName + "<white>, just purchased <gold><bold>Free Potatoes</bold><white> from the webstore.");
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-		String commandBuilder = "si give hotpotato 32 " + playerName;
+		String commandBuilder = "si give hotpotato 32 " + playerName + " true";
 		Bukkit.dispatchCommand(console, commandBuilder);
 	}
 
@@ -84,7 +76,7 @@ public class DonationCommand implements CommandExecutor {
 
 		VTellCommand.broadcastMessage("<aqua><bold>Shop</bold><white> <red>" + displayName + "<white>, just purchased <dark_aqua><bold>Blockminer Blast</bold><white> from the webstore.");
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-		String commandBuilder = "si give blockminerblast 1 " + playerName;
+		String commandBuilder = "si give blockminerblast 1 " + playerName + " true";
 		Bukkit.dispatchCommand(console, commandBuilder);
 	}
 
@@ -94,7 +86,7 @@ public class DonationCommand implements CommandExecutor {
 
 		VTellCommand.broadcastMessage("<aqua><bold>Shop</bold><white> <red>" + displayName + "<white>, just purchased <color:#B5593F><bold>A Brick</bold><white> from the webstore.");
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-		String commandBuilder = "si give lousybrick 1 " + playerName;
+		String commandBuilder = "si give lousybrick 1 " + playerName + " true";
 		Bukkit.dispatchCommand(console, commandBuilder);
 	}
 
@@ -160,6 +152,12 @@ public class DonationCommand implements CommandExecutor {
 		VTellCommand.broadcastMessage(center(line1, "dark_gray") + "<newline><newline>" + center(line3) + "<newline>" + center(line4) + "<newline><newline>" + fullLineStrike("dark_gray"));
 
 		playerDonated(plugin, playerName, "blockminer");
+	}
+
+	private void playSoundForEveryone() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1.0f, 1.0f);
+		}
 	}
 
 }

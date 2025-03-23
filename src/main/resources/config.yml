@@ -227,3 +227,7 @@ Systems:
   # Enables all Purpur feature Systems
   PurpurFeatures:
     Enabled: true
+
+  # Enables the afk system
+  AFKSystem:
+    Enabled: true

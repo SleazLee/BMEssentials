@@ -1,5 +1,9 @@
 package at.sleazlee.bmessentials;
 
+import at.sleazlee.bmessentials.AFKSystem.AfkCommand;
+import at.sleazlee.bmessentials.AFKSystem.AfkListener;
+import at.sleazlee.bmessentials.AFKSystem.AfkManager;
+import at.sleazlee.bmessentials.AFKSystem.AfkPlaceholderExpansion;
 import at.sleazlee.bmessentials.AltarSystem.AltarManager;
 import at.sleazlee.bmessentials.AltarSystem.Altars.HealingSprings;
 import at.sleazlee.bmessentials.AltarSystem.Altars.Obelisk;
@@ -8,7 +12,7 @@ import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueTabCompleter;
 import at.sleazlee.bmessentials.Containers.*;
-import at.sleazlee.bmessentials.DonationSystem.DonationCommand;
+import at.sleazlee.bmessentials.DonationSystem.GetDonations;
 import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
@@ -57,6 +61,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  * such as TPShop, Vote System, Wild System, Spawn Systems, and more.
  */
 public class BMEssentials extends JavaPlugin {
+
+    /** Timer for the AFK System */
+    private static final long TIMEOUT_MILLIS = 5 * 60 * 1000; // 5 minutes
 
     /** The main instance of the plugin. */
     private static BMEssentials main;
@@ -304,7 +311,9 @@ public class BMEssentials extends JavaPlugin {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Donation Systems");
 
-            this.getCommand("donation").setExecutor(new DonationCommand(this));
+            // Register the donation channel for both incoming and outgoing messages.
+            getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:donation", new GetDonations(this));
+            getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:donation");
         }
 
         // Trophy System
@@ -417,6 +426,26 @@ public class BMEssentials extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new SneakSlabBreak(), this);
         }
 
+        // AFK System
+        if (config.getBoolean("Systems.AFKSystem.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the AFK System");
+
+            // Register /afk command executor.
+            getCommand("afk").setExecutor(new AfkCommand());
+            // Register event listeners.
+            Bukkit.getPluginManager().registerEvents(new AfkListener(), this);
+            // Schedule a periodic task to check for inactive players.
+            // This task runs every minute.
+            Scheduler.runTimer(() -> {
+                long currentTime = System.currentTimeMillis();
+                AfkManager.getInstance().checkForInactivity(currentTime, TIMEOUT_MILLIS);
+            }, 20L * 15, 20L * 15);
+
+            // Register the PlaceholderAPI expansion if PlaceholderAPI is installed.
+            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                new AfkPlaceholderExpansion(this).register();
+            }
+        }
 
 
 

@@ -44,6 +44,10 @@ public class HelpCommand implements CommandExecutor {
                 Bukkit.dispatchCommand(player, "book claiming");
                 return true;
             }
+            else if (args[0].equalsIgnoreCase("lands")) {
+                Bukkit.dispatchCommand(player, "book claiming");
+                return true;
+            }
             else if (args[0].equalsIgnoreCase("money")) {
                 Bukkit.dispatchCommand(player, "book money");
                 return true;

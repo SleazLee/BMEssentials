@@ -2,12 +2,16 @@ package at.sleazlee.bmessentials.vot;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
+import at.sleazlee.bmessentials.AFKSystem.AfkManager; // Ensure you import your AFK manager.
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.*;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -42,7 +46,7 @@ public class VoteManager {
     private Scheduler.Task actionBarTask;
     private Scheduler.Task scheduledVoteEndTask;
     private int totalPlayersAtVoteStart;
-    private Player voteInitiator; // New field to track vote initiator
+    private Player voteInitiator; // Tracks vote initiator
 
     private final BMEssentials plugin;
     private int votDurationSeconds;
@@ -73,7 +77,7 @@ public class VoteManager {
      */
     public boolean startVote(String option, Player initiator) {
         if (voteInProgress) {
-            String messageText = "<color:#ff3300><bold>Vot</bold> <red>There is not able to start next round, while another is running!";
+            String messageText = "<color:#ff3300><bold>Vot</bold> <red>Cannot start a new vote while another is running!";
             Component message = MiniMessage.miniMessage().deserialize(messageText);
             initiator.sendMessage(message);
             return false;
@@ -94,7 +98,6 @@ public class VoteManager {
 
             String messageText = "<color:#ff3300><bold>Vot</bold> <red>You must wait " + timeMessage + " before starting a new vote.";
             Component message = MiniMessage.miniMessage().deserialize(messageText);
-
             initiator.sendMessage(message);
             return false;
         }
@@ -104,7 +107,10 @@ public class VoteManager {
         yesVotes = 0;
         noVotes = 0;
         votedPlayers.clear();
-        totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
+        // Only count online players that are not AFK.
+        totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
+                .filter(p -> !AfkManager.getInstance().isAfk(p))
+                .count();
         voteInitiator = initiator;
 
         String capitalizedOption = StringUtils.capitalize(voteOption);
@@ -116,18 +122,14 @@ public class VoteManager {
         Bukkit.broadcast(chatMessage);
 
         displayVotePrompt();
-
-        // Initialize the BossBar for voting.
         initializeBossBar(option);
-
-        // Start the vote ending countdown.
         startVoteCountdown(option);
 
         // Initiator votes "Yes" by default.
         castVote(initiator, true);
 
-        // Check for single-player scenario
-        if (totalPlayersAtVoteStart == 1) {
+        // If only one non-AFK player is online, finalize immediately.
+        if (totalPlayersAtVoteStart <= 1) {
             finalizeVote(false);
             return true;
         }
@@ -143,14 +145,20 @@ public class VoteManager {
      */
     public void castVote(Player player, boolean voteYes) {
         if (!voteInProgress) {
-            String messageText = "<color:#ff3300><bold>Vot</bold> <red>Currently, no voting round is running!";
+            String messageText = "<color:#ff3300><bold>Vot</bold> <red>No vote is currently running!";
             Component message = MiniMessage.miniMessage().deserialize(messageText);
             player.sendMessage(message);
             return;
         }
 
+        // Prevent AFK players from voting.
+        if (AfkManager.getInstance().isAfk(player)) {
+            player.sendMessage(ChatColor.RED + "You cannot vote while AFK. Please become active to vote.");
+            return;
+        }
+
         if (votedPlayers.contains(player.getUniqueId())) {
-            String messageText = "<color:#ff3300><bold>Vot</bold> <red>You have already placed a vote at this round!";
+            String messageText = "<color:#ff3300><bold>Vot</bold> <red>You have already voted this round!";
             Component message = MiniMessage.miniMessage().deserialize(messageText);
             player.sendMessage(message);
             return;
@@ -164,13 +172,13 @@ public class VoteManager {
 
         votedPlayers.add(player.getUniqueId());
 
-        String messageText = "<yellow><bold>Vot</bold> <gray>Your vote was recorded!";
+        String messageText = "<yellow><bold>Vot</bold> <gray>Your vote has been recorded!";
         Component message = MiniMessage.miniMessage().deserialize(messageText);
         player.sendMessage(message);
 
         updateVoteProgress();
 
-        // Check if all players have voted.
+        // Finalize if all eligible (non-AFK) players have voted.
         if (votedPlayers.size() >= totalPlayersAtVoteStart) {
             finalizeVote(false);
         }
@@ -199,7 +207,6 @@ public class VoteManager {
         String capitalizedOption = StringUtils.capitalize(voteOption);
         String customColor = VotBook.getColorForVoteType(voteOption);
 
-        // Boss bar message as per your request
         String bossBarMessage;
         if (yesVotes > noVotes) {
             bossBarMessage = "<gray>Voting was <green><bold>Successful</bold><gray>!";
@@ -210,31 +217,27 @@ public class VoteManager {
 
         String resultMessage;
         if (yesVotes > noVotes) {
-            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold>" + customColor + "<bold>"
-                    + capitalizedOption
-                    + "</bold></gold> <gray>was <green><bold>Successful</bold></green><gray>!";
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Vote for <gold>" + customColor + "<bold>"
+                    + capitalizedOption + "</bold></gold> <gray>was <green><bold>Successful</bold></green><gray>!";
         } else {
-            resultMessage = "<yellow><bold>Vot</bold> <gray>Voting for <gold>" + customColor + "<bold>"
-                    + capitalizedOption
-                    + "</bold></gold> <gray>was <color:#ff3300><bold>Unsuccessful</bold></color:#ff3300><gray>!";
+            resultMessage = "<yellow><bold>Vot</bold> <gray>Vote for <gold>" + customColor + "<bold>"
+                    + capitalizedOption + "</bold></gold> <gray>was <color:#ff3300><bold>Unsuccessful</bold></color:#ff3300><gray>!";
         }
 
         Component chatMessage = MiniMessage.miniMessage().deserialize(resultMessage);
         Bukkit.broadcast(chatMessage);
 
-        // Update boss bar message
         if (bossBar != null) {
             Component bossBarComponent = MiniMessage.miniMessage().deserialize(bossBarMessage);
             bossBar.name(bossBarComponent);
-            bossBar.progress(1.0f); // Reset progress bar if needed
+            bossBar.progress(1.0f);
 
-            // Keep the boss bar for 6 more seconds
             Scheduler.runLater(() -> {
                 for (Player online : Bukkit.getOnlinePlayers()) {
                     online.hideBossBar(bossBar);
                 }
                 bossBar = null;
-            }, 120L); // 6 seconds (20 ticks per second)
+            }, 120L);
         }
 
         votedPlayers.clear();
@@ -242,29 +245,27 @@ public class VoteManager {
 
     /**
      * Overloaded method for finalizing a vote without specifying cancellation.
-     * Assumes the vote was not cancelled.
      */
     void finalizeVote() {
         finalizeVote(false);
     }
 
+    /**
+     * Checks if a vote cooldown is active for the initiator.
+     *
+     * @param initiator the player who initiated the vote
+     * @return true if cooldown is active, false otherwise
+     */
     boolean isCooldownActive(Player initiator) {
-
         long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
-
-        if (timeSinceLastVote < cooldownMilliseconds && !initiator.hasPermission("bmessentials.vot.bypasscooldown")) {
-            return true;
-        }
-        return false;
+        return (timeSinceLastVote < cooldownMilliseconds && !initiator.hasPermission("bmessentials.vot.bypasscooldown"));
     }
 
     String getTimeLeft() {
-
         long timeSinceLastVote = System.currentTimeMillis() - lastVoteTime;
-
         String timeMessage = "null";
         if (timeSinceLastVote < cooldownMilliseconds) {
-            long timeLeft = (cooldownMilliseconds - timeSinceLastVote) / 1000; // Time left in seconds
+            long timeLeft = (cooldownMilliseconds - timeSinceLastVote) / 1000;
             if (timeLeft < 60) {
                 timeMessage = "0m " + timeLeft + "s";
             } else {
@@ -272,7 +273,6 @@ public class VoteManager {
                 long minutesLeft = (timeLeft - secondsLeft) / 60;
                 timeMessage = minutesLeft + "m " + secondsLeft + "s";
             }
-
         }
         return timeMessage;
     }
@@ -298,37 +298,28 @@ public class VoteManager {
                         world.setStorm(true);
                         world.setThundering(true);
                     }
-                    case "day" -> smoothTimeChange(world, 1000); // Sunrise time
-                    case "night" -> smoothTimeChange(world, 13000); // Sunset time
+                    case "day" -> smoothTimeChange(world, 1000);
+                    case "night" -> smoothTimeChange(world, 13000);
                 }
             });
         }
     }
 
     /**
-     * Smoothly transitions the world's time to the target time, always moving forward.
+     * Smoothly transitions the world's time to the target time.
      *
-     * @param world      the world to change the time in
+     * @param world      the world to change time in
      * @param targetTime the target time (in ticks)
      */
     private void smoothTimeChange(World world, long targetTime) {
         if (world.getEnvironment() == World.Environment.NETHER || world.getEnvironment() == World.Environment.THE_END) {
-            return; // No day/night cycle in these environments
+            return;
         }
-
         AtomicLong currentTime = new AtomicLong(world.getTime());
-
-        // Calculate total ticks to add to reach the target time, always moving forward
         long totalTicksToAdd = (targetTime - currentTime.get() + 24000) % 24000;
-
-        // Desired time increment per tick
-        final long desiredTimeIncrement = 60; // Adjust this value for speed of transition
-
-        // Calculate the number of steps
+        final long desiredTimeIncrement = 60;
         final long steps = totalTicksToAdd / desiredTimeIncrement;
         final long transitionDurationTicks = Math.max(1, steps);
-
-        // Adjust time increment to divide totalTicksToAdd evenly
         final long timeIncrement = Math.max(1, totalTicksToAdd / transitionDurationTicks);
 
         final Scheduler.Task[] taskHolder = new Scheduler.Task[1];
@@ -336,31 +327,26 @@ public class VoteManager {
             long newTime = (currentTime.get() + timeIncrement) % 24000;
             currentTime.set(newTime);
             world.setTime(newTime);
-
             long ticksRemaining = (targetTime - currentTime.get() + 24000) % 24000;
-
             if (ticksRemaining <= 0 || ticksRemaining < timeIncrement) {
-                world.setTime(targetTime); // Ensure exact target time is set
+                world.setTime(targetTime);
                 taskHolder[0].cancel();
             }
-        }, 0L, 1L); // Runs every tick
+        }, 0L, 1L);
     }
 
     /**
-     * Updates the action bar with the current voting progress.
+     * Updates the action bar with current voting progress.
      */
     private void updateVoteProgress() {
-        int totalPlayers = totalPlayersAtVoteStart;
         int progressBars = 14;
-
-        double yesPercentage = yesVotes / (double) totalPlayers;
-        double noPercentage = noVotes / (double) totalPlayers;
+        double yesPercentage = yesVotes / (double) totalPlayersAtVoteStart;
+        double noPercentage = noVotes / (double) totalPlayersAtVoteStart;
 
         int yesBars = (int) Math.round(yesPercentage * progressBars);
         int noBars = (int) Math.round(noPercentage * progressBars);
         int neutralBars = progressBars - yesBars - noBars;
 
-        // Ensure bars do not exceed total
         if (yesBars + noBars > progressBars) {
             int totalBars = yesBars + noBars;
             double scalingFactor = (double) progressBars / totalBars;
@@ -369,7 +355,6 @@ public class VoteManager {
             neutralBars = progressBars - yesBars - noBars;
         }
 
-        // Build the progress bar
         String barChar = "■";
         StringBuilder progressBar = new StringBuilder();
         progressBar.append(ChatColor.GREEN).append(StringUtils.repeat(barChar, yesBars));
@@ -386,7 +371,7 @@ public class VoteManager {
             for (Player online : Bukkit.getOnlinePlayers()) {
                 online.sendActionBar(Component.text(actionBarMessage));
             }
-        }, 0L, 20L); // Update every second
+        }, 0L, 20L);
     }
 
     /**
@@ -398,7 +383,7 @@ public class VoteManager {
             actionBarTask = null;
         }
         for (Player online : Bukkit.getOnlinePlayers()) {
-            online.sendActionBar(Component.empty()); // Clear the action bar
+            online.sendActionBar(Component.empty());
         }
     }
 
@@ -409,14 +394,14 @@ public class VoteManager {
      */
     private void initializeBossBar(String option) {
         String capitalizedOption = StringUtils.capitalize(option);
-
         if (bossBar != null) {
             for (Player online : Bukkit.getOnlinePlayers()) {
                 online.hideBossBar(bossBar);
             }
         }
         bossBar = BossBar.bossBar(
-                Component.text().append(Component.text("Voting for ", NamedTextColor.GRAY))
+                Component.text()
+                        .append(Component.text("Voting for ", NamedTextColor.GRAY))
                         .append(Component.text(capitalizedOption, NamedTextColor.GREEN, TextDecoration.BOLD))
                         .append(Component.text("! | ", NamedTextColor.GRAY))
                         .append(Component.text(votDurationSeconds + "s", NamedTextColor.AQUA))
@@ -431,7 +416,7 @@ public class VoteManager {
     }
 
     /**
-     * Starts the countdown for the voting session using the boss bar.
+     * Starts the countdown for the voting session.
      *
      * @param option the voting option
      */
@@ -442,22 +427,21 @@ public class VoteManager {
         scheduledVoteEndTask = Scheduler.runTimer(() -> {
             float progress = timeLeft.get() / (float) votDurationSeconds;
             bossBar.progress(progress);
-
             long secsLeft = timeLeft.decrementAndGet();
-            bossBar.name(Component.text().append(Component.text("Voting for ", NamedTextColor.GRAY))
+            bossBar.name(Component.text()
+                    .append(Component.text("Voting for ", NamedTextColor.GRAY))
                     .append(Component.text(capitalizedOption, NamedTextColor.GREEN, TextDecoration.BOLD))
                     .append(Component.text("! | ", NamedTextColor.GRAY))
                     .append(Component.text(secsLeft + "s", NamedTextColor.AQUA))
                     .build());
-
             if (secsLeft <= 0) {
                 finalizeVote(false);
             }
-        }, 20L, 20L); // Update every second
+        }, 20L, 20L);
     }
 
     /**
-     * Displays the vote prompt to all players with clickable text.
+     * Displays the vote prompt to all non-AFK players with clickable text.
      */
     private void displayVotePrompt() {
         String messageText = "<gray>Click to vote: "
@@ -470,22 +454,28 @@ public class VoteManager {
         Component message = MiniMessage.miniMessage().deserialize(messageText);
 
         for (Player online : Bukkit.getOnlinePlayers()) {
-            if (!online.equals(voteInitiator)) { // Exclude the initiator
+            // Only send the prompt to players who are not AFK and not the initiator.
+            if (!online.equals(voteInitiator) && !AfkManager.getInstance().isAfk(online)) {
                 online.sendMessage(message);
             }
         }
     }
 
     /**
-     * Handles player joining during a vote.
+     * Handles player joining (or coming out of AFK) during a vote.
      *
-     * @param player the player who joined
+     * @param player the player who joined or became active
      */
     public void handlePlayerJoin(Player player) {
         if (voteInProgress && bossBar != null) {
-            player.showBossBar(bossBar);
-            totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
-            updateVoteProgress();
+            // Only add players who are active.
+            if (!AfkManager.getInstance().isAfk(player)) {
+                player.showBossBar(bossBar);
+                totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
+                        .filter(p -> !AfkManager.getInstance().isAfk(p))
+                        .count();
+                updateVoteProgress();
+            }
         }
     }
 
@@ -497,22 +487,34 @@ public class VoteManager {
     public void handlePlayerQuit(Player player) {
         if (voteInProgress && bossBar != null) {
             player.hideBossBar(bossBar);
-            // Remove vote if the player had voted
-            if (votedPlayers.remove(player.getUniqueId())) {
-                if (votedPlayers.size() >= totalPlayersAtVoteStart) {
-                    finalizeVote(false);
-                    return;
-                }
-            }
-            totalPlayersAtVoteStart = Bukkit.getOnlinePlayers().size();
+            votedPlayers.remove(player.getUniqueId());
+            totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
+                    .filter(p -> !AfkManager.getInstance().isAfk(p))
+                    .count();
             updateVoteProgress();
-
-            // If no players are left, cancel the vote
             if (totalPlayersAtVoteStart == 0) {
                 finalizeVote(true);
             }
         }
     }
+
+    /**
+     * Handles a player going AFK during an ongoing vote.
+     * If the player hasn't voted yet, they are removed from the eligible vote pool.
+     *
+     * @param player the player who just became AFK.
+     */
+    public void handlePlayerAfk(Player player) {
+        if (voteInProgress && bossBar != null) {
+            if (!votedPlayers.contains(player.getUniqueId())) {
+                totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
+                        .filter(p -> !AfkManager.getInstance().isAfk(p))
+                        .count();
+                updateVoteProgress();
+            }
+        }
+    }
+
 
     /**
      * Checks if a vote is currently in progress.
