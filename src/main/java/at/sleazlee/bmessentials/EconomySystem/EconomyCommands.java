@@ -261,7 +261,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
 
             player.sendMessage(mini(
                     "<aqua><bold>BM</bold> <gray>Your balance is <green>$" + String.format("%.2f", dollars) +
-                            "</green> <gray>and <yellow>" + String.format("%.2f", votePoints) + "VPs</yellow><gray>."
+                            "</green> <gray>and <yellow>" + String.format("%,d", (long) votePoints) + "VPs</yellow><gray>."
             ));
             return true;
 
@@ -360,7 +360,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
         }
 
         // Footer line
-        String footer = "<dark_gray><st>                                                          </st>";
+        String footer = "<dark_gray><st>                                                             </st>";
         sender.sendMessage(mini(footer));
         return true;
     }
@@ -437,15 +437,6 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
         sender.sendMessage(mini("<green>You gave <white>" + playerName +
                 " " + economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
                 "</white>."));
-        if (target.isOnline()) {
-            Player onlineTarget = (Player) target;
-            double newBal = economy.balance(plugin.getName(), onlineTarget.getUniqueId(), "no_world", currency).doubleValue();
-            onlineTarget.sendMessage(mini("<gray>You were given <white>" +
-                    economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
-                    "</white> by " + sender.getName() +
-                    ". New balance: " +
-                    economy.format(plugin.getName(), BigDecimal.valueOf(newBal), currency)));
-        }
         return true;
     }
 
