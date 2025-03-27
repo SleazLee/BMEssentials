@@ -47,9 +47,9 @@ public class Obelisk {
 
         // Phase 1: Energy charge from altar center to obelisk top
         Scheduler.runLater(() -> {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                p.playSound(altarCenter, Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.2f, 0.9f);
-                p.playSound(altarCenter, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 0.8f, 1.5f);
+            for (Player players : Bukkit.getOnlinePlayers()) {
+                players.playSound(altarCenter, Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.2f, 0.9f);
+                players.playSound(altarCenter, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 0.8f, 1.5f);
             }
 
             Vector direction = OBELISK_TOP.toVector().subtract(altarCenter.toVector());
@@ -106,8 +106,8 @@ public class Obelisk {
 
         // Phase 3: Purple energy wave from the obelisk base
         Scheduler.runLater(() -> {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                p.playSound(OBELISK_BASE, Sound.ENTITY_WARDEN_SONIC_CHARGE, 1.5f, 0.8f);
+            for (Player players : Bukkit.getOnlinePlayers()) {
+                players.playSound(OBELISK_BASE, Sound.ENTITY_WARDEN_SONIC_CHARGE, 1.5f, 0.8f);
             }
 
             int waveSteps = 20;
@@ -128,8 +128,8 @@ public class Obelisk {
 
         // Phase 4: Westward enchantment wave from altar center
         Scheduler.runLater(() -> {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                p.playSound(altarCenter, Sound.BLOCK_BEACON_DEACTIVATE, 1.2f, 2.0f);
+            for (Player players : Bukkit.getOnlinePlayers()) {
+                players.playSound(altarCenter, Sound.BLOCK_BEACON_DEACTIVATE, 1.2f, 2.0f);
             }
 
             for (int i = 0; i < 40; i++) {
@@ -157,8 +157,8 @@ public class Obelisk {
 
             createEnchantVortex(world, altarCenter);
 
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                p.playSound(altarCenter, Sound.ITEM_TRIDENT_THUNDER, 1.5f, 1.5f);
+            for (Player players : Bukkit.getOnlinePlayers()) {
+                players.playSound(altarCenter, Sound.ITEM_TRIDENT_THUNDER, 1.5f, 1.5f);
             }
         }, 150);
 

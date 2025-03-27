@@ -118,17 +118,16 @@ public class HealingSprings {
             }, i * 2L);
         }
 
-        // Step 3: Initial sounds
         for (Player players : Bukkit.getOnlinePlayers()) {
-            player.playSound(center, Sound.BLOCK_BEACON_AMBIENT, SoundCategory.AMBIENT, 0.8f, 0.7f);
-            player.playSound(center, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 1.0f);
+            players.playSound(center, Sound.BLOCK_BEACON_AMBIENT, SoundCategory.AMBIENT, 0.8f, 0.7f);
+            players.playSound(center, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 1.0f);
         }
 
         // Step 4: Additional ambient sound after a short delay
         Scheduler.runLater(() -> {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 Location adjustedCenter = center.clone().add(0.0, 0.4, 0.0);
-                player.playSound(adjustedCenter, Sound.BLOCK_AMETHYST_CLUSTER_FALL, SoundCategory.AMBIENT, 2.0f, 0.3f);
+                players.playSound(adjustedCenter, Sound.BLOCK_AMETHYST_CLUSTER_FALL, SoundCategory.AMBIENT, 2.0f, 0.3f);
             }
         }, 20L);
 
@@ -166,7 +165,7 @@ public class HealingSprings {
         // Step 7: Conduit activation sound
         Scheduler.runLater(() -> {
             for (Player players : Bukkit.getOnlinePlayers()) {
-                player.playSound(center, Sound.BLOCK_CONDUIT_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 0.3f);
+                players.playSound(center, Sound.BLOCK_CONDUIT_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 0.3f);
             }
         }, 100L);
 

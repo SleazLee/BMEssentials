@@ -9,7 +9,17 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public final class Scheduler {
 
-    private static final boolean isFolia = Bukkit.getVersion().contains("Folia");
+    private static final boolean isFolia;
+    static {
+        boolean folia;
+        try {
+            Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
+            folia = true;
+        } catch (ClassNotFoundException e) {
+            folia = false;
+        }
+        isFolia = folia;
+    }
 
     /**
      * Runs a task immediately.
@@ -53,10 +63,10 @@ public final class Scheduler {
         if (isFolia)
             return new Task(Bukkit.getGlobalRegionScheduler()
                     .runAtFixedRate(BMEssentials.getInstance(), t -> runnable.run(), delayTicks < 1 ? 1 : delayTicks, periodTicks));
-
         else
             return new Task(Bukkit.getScheduler().runTaskTimer(BMEssentials.getInstance(), runnable, delayTicks, periodTicks));
     }
+
 
     /**
      * Checks if the server is running Folia.
