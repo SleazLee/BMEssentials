@@ -2,9 +2,8 @@ package at.sleazlee.bmessentials.wild;
 
 import at.sleazlee.bmessentials.bmefunctions.IsInWorldGuardRegion;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -153,6 +152,7 @@ public class WildCommand implements CommandExecutor {
             finalX = centerX + xOffset;
             finalZ = centerZ + zOffset;
 
+            logger.info("[Wild] Attempting to check if above water.");
             // If we are still within our allowed water-check attempts, check for water.
             if (attempts <= maxRetries) {
                 boolean isAboveWater = false;
