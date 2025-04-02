@@ -217,6 +217,14 @@ commands:
     description: Displays command information.
     usage: /text <text name>
 
+  ranks:
+    description: Displays rank information.
+    usage: /ranks <text name>
+
+  donorranks:
+    description: Displays command information.
+    usage: /donorranks <text name>
+
   afk:
     description: Toggle your AFK status.
 

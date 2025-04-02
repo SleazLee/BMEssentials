@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 /**
  * Listener to detect player activity events and update AFK status.
@@ -17,21 +16,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class AfkListener implements Listener {
 
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (!MovementUtils.isSignificantMovement(event.getFrom(), event.getTo())) return;
-
-        Player player = event.getPlayer();
-        boolean wasAfk = AfkManager.getInstance().isAfk(player);
-        boolean statusChanged = AfkManager.getInstance().updateActivity(player, event.getTo());
-        if (wasAfk && statusChanged) {
-            String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
-            Bukkit.broadcast(miniMessage.deserialize(message));
-            // When a player comes out of AFK, update the vote system.
-            VoteManager.getInstance().handlePlayerJoin(player);
-        }
-    }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
@@ -51,7 +35,7 @@ public class AfkListener implements Listener {
             String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
             Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
             // Reset their broadcasted state so if they go AFK again, it can be announced again later
-            AfkManager.getInstance().setBroadcastedAfk(player, false);
+            AfkManager.getInstance().setBroadcastedAfk(player, true);
         }
     }
 
@@ -81,7 +65,7 @@ public class AfkListener implements Listener {
             String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
             Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
             // Reset their broadcasted state so if they go AFK again, it can be announced again later
-            AfkManager.getInstance().setBroadcastedAfk(player, false);
+            AfkManager.getInstance().setBroadcastedAfk(player, true);
         }
     }
 }

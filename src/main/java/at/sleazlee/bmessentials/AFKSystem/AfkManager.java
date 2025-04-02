@@ -1,7 +1,9 @@
 package at.sleazlee.bmessentials.AFKSystem;
 
 import at.sleazlee.bmessentials.vot.VoteManager;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -87,13 +89,40 @@ public class AfkManager {
     public void checkForInactivity(long currentTime, long timeoutMillis) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerActivity activity = getActivity(player);
-            if (!activity.isAfk() && (currentTime - activity.getLastActiveTime() >= timeoutMillis)) {
-                activity.setAfk(true);
-                // Notify the vote system: if the player hasn't voted, remove them from the vote pool.
-                VoteManager.getInstance().handlePlayerAfk(player);
+            // Get the current location for comparison.
+            Location currentLocation = player.getLocation();
+
+            // Check if the player has moved significantly since last check.
+            boolean hasMoved = MovementUtils.isSignificantMovement(activity.getLastLocation(), currentLocation);
+
+            if (hasMoved) {
+                // Update the last active time and location.
+                activity.setLastActiveTime(currentTime);
+                activity.setLastLocation(currentLocation);
+
+                // If the player was marked as AFK, mark them active.
+                if (activity.isAfk()) {
+                    activity.setAfk(false);
+                    // Notify the vote system that the player is active again.
+                    VoteManager.getInstance().handlePlayerJoin(player);
+
+                    // Broadcast "no longer AFK" if applicable.
+                    if (activity.hasBroadcastedAfkMessage()) {
+                        String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
+                        Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
+                    }
+                }
+            } else {
+                // No significant movement detected. Check if the inactivity threshold has been reached.
+                if (!activity.isAfk() && (currentTime - activity.getLastActiveTime() >= timeoutMillis)) {
+                    activity.setAfk(true);
+                    // Notify the vote system that the player is now AFK.
+                    VoteManager.getInstance().handlePlayerAfk(player);
+                }
             }
         }
     }
+
 
 
     /**

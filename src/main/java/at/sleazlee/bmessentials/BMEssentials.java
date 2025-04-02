@@ -16,14 +16,13 @@ import at.sleazlee.bmessentials.DonationSystem.GetDonations;
 import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
-import at.sleazlee.bmessentials.Help.Commands.BookCommand;
-import at.sleazlee.bmessentials.Help.Commands.CommandsCommand;
-import at.sleazlee.bmessentials.Help.Commands.HelpCommand;
-import at.sleazlee.bmessentials.Help.Commands.TextCommand;
+import at.sleazlee.bmessentials.Help.Commands.*;
 import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.HelpText;
 import at.sleazlee.bmessentials.Help.TabCompleter.CommandTabCompleter;
+import at.sleazlee.bmessentials.Help.TabCompleter.DonorranksTabCompleter;
 import at.sleazlee.bmessentials.Help.TabCompleter.HelpTabCompleter;
+import at.sleazlee.bmessentials.Help.TabCompleter.RanksTabCompleter;
 import at.sleazlee.bmessentials.PlayerData.BMEChatPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
@@ -397,6 +396,15 @@ public class BMEssentials extends JavaPlugin {
 
             getCommand("commands").setExecutor(new CommandsCommand(textSystem));
             getCommand("commands").setTabCompleter(new CommandTabCompleter());
+
+
+            // ranks command
+            getCommand("ranks").setExecutor(new RanksCommand());
+            getCommand("ranks").setTabCompleter(new RanksTabCompleter());
+
+            // donorranks command
+            getCommand("donorranks").setExecutor(new DonorrankCommand());
+            getCommand("donorranks").setTabCompleter(new DonorranksTabCompleter());
         }
 
         // Purpur feature Systems
