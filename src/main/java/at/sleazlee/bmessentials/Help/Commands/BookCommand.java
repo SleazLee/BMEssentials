@@ -58,7 +58,16 @@ public class BookCommand implements CommandExecutor {
                     args[0].equalsIgnoreCase("commands") ||
                     args[0].equalsIgnoreCase("servercommands") ||
                     args[0].equalsIgnoreCase("abilitiesunlockscommands") ||
-                    args[0].equalsIgnoreCase("shopcommands")) {
+                    args[0].equalsIgnoreCase("shopcommands") ||
+
+                    // Rank books
+                    args[0].equalsIgnoreCase("donorranks") ||
+                    args[0].equalsIgnoreCase("defaultrank") ||
+                    args[0].equalsIgnoreCase("plusrank") ||
+                    args[0].equalsIgnoreCase("premiumrank") ||
+                    args[0].equalsIgnoreCase("ultrarank") ||
+                    args[0].equalsIgnoreCase("superrank") ||
+                    args[0].equalsIgnoreCase("blockminerrank")) {
 
                 String bookName = args[0];
                 books.openBook(player, bookName);
