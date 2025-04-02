@@ -2,10 +2,19 @@ package at.sleazlee.bmessentials;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
+
+import static org.bukkit.Bukkit.getLogger;
 
 /**
  * Utility class for scheduling tasks, with support for Folia.
+ * <p>
+ * This class provides methods for both global scheduling and region-specific scheduling
+ * (i.e. tasks that require a proper world context). In a Folia environment the appropriate
+ * scheduler is used to ensure that world-related operations (like retrieving block states)
+ * have a valid context.
+ * </p>
  */
 public final class Scheduler {
 
@@ -15,44 +24,52 @@ public final class Scheduler {
         try {
             Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
             folia = true;
+            getLogger().warning("Scheduler You are running FOLIA");
         } catch (ClassNotFoundException e) {
             folia = false;
+            getLogger().warning("Scheduler You are running BUKKIT");
         }
         isFolia = folia;
     }
 
     /**
-     * Runs a task immediately.
+     * Runs a task immediately using a global scheduler.
      *
      * @param runnable The task to run.
      */
     public static void run(Runnable runnable) {
         if (isFolia)
-            Bukkit.getGlobalRegionScheduler()
-                    .execute(BMEssentials.getInstance(), runnable);
-
+            Bukkit.getGlobalRegionScheduler().execute(BMEssentials.getInstance(), runnable);
         else
             Bukkit.getScheduler().runTask(BMEssentials.getInstance(), runnable);
     }
 
     /**
-     * Schedules a task to run after a delay.
+     * Schedules a task to run after a delay using a global scheduler.
+     * <p>
+     * If the delayTicks parameter is less than or equal to 0, the task is executed immediately.
+     * This avoids errors with Folia which requires a minimum delay of 1 tick.
+     * A dummy Task (with no cancel functionality) is returned in this case.
+     * </p>
      *
      * @param runnable   The task to run.
      * @param delayTicks The delay in ticks before running the task.
-     * @return The scheduled task.
+     * @return The scheduled task, or a dummy Task if executed immediately.
      */
     public static Task runLater(Runnable runnable, long delayTicks) {
+        if (delayTicks <= 0) {
+            run(runnable);
+            return new Task(null);
+        }
         if (isFolia)
             return new Task(Bukkit.getGlobalRegionScheduler()
                     .runDelayed(BMEssentials.getInstance(), t -> runnable.run(), delayTicks));
-
         else
             return new Task(Bukkit.getScheduler().runTaskLater(BMEssentials.getInstance(), runnable, delayTicks));
     }
 
     /**
-     * Schedules a repeating task.
+     * Schedules a repeating task using a global scheduler.
      *
      * @param runnable    The task to run.
      * @param delayTicks  The initial delay in ticks before running the task.
@@ -67,6 +84,65 @@ public final class Scheduler {
             return new Task(Bukkit.getScheduler().runTaskTimer(BMEssentials.getInstance(), runnable, delayTicks, periodTicks));
     }
 
+    // -------------------------------------------------------------------
+    // REGION-BASED SCHEDULING METHODS
+    // Use these methods when a task requires a proper world/region context,
+    // such as when accessing block data.
+    // -------------------------------------------------------------------
+
+    /**
+     * Runs a task immediately using a region-based scheduler.
+     * The task is scheduled with the given location to ensure proper world context.
+     *
+     * @param location The location used to determine the region context.
+     * @param runnable The task to run.
+     */
+    public static void run(Location location, Runnable runnable) {
+        if (isFolia)
+            Bukkit.getRegionScheduler().execute(BMEssentials.getInstance(), location, runnable);
+        else
+            Bukkit.getScheduler().runTask(BMEssentials.getInstance(), runnable);
+    }
+
+    /**
+     * Schedules a task to run after a delay using a region-based scheduler.
+     * The task is scheduled with the given location to ensure proper world context.
+     * <p>
+     * If delayTicks is less than or equal to 0, the task is executed immediately.
+     * </p>
+     *
+     * @param location   The location used to determine the region context.
+     * @param runnable   The task to run.
+     * @param delayTicks The delay in ticks before running the task.
+     * @return The scheduled task, or a dummy Task if executed immediately.
+     */
+    public static Task runLater(Location location, Runnable runnable, long delayTicks) {
+        if (delayTicks <= 0) {
+            run(location, runnable);
+            return new Task(null);
+        }
+        if (isFolia)
+            return new Task(Bukkit.getRegionScheduler().runDelayed(BMEssentials.getInstance(), location, t -> runnable.run(), delayTicks));
+        else
+            return new Task(Bukkit.getScheduler().runTaskLater(BMEssentials.getInstance(), runnable, delayTicks));
+    }
+
+    /**
+     * Schedules a repeating task using a region-based scheduler.
+     * The task is scheduled with the given location to ensure proper world context.
+     *
+     * @param location    The location used to determine the region context.
+     * @param runnable    The task to run.
+     * @param delayTicks  The initial delay in ticks before running the task.
+     * @param periodTicks The period in ticks between successive runs.
+     * @return The scheduled task.
+     */
+    public static Task runTimer(Location location, Runnable runnable, long delayTicks, long periodTicks) {
+        if (isFolia)
+            return new Task(Bukkit.getRegionScheduler().runAtFixedRate(BMEssentials.getInstance(), location, t -> runnable.run(), delayTicks < 1 ? 1 : delayTicks, periodTicks));
+        else
+            return new Task(Bukkit.getScheduler().runTaskTimer(BMEssentials.getInstance(), runnable, delayTicks, periodTicks));
+    }
 
     /**
      * Checks if the server is running Folia.
@@ -78,7 +154,8 @@ public final class Scheduler {
     }
 
     /**
-     * Cancels the current task. (Implementation can be added if needed)
+     * Cancels the current task.
+     * (Implementation can be added if needed)
      */
     public static void cancelCurrentTask() {
     }
@@ -121,48 +198,3 @@ public final class Scheduler {
         }
     }
 }
-
-
-// if BukkitRunnable:
-//Looks like this:
-
-//        new BukkitRunnable() {
-//      @Override
-//       public void run() {
-//        voteInProgress = false;
-//
-//        if (yesVotes > noVotes) {
-//        Bukkit.broadcastMessage(ChatColor.GREEN + "The vote to change " + voteOption + " has passed. Changing now...");
-//        executeChange(voteOption);
-//        } else {
-//        Bukkit.broadcastMessage(ChatColor.RED + "The vote to change " + voteOption + " has failed. No change will occur.");
-//        }
-//
-//        // Start cooldown for all players
-//        startCooldown();
-//
-//        // Clear voted players
-//        votedPlayers.clear();
-//        }
-//        }.runTaskLater(this, 60 * 20); // 60 seconds
-//        }
-
-//Translate to this:
-
-//      runLater(() -> {
-//        voteInProgress = false;
-//
-//        if (yesVotes > noVotes) {
-//        Bukkit.broadcastMessage(ChatColor.GREEN + "The vote to change " + voteOption + " has passed. Changing now...");
-//        executeChange(voteOption);
-//        } else {
-//        Bukkit.broadcastMessage(ChatColor.RED + "The vote to change " + voteOption + " has failed. No change will occur.");
-//        }
-//
-//        // Start cooldown for all players
-//        startCooldown();
-//
-//        // Clear voted players
-//        votedPlayers.clear();
-//        }, 20 * 60); // 60 seconds
-//        }
