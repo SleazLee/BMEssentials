@@ -429,9 +429,9 @@ public class BMEssentials extends JavaPlugin {
             // Prevents fall damage when a player lands on a hay block
             getServer().getPluginManager().registerEvents(new NoFallDamageOnHay(), this);
 
-
             // You can break individual slabs in a double slab block while sneaking
             getServer().getPluginManager().registerEvents(new SneakSlabBreak(), this);
+
         }
 
         // AFK System
@@ -454,7 +454,6 @@ public class BMEssentials extends JavaPlugin {
                 new AfkPlaceholderExpansion(this).register();
             }
         }
-
 
 
 
