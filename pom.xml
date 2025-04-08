@@ -175,5 +175,11 @@
             <version>5.4</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.angeschossen</groupId>
+            <artifactId>LandsAPI</artifactId>
+            <version>7.13.1</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

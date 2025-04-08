@@ -194,8 +194,7 @@ public class WildCommand implements CommandExecutor {
         String worldName = "world";
         String serverName = "blockminer";
 
-        if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")
-                || IsInWorldGuardRegion.isPlayerInRegion(player, "Shop")) {
+        if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")) {
             // Instant teleport if in spawn or shop region
             HuskHomesAPIHook.instantTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
         } else {

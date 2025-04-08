@@ -35,6 +35,7 @@ import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.BMRestart;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
+import at.sleazlee.bmessentials.huskhomes.LandsTeleportFixListener;
 import at.sleazlee.bmessentials.maps.MapCommand;
 import at.sleazlee.bmessentials.maps.MapTabCompleter;
 import at.sleazlee.bmessentials.rankup.RankUpManager;
@@ -51,6 +52,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -453,6 +455,29 @@ public class BMEssentials extends JavaPlugin {
             if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
                 new AfkPlaceholderExpansion(this).register();
             }
+        }
+
+        // AFK System
+        if (config.getBoolean("Systems.LandsTPFix.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Fixed the Lands TP System");
+
+            Plugin landsPlugin = getServer().getPluginManager().getPlugin("Lands");
+            Plugin huskHomesPlugin = getServer().getPluginManager().getPlugin("HuskHomes");
+
+            if (landsPlugin != null || landsPlugin.isEnabled()) {
+                if (huskHomesPlugin != null || huskHomesPlugin.isEnabled()) {
+                    // Passed plugin load checks, run logic here.
+                    getServer().getPluginManager().registerEvents(new LandsTeleportFixListener(), this);
+
+                } else {
+                    // If HuskHomes is not found
+                    getLogger().severe("HuskHomes plugin is not loaded or disabled. TeleportFix will be disabled.");
+                }
+            } else {
+                // If lands is not found
+                getLogger().severe("Lands plugin is not loaded or disabled. TeleportFix will be disabled.");
+            }
+
         }
 
 

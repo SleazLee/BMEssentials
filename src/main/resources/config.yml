@@ -231,3 +231,7 @@ Systems:
   # Enables the afk system
   AFKSystem:
     Enabled: true
+
+  # Enables the Lands TP Fix System
+  LandsTPFix:
+    Enabled: true
