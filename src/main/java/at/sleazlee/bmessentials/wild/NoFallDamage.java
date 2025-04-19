@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +21,7 @@ public class NoFallDamage implements Listener {
 
     @Getter
     private static final List<UUID> fallDisabled = new ArrayList<>(); // List of player UUIDs with fall damage disabled.
-    private final Plugin plugin; // Reference to the main plugin.
 
-    /**
-     * Constructs a NoFallDamage object.
-     *
-     * @param plugin The main plugin instance.
-     */
-    public NoFallDamage(Plugin plugin) {
-        this.plugin = plugin;
-    }
 
     /**
      * Event handler that triggers when a player teleports.
@@ -50,6 +41,17 @@ public class NoFallDamage implements Listener {
             // Schedule a task to remove the player from the fallDisabled list after a delay.
             Scheduler.runLater(() -> fallDisabled.remove(uuid), 240L); // 240 ticks = 12 seconds
         }
+    }
+
+    // New join event handler for rejoining players
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        UUID uuid = player.getUniqueId();
+        // Add player to the fall damage disabled list upon join
+        fallDisabled.add(uuid);
+        // Remove their immunity after a delay (240 ticks = 12 seconds) to avoid permanent immunity
+        Scheduler.runLater(() -> fallDisabled.remove(uuid), 240L);
     }
 
     /**

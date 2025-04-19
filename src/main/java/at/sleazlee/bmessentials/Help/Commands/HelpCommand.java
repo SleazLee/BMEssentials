@@ -1,5 +1,7 @@
 package at.sleazlee.bmessentials.Help.Commands;
 
+import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Help.HelpBooks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -9,6 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class HelpCommand implements CommandExecutor {
+
+    // Get the instance of the Help book system
+    HelpBooks books = BMEssentials.getInstance().getBooks();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -41,23 +46,23 @@ public class HelpCommand implements CommandExecutor {
 
             // Example: /help claiming => we run "/book claiming"
             if (args[0].equalsIgnoreCase("claiming")) {
-                Bukkit.dispatchCommand(player, "book claiming");
+                books.openBook(player, "claiming");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("lands")) {
-                Bukkit.dispatchCommand(player, "book claiming");
+                books.openBook(player, "claiming");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("money")) {
-                Bukkit.dispatchCommand(player, "book money");
+                books.openBook(player, "money");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("ranks")) {
-                Bukkit.dispatchCommand(player, "book ranks");
+                books.openBook(player, "ranks");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("voting")) {
-                Bukkit.dispatchCommand(player, "book voting");
+                books.openBook(player, "voting");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("commands")) {
@@ -66,11 +71,11 @@ public class HelpCommand implements CommandExecutor {
                 return true;
             }
             else if (args[0].equalsIgnoreCase("settings")) {
-                Bukkit.dispatchCommand(player, "book settings");
+                books.openBook(player, "settings");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("abilities")) {
-                Bukkit.dispatchCommand(player, "book abilities");
+                books.openBook(player, "abilities");
                 return true;
             }
         }

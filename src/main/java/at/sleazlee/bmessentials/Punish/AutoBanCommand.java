@@ -36,31 +36,42 @@ public class AutoBanCommand implements CommandExecutor {
 	}
 
 	/**
-	 * Broadcast a message to the BungeeCord server.
+	 * Broadcast an encrypted message to the Velocity proxy.
 	 *
-	 * @param playerName The Player that will be banned.
+	 * @param playerName The player name to include in the payload.
 	 */
 	public static void sendPluginMessage(String playerName) {
-		// Debug message
-		plugin.getLogger().info("Trying to send a Plugin Message");
+		BMEssentials plugin = BMEssentials.getInstance();
+		plugin.getLogger().info("Trying to send an encrypted Plugin Message");
 
-		// Create a byte stream to hold the message
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		DataOutputStream out = new DataOutputStream(b);
-
+		// 1) Serialize your payload
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(baos);
 		try {
 			out.writeUTF(playerName);
-
 		} catch (IOException e) {
-			e.printStackTrace();
+			plugin.getLogger().severe("Failed to serialize payload");
+			return;
 		}
 
-		// Send the plugin message to BungeeCord from an arbitrary player
+		byte[] raw = baos.toByteArray();
+		byte[] cipher;
+		// 2) Encrypt it
+		try {
+			cipher = plugin.getAes().encrypt(raw);
+		} catch (Exception ex) {
+			plugin.getLogger().severe("Failed to encrypt autoban payload");
+			return;
+		}
+
+		// 3) Send via any online player
 		Collection<? extends Player> players = Bukkit.getOnlinePlayers();
 		if (!players.isEmpty()) {
-			players.iterator().next().sendPluginMessage(plugin, "bmessentials:autoban", b.toByteArray());
-			// Debug message
-			plugin.getLogger().info("Sent a Plugin Message");
+			Player sender = players.iterator().next();
+			sender.sendPluginMessage(plugin, "bmessentials:autoban", cipher);
+			plugin.getLogger().info("Sent encrypted Plugin Message");
+		} else {
+			plugin.getLogger().severe("No online players to relay plugin message!");
 		}
 	}
 }

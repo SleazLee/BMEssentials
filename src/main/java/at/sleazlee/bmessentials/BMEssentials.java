@@ -16,6 +16,8 @@ import at.sleazlee.bmessentials.DonationSystem.GetDonations;
 import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
+import at.sleazlee.bmessentials.Help.Abilities.ChestSortCommand;
+import at.sleazlee.bmessentials.Help.Abilities.ChestSortTabCompleter;
 import at.sleazlee.bmessentials.Help.Commands.*;
 import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.HelpText;
@@ -35,6 +37,7 @@ import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.BMRestart;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
+import at.sleazlee.bmessentials.crypto.AESEncryptor;
 import at.sleazlee.bmessentials.huskhomes.LandsTeleportFixListener;
 import at.sleazlee.bmessentials.maps.MapCommand;
 import at.sleazlee.bmessentials.maps.MapTabCompleter;
@@ -55,6 +58,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.nio.file.Path;
 
 /**
  * The main class for the BMEssentials plugin, which extends JavaPlugin.
@@ -90,6 +95,12 @@ public class BMEssentials extends JavaPlugin {
     private CommandQueueManager queueManager;
     private FileConfiguration config;
 
+    /** The instance of the help book system. */
+    private HelpBooks books;
+
+    /** The instance of the Plugin Message Encryption Code. */
+    private AESEncryptor aes;
+
     /**
      * Gets the instance of the main plugin class.
      *
@@ -115,6 +126,18 @@ public class BMEssentials extends JavaPlugin {
 
         // Now, initialize the config variable with the loaded configuration
         this.config = getConfig();
+
+        // Load the Plugin Message Encrypton
+        try {
+            Path keyFile = getDataFolder().toPath().resolve("crypto.key");
+            this.aes = AESEncryptor.fromKeyFile(keyFile);
+            getLogger().info("🔐 AES key loaded");
+        } catch (Exception e) {
+            getLogger().severe("Failed to load crypto.key, disabling plugin.");
+            e.printStackTrace();
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         // Art at the beginning.
         String[] startArt = Art.startupArt().split("\n");
@@ -212,7 +235,7 @@ public class BMEssentials extends JavaPlugin {
             WildData wildData = new WildData(this);
 
             // Register the NoFallDamage event listener.
-            getServer().getPluginManager().registerEvents(new NoFallDamage(this), this);
+            getServer().getPluginManager().registerEvents(new NoFallDamage(), this);
 
             // Instantiate the command executor and tab completer, passing the WildData instance.
             WildCommand wildCommand = new WildCommand(wildData, this);
@@ -384,7 +407,7 @@ public class BMEssentials extends JavaPlugin {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled the Book Systems");
 
-            HelpBooks books = new HelpBooks(this);
+            books = new HelpBooks(this);
             getCommand("book").setExecutor(new BookCommand(books));
 
             getCommand("help").setExecutor(new HelpCommand());
@@ -407,6 +430,10 @@ public class BMEssentials extends JavaPlugin {
             // donorranks command
             getCommand("donorranks").setExecutor(new DonorrankCommand());
             getCommand("donorranks").setTabCompleter(new DonorranksTabCompleter());
+
+            // Chest Sort System
+            getCommand("chestsort").setExecutor(new ChestSortCommand());
+            getCommand("chestsort").setTabCompleter(new ChestSortTabCompleter());
         }
 
         // Purpur feature Systems
@@ -457,7 +484,7 @@ public class BMEssentials extends JavaPlugin {
             }
         }
 
-        // AFK System
+        // Lands TP Fix System
         if (config.getBoolean("Systems.LandsTPFix.Enabled")) {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Fixed the Lands TP System");
 
@@ -479,11 +506,6 @@ public class BMEssentials extends JavaPlugin {
             }
 
         }
-
-
-
-
-
 
         // Finally enables the reload system.
         this.getCommand("bme").setExecutor(new BMECommandExecutor(this));
@@ -512,6 +534,14 @@ public class BMEssentials extends JavaPlugin {
 
         // Log a message to indicate the plugin has been successfully disabled
         getLogger().info("BMEssentials has been disabled!");
+    }
+
+    public HelpBooks getBooks() {
+        return books;
+    }
+
+    public AESEncryptor getAes() {
+        return aes;
     }
 
 }

@@ -298,7 +298,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
             ).doubleValue();
 
             sender.sendMessage(mini("<aqua><bold>BM</bold> <gray>" +
-                    "Balance for <white>" + targetName + "</white><gray>is " +
+                    "Balance for <white>" + targetName + "</white><gray> is " +
                     "<green>$" + String.format("%,.2f", dollars) +
                     "</green><gray> and <yellow>" + String.format("%,.2f", votePoints) + "VPs</yellow><gray>."
             ));

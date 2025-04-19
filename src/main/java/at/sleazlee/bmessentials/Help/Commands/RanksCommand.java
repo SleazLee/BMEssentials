@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.Help.Commands;
 
-import org.bukkit.Bukkit;
+import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Help.HelpBooks;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -9,6 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class RanksCommand implements CommandExecutor {
+
+    // Get the instance of the Help book system
+    HelpBooks books = BMEssentials.getInstance().getBooks();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -40,31 +44,31 @@ public class RanksCommand implements CommandExecutor {
 
             // Example: /ranks plus => we run "/book plusrank"
             if (args[0].equalsIgnoreCase("default")) {
-                Bukkit.dispatchCommand(player, "book defaultrank");
+                books.openBook(player, "defaultrank");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("plus")) {
-                Bukkit.dispatchCommand(player, "book plusrank");
+                books.openBook(player, "plusrank");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("premium")) {
-                Bukkit.dispatchCommand(player, "book premiumrank");
+                books.openBook(player, "premiumrank");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("ultra")) {
-                Bukkit.dispatchCommand(player, "book ultrarank");
+                books.openBook(player, "ultrarank");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("super")) {
-                Bukkit.dispatchCommand(player, "book superrank");
+                books.openBook(player, "superrank");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("blockminer")) {
-                Bukkit.dispatchCommand(player, "book blockminerrank");
+                books.openBook(player, "blockminerrank");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("donor")) {
-                Bukkit.dispatchCommand(player, "book donorranks");
+                books.openBook(player, "donorranks");
                 return true;
             }
             }else if (args[0].equalsIgnoreCase("current")) {
@@ -84,17 +88,17 @@ public class RanksCommand implements CommandExecutor {
      */
     public void findRank(Player player) {
         if(player.hasPermission("ranks.blockminer")) {
-            Bukkit.dispatchCommand(player, "book blockminerrank");
+            books.openBook(player, "blockminerrank");
         } else if (player.hasPermission("ranks.super")) {
-            Bukkit.dispatchCommand(player, "book superrank");
+            books.openBook(player, "superrank");
         } else if (player.hasPermission("ranks.ultra")) {
-            Bukkit.dispatchCommand(player, "book ultrarank");
+            books.openBook(player, "ultrarank");
         } else if (player.hasPermission("ranks.premium")) {
-            Bukkit.dispatchCommand(player, "book premiumrank");
+            books.openBook(player, "premiumrank");
         } else if (player.hasPermission("ranks.plus")) {
-            Bukkit.dispatchCommand(player, "book plusrank");
+            books.openBook(player, "plusrank");
         } else {
-            Bukkit.dispatchCommand(player, "book defaultrank");
+            books.openBook(player, "defaultrank");
         }
     }
 }

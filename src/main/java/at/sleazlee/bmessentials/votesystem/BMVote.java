@@ -1,21 +1,17 @@
 package at.sleazlee.bmessentials.votesystem;
 
 import at.sleazlee.bmessentials.BMEssentials;
-import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.Scheduler;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import at.sleazlee.bmessentials.art.Art;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -90,26 +86,46 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
      */
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals("bmessentials:vote")) return;
+        // 0) Only our vote channel
+        if (!"bmessentials:vote".equals(channel)) {
+            return;
+        }
 
-        // Debug log to show receipt of the message
-        Bukkit.getLogger().info("BMVote: Received plugin message on channel " + channel + " from " + player.getName() +
-                " with payload: " + new String(message));
+        // 1) Decrypt the incoming bytes
+        byte[] plain;
+        try {
+            plain = plugin.getAes().decrypt(message);
+        } catch (Exception e) {
+            plugin.getLogger().warning("Dropping malformed vote packet from " + player.getName());
+            return;
+        }
 
-        String data = new String(message);
+        // 2) Convert to UTF‑8 string
+        String data = new String(plain, StandardCharsets.UTF_8);
+        plugin.getLogger().info("BMVote: Decrypted payload from " + player.getName() + ": " + data);
+
+        // 3) Split and validate format "uuid;count"
         String[] parts = data.split(";");
-        if (parts.length != 2) return;
+        if (parts.length != 2) {
+            plugin.getLogger().warning("Invalid vote packet format: " + data);
+            return;
+        }
+
         String uuidString = parts[0];
         int voteCount;
         try {
             voteCount = Integer.parseInt(parts[1]);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
+            plugin.getLogger().warning("Invalid vote count in packet: " + parts[1]);
             return;
         }
+
+        // 4) Award the votes
         for (int i = 0; i < voteCount; i++) {
             givePrizeByUUID(uuidString);
         }
     }
+
 
 
     /**
@@ -137,14 +153,14 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
         if (randomValue < 0.10) {
             // 10% chance, obelisk
             return "obelisk";
-        } else if (randomValue < 0.32) {
-            // 22% chance, wishingwell
+        } else if (randomValue < 0.40) {
+            // 30% chance, wishingwell
             return "wishingwell";
-        } else if (randomValue < 0.74) {
-            // 32% chance, healingsprings
+        } else if (randomValue < 0.80) {
+            // 40% chance, healingsprings
             return "healingsprings";
         } else {
-            // 26% chance, healingsprings
+            // 20% chance, Nothing
             return "nothing";
         }
     }
@@ -165,19 +181,19 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
             switch (randomKey()) {
                 case "obelisk":
                     player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§C§A§6§5§0§0 §lObelisk§7§l Token§f!");
-                    commandOne = "si give obeliskkey 1 " + playerName;
+                    commandOne = "si give obeliskkey 1 " + playerName + " true";
                     commandTwo = "eco give " + playerName + " 1 VotePoints";
                     hexCode = "#CA6500";
                     break;
                 case "wishingwell":
                     player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§3§2§C§A§F§C §lWishing-Well§7§l Token§f!");
-                    commandOne = "si give wishingwellkey 1 " + playerName;
+                    commandOne = "si give wishingwellkey 1 " + playerName + " true";
                     commandTwo = "eco give " + playerName + " 1 VotePoints";
                     hexCode = "#32CAFC";
                     break;
                 case "healingsprings":
                     player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§3§2§C§A§6§5 §lHealing Springs§7§l Token§f!");
-                    commandOne = "si give healingspringskey 1 " + playerName;
+                    commandOne = "si give healingspringskey 1 " + playerName + " true";
                     commandTwo = "eco give " + playerName + " 1 VotePoints";
                     hexCode = "#32CA65";
                     break;

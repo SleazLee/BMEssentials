@@ -6,7 +6,7 @@ author: SleazLee
 description: One plugin to rule them all!
 folia-supported: true
 
-loadbefore: [Lands]
+loadbefore: [Lands, ChestSort]
 depend: [WorldGuard, WorldEdit]
 softdepend: [VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms, Lands]
 
@@ -227,6 +227,9 @@ commands:
 
   afk:
     description: Toggle your AFK status.
+
+  chestsort:
+    description: Changes ChestSort Settings.
 
 
 permissions:
