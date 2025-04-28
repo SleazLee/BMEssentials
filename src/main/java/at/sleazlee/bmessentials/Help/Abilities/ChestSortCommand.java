@@ -19,126 +19,157 @@ public class ChestSortCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
+        String playerName = player.getName();
+        HelpBooks books = BMEssentials.getInstance().getBooks();
 
-        // Step 1: Check player's permissions "chestsort.use" and "chestsort.firstuse"
-        if (!player.hasPermission("chestsort.use") && !player.hasPermission("chestsort.firstuse")) {
+
+        // Step 1: Check if the player has the proper rank.
+        if (!player.hasPermission("settings.chestsort.allow")) {
             // Is not allowed.
             if (player.hasPermission("ranking.blockminer") || player.hasPermission("ranking.super")) {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(
-                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[0]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:\"/ranks\"><hover:show_text:\"<aqua>Click to view your current rank chain!</aqua>\"><aqua>/ranks</aqua></hover></click><white>."
+                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[0]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:'/ranks'><hover:show_text:'<aqua>Click to view your current rank chain!</aqua>'><aqua>/ranks</aqua></hover></click><white>."
                 ));
                 return true;
             } else if (player.hasPermission("ranking.ultra") || player.hasPermission("ranking.premium")) {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(
-                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[1]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:\"/ranks\"><hover:show_text:\"<aqua>Click to view your current rank chain!</aqua>\"><aqua>/ranks</aqua></hover></click><white>."
+                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[1]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:'/ranks'><hover:show_text:'<aqua>Click to view your current rank chain!</aqua>'><aqua>/ranks</aqua></hover></click><white>."
                 ));
                 return true;
             } else if (player.hasPermission("ranking.plus")) {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(
-                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[2]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:\"/ranks\"><hover:show_text:\"<aqua>Click to view your current rank chain!</aqua>\"><aqua>/ranks</aqua></hover></click><white>."
+                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[2]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:'/ranks'><hover:show_text:'<aqua>Click to view your current rank chain!</aqua>'><aqua>/ranks</aqua></hover></click><white>."
                 ));
                 return true;
             } else {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(
-                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[2]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:\"/ranks\"><hover:show_text:\"<aqua>Click to view your current rank chain!</aqua>\"><aqua>/ranks</aqua></hover></click><white>."
+                        "<#F62525><bold>ChestSort</bold><red> You need to be at least rank <aqua><bold>[2]</bold><red> to use Chest Sorting!<white> Check out <click:run_command:'/ranks'><hover:show_text:'<aqua>Click to view your current rank chain!</aqua>'><aqua>/ranks</aqua></hover></click><white>."
                 ));
                 return true;
             }
-        } else if (player.hasPermission("chestsort.use") && !player.hasPermission("chestsort.firstuse")) {
-            // First time running command.
-            String playerName = player.getName();
-            player.sendMessage("Setting up first-use permissions for " + playerName + " (Placeholder: executing LP commands).");
-            // Dispatch commands from the console using Bukkit.dispatchCommand:
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.firstuse");
 
-            return true;
-        } else if (!player.hasPermission("chestsort.use") && player.hasPermission("chestsort.firstuse")){
-            if (args.length >= 2) {
-                player.sendMessage(MiniMessage.miniMessage().deserialize(
-                        "<#F62525><bold>ChestSort</bold><red> You need to toggle Chest Sorting in able to toggle its abilities! <white>Try <click:run_command:\"/chestsort toggle\"><hover:show_text:\"<gold>Click to toggle ChestSorting!</gold>\"><gold>/chestort toggle</gold></hover></click><white>."
-                ));
+
+            // Step 2: Run logic for No arguments (/chestsort)
+        } else if (args.length == 0) {
+
+            if (!player.hasPermission("chestsort.use") && !player.hasPermission("chestsort.firstuse")) {
+
+                // First time running command.
+
+                // Dispatch commands from the console using Bukkit.dispatchCommand:
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.firstuse true");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true");
+                books.openBook(player, "chestsortsettingstrue");
+                return true;
+
+
+            } else if (!player.hasPermission("chestsort.use") && player.hasPermission("chestsort.firstuse")) {
+
+                books.openBook(player, "chestsortsettingsfalse");
+
+                return true;
+
+            } else if (player.hasPermission("chestsort.use") && player.hasPermission("chestsort.firstuse")) {
+
+                books.openBook(player, "chestsortsettingstrue");
+                return true;
+
+            } else {
+
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.firstuse true");
+                books.openBook(player, "chestsortsettingstrue");
+                return true;
+
+            }
+
+            // Step 3: Run logic for (/chestsort toggle <type>)
+        } else if (args[0].equalsIgnoreCase("toggle")) {
+
+            // Step 4: Run logic for only (/chestsort toggle)
+            if (args.length == 1) {
+
+                if (player.hasPermission("chestsort.use")) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use false");
+                    player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>ChestSort </bold></gold><gray>You have toggled automatic sorting <color:#ff3300>off</color:#ff3300>!</gray>"));
+
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true");
+                    player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>ChestSort </bold></gold><gray>You have toggled automatic sorting <green>on</green>!</gray>"));
+                }
+
+            } else if (args[1].equals("true")) {
+
+                if (player.hasPermission("chestsort.use")) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use false");
+                    books.openBook(player, "chestsortsettingsfalse");
+
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true");
+                    books.openBook(player, "chestsortsettingstrue");
+                }
+
+            // Step 5: Run logic for (/chestsort toggle "type")
+            } else {
+
+                String subCommand = args[1].toLowerCase();
+                toggleChestSortHotkey(player, playerName, subCommand);
+
             }
             return true;
-        }
 
 
+            // Step 6: Run logic for (/chestsort hotkeys)
+        } else if (args[0].equalsIgnoreCase("hotkeys")) {
 
-        // Check if there are any arguments
-        if (args.length > 0) {
-            String playerName = player.getName();
-            // Check for the "toggle" subcommand
-            if (args[0].equalsIgnoreCase("toggle")) {
-                // If only "toggle" is present, leave a placeholder for future toggle logic
-                if (args.length == 1) {
-                    player.sendMessage("Toggling ChestSort. (Placeholder for future logic)");
-                    if (player.hasPermission("chestsort.use")) {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use false");
-                    } else {
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true");
-                    }
-                    return true;
+            // If only "toggle" is present, leave a placeholder for future toggle logic
+            boolean doubleclick = player.hasPermission("chestsort.hotkey.doubleclick");
+            boolean shiftclick = player.hasPermission("chestsort.hotkey.shiftclick");
+            boolean middleclick = player.hasPermission("chestsort.hotkey.middleclick");
+            boolean shiftrightclick = player.hasPermission("chestsort.hotkey.shiftrightclick");
+
+            // Step 4: Run logic for only (/chestsort hotkeys)
+            if (args.length == 1) {
+
+                books.openBook(player, "chestsorthotkeys" + doubleclick + shiftclick + middleclick + shiftrightclick);
+
+                // Step 5: Run logic for (/chestsort hotkeys "type")
+            } else {
+
+                String subCommand = args[1].toLowerCase();
+                boolean toogled = toggleChestSortHotkey(player, playerName, subCommand);
+
+                switch (subCommand) {
+                    case "doubleclick":
+                        books.openBook(player, "chestsorthotkeys" + toogled + shiftclick + middleclick + shiftrightclick);
+                        break;
+                    case "shiftclick":
+                        books.openBook(player, "chestsorthotkeys" + doubleclick + toogled + middleclick + shiftrightclick);
+                        break;
+                    case "middleclick":
+                        books.openBook(player, "chestsorthotkeys" + doubleclick + shiftclick + toogled + shiftrightclick);
+                        break;
+                    case "shiftrightclick":
+                        books.openBook(player, "chestsorthotkeys" + doubleclick + shiftclick + middleclick + toogled);
+                        break;
+                    default:
+                        player.sendMessage("Unknown subcommand for toggle.");
+                        break;
                 }
-                // Check for subsub commands:
-                if (args.length >= 2) {
-                    String subCommand = args[1].toLowerCase();
-                    switch (subCommand) {
-                        case "doubleclick":
-                            // Placeholder for "/chestsort toggle DoubleClick" logic
-                            player.sendMessage("DoubleClick toggle executed. (Placeholder for future logic)");
-                            if (player.hasPermission("chestsort.hotkey.doubleclick")) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick false");
-                            } else {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick true");
-                            }
-                            break;
-                        case "shiftclick":
-                            // Placeholder for "/chestsort toggle ShiftClick" logic
-                            player.sendMessage("ShiftClick toggle executed. (Placeholder for future logic)");
-                            if (player.hasPermission("chestsort.hotkey.shiftclick")) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
-                            } else {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick true");
-                            }
-                            break;
-                        case "middleclick":
-                            // Placeholder for "/chestsort toggle MiddleClick" logic
-                            player.sendMessage("MiddleClick toggle executed. (Placeholder for future logic)");
-                            if (player.hasPermission("chestsort.hotkey.middleclick")) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
-                            } else {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick true");
-                            }
-                            break;
-                        case "shiftrightclick":
-                            // Placeholder for "/chestsort toggle ShiftRightClick" logic
-                            player.sendMessage("ShiftRightClick toggle executed. (Placeholder for future logic)");
-                            if (player.hasPermission("chestsort.hotkey.shiftrightclick")) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
-                            } else {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick true");
-                            }
-                            break;
-                        default:
-                            player.sendMessage("Unknown subcommand for toggle.");
-                            break;
-                    }
-                    return true;
-                }
+
             }
+            return true;
         } else {
-            // No arguments provided:
-            HelpBooks books = BMEssentials.getInstance().getBooks();
-            if (player.hasPermission("chestsort.use")) {
-                books.openBook(player, "chestsortsettingsEnabled");
-            } else {
-                books.openBook(player, "chestsortsettingsDisabled");
-            }
+            // error CS101
+            player.sendMessage("Report this to SleazLee. Error CS101");
             return true;
         }
-        return false;
+
     }
 
     /**
@@ -152,6 +183,51 @@ public class ChestSortCommand implements CommandExecutor {
         return player.hasPermission(permission);
     }
 
+
+    public boolean toggleChestSortHotkey(Player player, String playerName, String subCommand) {
+        switch (subCommand) {
+            case "doubleclick":
+                // Placeholder for "/chestsort toggle DoubleClick" logic
+                if (player.hasPermission("chestsort.hotkey.doubleclick")) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick false");
+                    return false;
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick true");
+                    return true;
+                }
+            case "shiftclick":
+                // Placeholder for "/chestsort toggle ShiftClick" logic
+                if (player.hasPermission("chestsort.hotkey.shiftclick")) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
+                    return false;
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick true");
+                    return true;
+                }
+            case "middleclick":
+                // Placeholder for "/chestsort toggle MiddleClick" logic
+                if (player.hasPermission("chestsort.hotkey.middleclick")) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
+                    return false;
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick true");
+                    return true;
+                }
+            case "shiftrightclick":
+                // Placeholder for "/chestsort toggle ShiftRightClick" logic
+                if (player.hasPermission("chestsort.hotkey.shiftrightclick")) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
+                    return false;
+                } else {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick true");
+                    return true;
+                }
+            default:
+                player.sendMessage("Unknown subcommand for toggle.");
+                break;
+        }
+        return false;
+    }
 
 }
 

@@ -21,6 +21,10 @@ public class MovementUtils {
         if (from == null || to == null) {
             return true;
         }
+        if (from.getWorld() != to.getWorld()) {
+            return true;
+        }
+
         double distance = from.distance(to);
         float yawDiff = Math.abs(from.getYaw() - to.getYaw());
         float pitchDiff = Math.abs(from.getPitch() - to.getPitch());

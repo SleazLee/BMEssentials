@@ -8,7 +8,7 @@ folia-supported: true
 
 loadbefore: [Lands, ChestSort]
 depend: [WorldGuard, WorldEdit]
-softdepend: [VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms, Lands]
+softdepend: [VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms, Lands, BlueMap]
 
 commands:
   bme:
@@ -104,12 +104,12 @@ commands:
     usage: /adminvote <player>
 
   map:
-    description: Sends the player a link to the server map.
-    usage: /map
+    description: Toggle your BlueMap visibility
+    usage: /map <toggle|show|hide>
 
   maps:
-    description: Sends the player a link to the server map.
-    usage: /maps
+    description: Toggle your BlueMap visibility
+    usage: /maps <toggle|show|hide>
 
   springsheal:
     description: Heals the player.
