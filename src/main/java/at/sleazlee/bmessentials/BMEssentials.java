@@ -51,6 +51,8 @@ import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
+import at.sleazlee.bmessentials.playerutils.InvseeCommand;
+import at.sleazlee.bmessentials.playerutils.SeenCommand;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -309,6 +311,12 @@ public class BMEssentials extends JavaPlugin {
             // Anvil
             this.getCommand("anvil").setExecutor(new AnvilCommand());
         }
+
+        // Inventory tools
+        InvseeCommand invsee = new InvseeCommand(this);
+        getCommand("invsee").setExecutor(invsee);
+        getServer().getPluginManager().registerEvents(invsee, this);
+        getCommand("seen").setExecutor(new SeenCommand());
 
         // Velocity Tell System
         if (config.getBoolean("Systems.VTell.Enabled")) {
