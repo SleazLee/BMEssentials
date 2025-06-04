@@ -9,86 +9,47 @@
 
 # **BMEssentials**
 
-## >> Overview
-**BMEssentials** is a feature-rich Spigot plugin designed to enhance the BM experience. Developed by **SleazLee**, this plugin aims to be the one-stop solution for the Blockminer network cluster.
+## Overview
+**BMEssentials** is a multi-purpose Spigot plugin designed for the Blockminer network. It bundles many utilities such as teleport systems, economy, rank ups and more into a single plugin.
 
-- **Version**: `2.0`  
-- **API Version**: `1.21`  
-- **Author**: `SleazLee`  
-- **Soft Dependencies**: `HuskTowns, Vault`
+- **Version**: `2.0`
+- **API Version**: `1.21`
+- **Author**: `SleazLee`
+- **Soft Dependencies**: `VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms, Lands, BlueMap`
 
-## >> Features
-### Core Systems
-- Database Manager: Manages MySQL database connections and table creation.
-- HuskHomes API Hook: Integration with HuskHomes plugin.
-- Art: ASCII art displayed on startup.
+## Major Features
+- **Player Data & Economy** – MySQL backed data storage with PlaceholderAPI expansions and Vault compatible economy commands (`/pay`, `/bal`, `/eco`).
+- **Rank Up System** – Configurable requirements for progressing through ranks.
+- **TPShop** – Simple teleport shop command with tab completion.
+- **Vote & Vot Systems** – Cross-server vote handling and in‑game weather/time votes.
+- **Wild Teleport** – Safe random teleportation around the world.
+- **Spawn Systems** – Healing springs, wishing well, obelisk and first join messages.
+- **Common Commands** – `/playtime`, `/lag`, `/bmdiscord` and server restart utilities.
+- **Virtual Containers** – Commands for opening crafting tables, anvils, ender chests and more.
+- **Inventory Tools** – `/invsee` and `/seen` for managing player inventories.
+- **VTell** – Network wide messaging using plugin channels.
+- **BlueMap Integration** – `/map` and `/maps` to toggle map visibility.
+- **Punishments** – Ban and mute commands with BungeeCord support.
+- **Donations** – Handles donation packages across the network.
+- **Trophy Room** – Collectible trophies with menu GUI and placeholders.
+- **Command Queue** – Execute queued commands from a YAML file.
+- **Help Books & Text** – In‑game books and help commands for players.
+- **Purpur Enhancements** – QoL tweaks like crop trample prevention and mob spawner silk touch.
+- **AFK System** – Detects AFK players and provides PlaceholderAPI placeholders.
+- **Lands TP Fix** – Improves teleport handling when using HuskHomes and Lands.
+- **AES Message Encryption** – Secure plugin messaging using an AES key.
 
-### Functional Systems
-- TPShop: Teleportation shop with tab completion.
-- Vote System: Admin voting system with tab completion.
-- Wild: Random teleportation system with no fall damage.
-- Spawn Systems: Features like first join messages, healing springs, and more.
-- Common Commands: Commands like playtime, lag, and Discord info.
-- Trash System: Commands for trash and disposal.
-- VTell: Cross-server messaging system.
-- Maps: Map-related commands with tab completion.
-- Punishments: Ban and mute systems with BungeeCord support.
-- Donations: Donation-related commands.
+## Installation
+1. Build the plugin with Maven or download the compiled jar.
+2. Place the jar in your server's `plugins` folder.
+3. Start or reload the server to generate the default configuration.
+4. Edit `config.yml` to enable or disable the systems you want.
 
-## >> Commands
-### TPShop
-- `/tpshop <###>`: Sends the player to a shop.
+## Usage
+Most features can be toggled in `config.yml`. Use `/bme` to reload the plugin after changing the configuration.
 
-### Vote System
-- `/adminvote <player>`: Sends a test vote.
+## Contributing
+Pull requests and issues are welcome! Feel free to contribute new features or improvements.
 
-### Wild System
-- `/wild`, `/rtp`, `/randomtp`, `/randomteleport`: Random teleportation.
-
-### Spawn Systems
-- `/firstjoinmessage`: Repeating action bar messages.
-- `/springsheal`: Heals the player.
-- `/vot`, `/voting`: Spawn-only vote messages.
-- `/mcmmobonus <player>`: Gives an mcMMO boost.
-- `/diamondcatch <player>`: Gives random diamonds.
-
-### Common Commands
-- `/playtime`: Shows playtime.
-- `/lag`: Displays performance info.
-- `/bmdiscord`: Provides a Discord link.
-
-### Trash System
-- `/trash`, `/disposal`: Opens a trash chest.
-
-### Velocity Tell
-- `/vtell`: Sends a message to all players on the network.
-
-### Maps
-- `/map`, `/maps`: Server map link.
-
-### Punishments
-- `/autoban <player>`: Bans for hacking.
-- `/unmute <player>`: Unmutes a player.
-
-### Donations
-- `/donation <player> <package>`: Gives a donation package.
-
-### Town Bonus
-- `/bmlands`: Admin command for lands.
-
-### Core
-- `/bme`: Reloads the plugin.
-
-## >> Installation
-1. Download the latest release.
-2. Place it in your `plugins` folder.
-3. Restart your server.
-
-## >> Usage
-Use `/bme` for reloading the plugin and other functionalities.
-
-## >> Contributing
-Feel free to open an issue or submit a pull request.
-
-## >> License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for full details.
