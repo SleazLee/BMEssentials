@@ -263,5 +263,5 @@ permissions:
     default: op
 
   bm.invsee.use:
-    description: Allows the player to open other players' inventories.
+    description: Allows the player to open other players inventories.
     default: op
