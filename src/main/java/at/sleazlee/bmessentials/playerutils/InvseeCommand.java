@@ -99,7 +99,7 @@ public class InvseeCommand implements CommandExecutor, Listener {
                 return inv;
             }
             NBTFile nbt = new NBTFile(dataFile);
-            List<NBTCompound> list = nbt.getCompoundList("Inventory");
+            NBTCompoundList list = nbt.getCompoundList("Inventory");
             for (int i = 0; i < list.size(); i++) {
                 NBTCompound tag = list.get(i);
                 int slot = tag.getByte("Slot");
