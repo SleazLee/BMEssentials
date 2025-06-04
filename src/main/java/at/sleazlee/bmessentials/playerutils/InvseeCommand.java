@@ -1,7 +1,8 @@
 package at.sleazlee.bmessentials.playerutils;
 
-import de.tr7zw.nbtapi.NBTFile;
-import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTFile;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.nbtapi.NBTCompoundList;
 import de.tr7zw.nbtapi.NBTListCompound;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -98,8 +99,9 @@ public class InvseeCommand implements CommandExecutor, Listener {
                 return inv;
             }
             NBTFile nbt = new NBTFile(dataFile);
-            NBTCompoundList list = nbt.getCompoundList("Inventory");
-            for (NBTListCompound tag : list) {
+            List<NBTCompound> list = nbt.getCompoundList("Inventory");
+            for (int i = 0; i < list.size(); i++) {
+                NBTCompound tag = list.get(i);
                 int slot = tag.getByte("Slot");
                 ItemStack item = NBTItem.convertNBTtoItem(tag);
                 if (slot >= 0 && slot < inv.getSize()) {
