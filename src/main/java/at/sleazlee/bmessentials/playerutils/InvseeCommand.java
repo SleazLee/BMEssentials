@@ -1,8 +1,10 @@
 package at.sleazlee.bmessentials.playerutils;
 
-import de.tr7zw.nbtapi.NBTCompound;
-import de.tr7zw.nbtapi.NBTFile;
-import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTFile;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.nbtapi.NBTCompoundList;
+import de.tr7zw.nbtapi.NBTListCompound;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -97,10 +99,10 @@ public class InvseeCommand implements CommandExecutor, Listener {
                 return inv;
             }
             NBTFile nbt = new NBTFile(dataFile);
-            List<NBTCompound> list = nbt.getCompoundList("Inventory");
-            for (NBTCompound tag : list) {
+            NBTCompoundList list = nbt.getCompoundList("Inventory");
+            for (NBTListCompound tag : list) {
                 int slot = tag.getByte("Slot");
-                ItemStack item = NBTItem.convertNBTCompoundToItemStack(tag);
+                ItemStack item = NBTItem.convertNBTtoItem(tag);
                 if (slot >= 0 && slot < inv.getSize()) {
                     inv.setItem(slot, item);
                 }
@@ -116,16 +118,16 @@ public class InvseeCommand implements CommandExecutor, Listener {
             File dataFile = new File(Bukkit.getWorlds().get(0).getWorldFolder(), "playerdata/" + off.getUniqueId() + ".dat");
             if (!dataFile.exists()) return;
             NBTFile nbt = new NBTFile(dataFile);
-            List<NBTCompound> list = new ArrayList<>();
+            NBTCompoundList list = nbt.getCompoundList("Inventory");
+            list.clear();
             for (int i = 0; i < inv.getSize(); i++) {
                 ItemStack item = inv.getItem(i);
                 if (item != null && item.getType().isItem()) {
-                    NBTCompound tag = NBTItem.convertItemtoNBT(item).getCompound();
+                    NBTListCompound tag = list.addCompound();
+                    tag.mergeCompound(NBTItem.convertItemtoNBT(item));
                     tag.setByte("Slot", (byte) i);
-                    list.add(tag);
                 }
             }
-            nbt.setCompoundList("Inventory", list);
             nbt.save();
         } catch (Exception e) {
             plugin.getLogger().warning("Failed to save inventory for " + off.getName());
