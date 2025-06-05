@@ -111,6 +111,8 @@ public class AfkManager {
                         String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
                         Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
                     }
+                    // Reset broadcast flag for the next AFK session.
+                    activity.setBroadcastedAfkMessage(false);
                 }
             } else {
                 // No significant movement detected. Check if the inactivity threshold has been reached.
@@ -118,6 +120,9 @@ public class AfkManager {
                     activity.setAfk(true);
                     // Notify the vote system that the player is now AFK.
                     VoteManager.getInstance().handlePlayerAfk(player);
+                    // Auto AFK should not trigger a "no longer AFK" broadcast unless the player
+                    // manually set themselves AFK again.
+                    activity.setBroadcastedAfkMessage(false);
                 }
             }
         }
@@ -172,6 +177,7 @@ public class AfkManager {
         activity.setLastLocation(player.getLocation());  // optional, if you still want to track location
         if (activity.isAfk()) {
             activity.setAfk(false);
+            activity.setBroadcastedAfkMessage(false);
         }
     }
 

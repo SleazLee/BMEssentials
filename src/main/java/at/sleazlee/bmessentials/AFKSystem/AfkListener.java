@@ -45,8 +45,8 @@ public class AfkListener implements Listener {
             if (!alreadyBroadcast) {
                 String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
                 Bukkit.broadcast(miniMessage.deserialize(message));
-                // Mark as broadcasted to prevent future duplicate messages.
-                AfkManager.getInstance().setBroadcastedAfk(player, true);
+                // Reset flag so future automatic AFK sessions don't broadcast.
+                AfkManager.getInstance().setBroadcastedAfk(player, false);
             }
         }
     }
@@ -82,8 +82,8 @@ public class AfkListener implements Listener {
             if (!alreadyBroadcast) {
                 String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
                 Bukkit.broadcast(miniMessage.deserialize(message));
-                // Mark as broadcasted to prevent future duplicate messages.
-                AfkManager.getInstance().setBroadcastedAfk(player, true);
+                // Reset flag so future automatic AFK sessions don't broadcast.
+                AfkManager.getInstance().setBroadcastedAfk(player, false);
             }
         }
     }

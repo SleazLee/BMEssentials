@@ -41,8 +41,14 @@ public class AfkCommand implements CommandExecutor {
 
             Bukkit.broadcast(MiniMessage.miniMessage().deserialize(message));
             AfkManager.getInstance().updateLastAfkMessageTime(player);
-            AfkManager.getInstance().setBroadcastedAfk(player, true);
+        }
+
+        // Manage broadcast flag for future automatic messages.
+        if (newState) {
+            // Player entered AFK via command.
+            AfkManager.getInstance().setBroadcastedAfk(player, canSendMessage);
         } else {
+            // Player exited AFK via command.
             AfkManager.getInstance().setBroadcastedAfk(player, false);
         }
 
