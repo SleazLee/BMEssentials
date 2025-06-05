@@ -52,6 +52,7 @@ import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
 import at.sleazlee.bmessentials.playerutils.InvseeCommand;
+import at.sleazlee.bmessentials.playerutils.InvseeTabCompleter;
 import at.sleazlee.bmessentials.playerutils.SeenCommand;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -315,6 +316,7 @@ public class BMEssentials extends JavaPlugin {
         // Inventory tools
         InvseeCommand invsee = new InvseeCommand(this);
         getCommand("invsee").setExecutor(invsee);
+        getCommand("invsee").setTabCompleter(new InvseeTabCompleter());
         getServer().getPluginManager().registerEvents(invsee, this);
         getCommand("seen").setExecutor(new SeenCommand());
 
