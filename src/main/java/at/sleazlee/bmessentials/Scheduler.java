@@ -4,6 +4,7 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
+import java.util.concurrent.TimeUnit;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -82,6 +83,57 @@ public final class Scheduler {
                     .runAtFixedRate(BMEssentials.getInstance(), t -> runnable.run(), delayTicks < 1 ? 1 : delayTicks, periodTicks));
         else
             return new Task(Bukkit.getScheduler().runTaskTimer(BMEssentials.getInstance(), runnable, delayTicks, periodTicks));
+    }
+
+    // -------------------------------------------------------------------
+    // ASYNC SCHEDULING METHODS
+    // These methods should be used for non-Bukkit operations such as
+    // database access or other blocking work.
+    // -------------------------------------------------------------------
+
+    /**
+     * Runs a task asynchronously.
+     *
+     * @param runnable The task to run.
+     */
+    public static void runAsync(Runnable runnable) {
+        if (isFolia)
+            Bukkit.getAsyncScheduler().runNow(BMEssentials.getInstance(), t -> runnable.run());
+        else
+            Bukkit.getScheduler().runTaskAsynchronously(BMEssentials.getInstance(), runnable);
+    }
+
+    /**
+     * Runs a task asynchronously after a delay.
+     *
+     * @param runnable   The task to run.
+     * @param delayTicks The delay in ticks before running the task.
+     * @return The scheduled task, or a dummy Task if executed immediately.
+     */
+    public static Task runAsyncLater(Runnable runnable, long delayTicks) {
+        if (delayTicks <= 0) {
+            runAsync(runnable);
+            return new Task(null);
+        }
+        if (isFolia)
+            return new Task(Bukkit.getAsyncScheduler().runDelayed(BMEssentials.getInstance(), t -> runnable.run(), delayTicks * 50L, TimeUnit.MILLISECONDS));
+        else
+            return new Task(Bukkit.getScheduler().runTaskLaterAsynchronously(BMEssentials.getInstance(), runnable, delayTicks));
+    }
+
+    /**
+     * Runs a repeating asynchronous task.
+     *
+     * @param runnable    The task to run.
+     * @param delayTicks  The initial delay in ticks before running the task.
+     * @param periodTicks The period in ticks between successive runs.
+     * @return The scheduled task.
+     */
+    public static Task runAsyncTimer(Runnable runnable, long delayTicks, long periodTicks) {
+        if (isFolia)
+            return new Task(Bukkit.getAsyncScheduler().runAtFixedRate(BMEssentials.getInstance(), t -> runnable.run(), (delayTicks < 1 ? 1 : delayTicks) * 50L, periodTicks * 50L, TimeUnit.MILLISECONDS));
+        else
+            return new Task(Bukkit.getScheduler().runTaskTimerAsynchronously(BMEssentials.getInstance(), runnable, delayTicks, periodTicks));
     }
 
     // -------------------------------------------------------------------
