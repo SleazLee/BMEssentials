@@ -38,7 +38,7 @@ public class DatabaseManager {
 	}
 
 	public static void asyncSetString(BMEssentials plugin, String tableName, String keyColumnName, String uuidValue, String targetColumn, String value) {
-		Scheduler.run(() -> {
+                Scheduler.runAsync(() -> {
 			try (Connection connection = getConnection();
 				 PreparedStatement statement = connection.prepareStatement(
 						 "INSERT INTO " + tableName + " (" + keyColumnName + ", " + targetColumn + ") VALUES (?, ?) ON DUPLICATE KEY UPDATE " + targetColumn + " = ?")) {
@@ -53,7 +53,7 @@ public class DatabaseManager {
 	}
 
 	public static void asyncGetString(BMEssentials plugin, String tableName, String keyColumnName, String uuidValue, String targetColumn, Consumer<String> callback) {
-		Scheduler.run(() -> {
+                Scheduler.runAsync(() -> {
 			try (Connection connection = getConnection();
 				 PreparedStatement statement = connection.prepareStatement(
 						 "SELECT " + targetColumn + " FROM " + tableName + " WHERE " + keyColumnName + " = ?")) {
