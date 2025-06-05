@@ -1,5 +1,13 @@
 WishingWell:
   prizes:
+    #    - name: "fastmelon" (The name you setup in /si save <name>)
+    #      type: "MELON_SLICE" (The actual minecraft item name)
+    #      amount: 32 (The server picks a random ammount from 1 to this number)
+    #      rarity: 10 (The higher the more rare)
+    - name: "fastmelon"
+      type: "MELON_SLICE"
+      amount: 32
+      rarity: 20
     - name: "Lead"
       type: "LEAD"
       amount: 16
@@ -255,6 +263,10 @@ WishingWell:
 
 Obelisk:
   prizes:
+    - name: "cyanidepill"
+      type: "gold_nugget"
+      amount: 2
+      rarity: 65
     - name: "TNT"
       type: "TNT"
       amount: 32

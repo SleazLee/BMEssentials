@@ -8,11 +8,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-public class BungeeMutePlayer implements PluginMessageListener {
+public class VelocityMutePlayer implements PluginMessageListener {
 
 	private final BMEssentials plugin;
 
-	public BungeeMutePlayer(BMEssentials plugin) {
+	public VelocityMutePlayer(BMEssentials plugin) {
 		this.plugin = plugin;
 	}
 
