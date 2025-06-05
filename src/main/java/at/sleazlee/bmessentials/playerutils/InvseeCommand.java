@@ -103,6 +103,7 @@ public class InvseeCommand implements CommandExecutor, Listener {
             for (int i = 0; i < list.size(); i++) {
                 NBTCompound tag = list.get(i);
                 int slot = tag.getByte("Slot");
+                tag.removeKey("Slot");
                 ItemStack item = NBTItem.convertNBTtoItem(tag);
                 if (slot >= 0 && slot < inv.getSize()) {
                     inv.setItem(slot, item);
