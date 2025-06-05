@@ -42,9 +42,8 @@ public class AfkManager {
     }
 
     /**
-     * Updates the player's activity based on their current location.
-     * This method uses a combined check of position and orientation (yaw/pitch)
-     * to determine if the movement is significant.
+     * Movement is considered significant only when the player's position changes
+     * by a threshold amount; head rotation is ignored.
      *
      * @param player      the player.
      * @param newLocation the player's current location.
