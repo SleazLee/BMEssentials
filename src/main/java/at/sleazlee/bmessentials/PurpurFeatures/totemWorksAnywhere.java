@@ -3,7 +3,12 @@ package at.sleazlee.bmessentials.PurpurFeatures;
 import at.sleazlee.bmessentials.wild.NoFallDamage; // <-- Make sure this import is correct
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -84,5 +89,18 @@ public class totemWorksAnywhere implements Listener {
 
         // Totem use sound
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
+
+        // Small firework effect at the player's location for visual feedback
+        Firework firework = player.getWorld().spawn(player.getLocation(), Firework.class);
+        FireworkMeta meta = firework.getFireworkMeta();
+        meta.addEffect(FireworkEffect.builder()
+                .withColor(Color.LIME)
+                .with(FireworkEffect.Type.BURST)
+                .flicker(true)
+                .trail(true)
+                .build());
+        meta.setPower(0);
+        firework.setFireworkMeta(meta);
+        firework.detonate();
     }
 }
