@@ -28,7 +28,7 @@ public class SeenCommand implements CommandExecutor {
 
         String name = args[0];
         if (HIDDEN.contains(name)) {
-            sender.sendMessage(mm.deserialize("<red>This player is untraceable.</red>"));
+            sender.sendMessage(mm.deserialize("<color:#ff3300><bold>Seen</bold> <red>This player is untraceable.</red>"));
             return true;
         }
 

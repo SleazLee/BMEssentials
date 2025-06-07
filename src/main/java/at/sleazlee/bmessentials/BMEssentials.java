@@ -31,6 +31,9 @@ import at.sleazlee.bmessentials.PlayerData.BMEChatPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
 import at.sleazlee.bmessentials.PlayerData.PlayerJoinListener;
+import at.sleazlee.bmessentials.Punish.AutoBanCommand;
+import at.sleazlee.bmessentials.Punish.UnMuteCommand;
+import at.sleazlee.bmessentials.Punish.VelocityMutePlayer;
 import at.sleazlee.bmessentials.PurpurFeatures.*;
 import at.sleazlee.bmessentials.SpawnSystems.FirstJoinCommand;
 import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
@@ -319,6 +322,19 @@ public class BMEssentials extends JavaPlugin {
         getCommand("invsee").setTabCompleter(new InvseeTabCompleter());
         getServer().getPluginManager().registerEvents(invsee, this);
         getCommand("seen").setExecutor(new SeenCommand());
+
+        // Punishment System
+        if (config.getBoolean("Systems.Punishments.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Punishment System");
+
+            // Register the commands used for punishing players
+            getCommand("autoban").setExecutor(new AutoBanCommand(this));
+            getCommand("unmute").setExecutor(new UnMuteCommand());
+
+            // Plugin messaging: send autoban requests to Velocity and receive mute commands
+            getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:autoban");
+            getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:mute", new VelocityMutePlayer(this));
+        }
 
         // Velocity Tell System
         if (config.getBoolean("Systems.VTell.Enabled")) {
