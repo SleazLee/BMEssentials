@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.Punish;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.crypto.AESEncryptor;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
@@ -10,11 +11,13 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 public class VelocityMutePlayer implements PluginMessageListener {
 
-	private final BMEssentials plugin;
+    private final BMEssentials plugin;
+    private final AESEncryptor aes;
 
-	public VelocityMutePlayer(BMEssentials plugin) {
-		this.plugin = plugin;
-	}
+    public VelocityMutePlayer(BMEssentials plugin) {
+            this.plugin = plugin;
+            this.aes = plugin.getAes();
+    }
 
 	@Override
 	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
@@ -22,8 +25,16 @@ public class VelocityMutePlayer implements PluginMessageListener {
 			return;
 		}
 
-		ByteArrayDataInput in = ByteStreams.newDataInput(message);
-		String muteCommandBuilder = in.readUTF();
+                byte[] plain;
+                try {
+                        plain = aes.decrypt(message);
+                } catch (Exception e) {
+                        plugin.getLogger().warning("Failed to decrypt mute payload from " + player.getName());
+                        return;
+                }
+
+                ByteArrayDataInput in = ByteStreams.newDataInput(plain);
+                String muteCommandBuilder = in.readUTF();
 
 		plugin.getLogger().info("Received the message: " + muteCommandBuilder);
 
