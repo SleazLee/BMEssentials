@@ -102,10 +102,14 @@ Systems:
         Name: "spawn"
         Return: "spawn"
 
-      # Add new regions as needed
-      # 3:
-      #   Name: <Region Name>
-      #   Return: <Return Value>
+  # Add new regions as needed
+  # 3:
+  #   Name: <Region Name>
+  #   Return: <Return Value>
+
+  # Enables SimplePortals integration.
+  SimplePortals:
+    Enabled: true
 
   # Enables spawn only systems.
   SpawnSystems:
