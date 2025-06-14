@@ -180,5 +180,16 @@ public class AfkManager {
         }
     }
 
+    /**
+     * Removes all AFK related data for a player. This should be called when the
+     * player leaves the server to ensure stale AFK state isn't retained.
+     *
+     * @param player the player to remove
+     */
+    public void removePlayer(Player player) {
+        activityMap.remove(player.getUniqueId());
+        lastAfkCommandTime.remove(player.getUniqueId());
+    }
+
 
 }
