@@ -36,7 +36,7 @@ import at.sleazlee.bmessentials.Punish.UnMuteCommand;
 import at.sleazlee.bmessentials.Punish.VelocityMutePlayer;
 import at.sleazlee.bmessentials.PurpurFeatures.*;
 import at.sleazlee.bmessentials.SpawnSystems.FirstJoinCommand;
-import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
+import at.sleazlee.bmessentials.SimplePortals.SimplePortals;
 import at.sleazlee.bmessentials.VTell.VTellCommand;
 import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
@@ -255,13 +255,18 @@ public class BMEssentials extends JavaPlugin {
             getCommand("version").setExecutor(new ChunkVersion(wildData, this));
         }
 
+        // SimplePortals System
+        if (config.getBoolean("Systems.SimplePortals.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled SimplePortals");
+            new SimplePortals(this);
+        }
+
         // Spawn Systems
         if (config.getBoolean("Systems.SpawnSystems.Enabled")) {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Spawn Systems");
 
             this.getCommand("firstjoinmessage").setExecutor(new FirstJoinCommand(this));
-            this.getCommand("springsheal").setExecutor(new HealCommand(this));
 
             AltarManager altarManager = new AltarManager(this);
             getServer().getPluginManager().registerEvents(altarManager, this);

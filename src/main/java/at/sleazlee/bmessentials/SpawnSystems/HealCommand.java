@@ -1,13 +1,9 @@
 package at.sleazlee.bmessentials.SpawnSystems;
 
-import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -15,9 +11,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class HealCommand implements CommandExecutor {
-
-	private final BMEssentials plugin;
+public class HealCommand {
 
 	// Existing cooldown map for 90-minute cooldown
 	private final Map<UUID, Long> mainCooldowns = new ConcurrentHashMap<>();
@@ -27,31 +21,13 @@ public class HealCommand implements CommandExecutor {
 	private final Map<UUID, Long> commandCooldowns = new ConcurrentHashMap<>();
 	private final long commandCooldownDuration = 10 * 1000; // 10 seconds in milliseconds
 
-	private final Random random = new Random();
+        private final Random random = new Random();
 
-	public HealCommand(BMEssentials plugin) {
-		this.plugin = plugin;
-	}
+        public HealCommand() {
+                // empty constructor
+        }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		// Ensure the command is executed with at least one argument
-		if (args.length > 0) {
-			String playerName = args[0];
-			Player player = Bukkit.getPlayer(playerName);
-
-			if (player != null && sender.hasPermission("bmessentials.heal")) {
-				checkAndExecute(player);
-			} else {
-				sender.sendMessage("§cPlayer not found, not online, or you lack permissions.");
-			}
-		} else {
-			sender.sendMessage("§cUsage: /" + label + " <player>");
-		}
-		return true;
-	}
-
-	private void checkAndExecute(Player player) {
+        public void checkAndExecute(Player player) {
 		UUID playerUUID = player.getUniqueId();
 		long currentTime = System.currentTimeMillis();
 
