@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 /**
  * Listener to detect player activity events and update AFK status.
@@ -41,8 +42,8 @@ public class AfkListener implements Listener {
             AfkManager.getInstance().forceActive(player);
             VoteManager.getInstance().handlePlayerJoin(player);
 
-            // Broadcast "no longer AFK" message only once per AFK session.
-            if (!alreadyBroadcast) {
+            // Broadcast "no longer AFK" message only if an "AFK" message was sent.
+            if (alreadyBroadcast) {
                 String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
                 Bukkit.broadcast(miniMessage.deserialize(message));
                 // Reset flag so future automatic AFK sessions don't broadcast.
@@ -78,13 +79,23 @@ public class AfkListener implements Listener {
             AfkManager.getInstance().forceActive(player);
             VoteManager.getInstance().handlePlayerJoin(player);
 
-            // Broadcast "no longer AFK" message only once per AFK session.
-            if (!alreadyBroadcast) {
+            // Broadcast "no longer AFK" message only if an "AFK" message was sent.
+            if (alreadyBroadcast) {
                 String message = "<italic><gray>" + player.getName() + " is no longer AFK</gray></italic>";
                 Bukkit.broadcast(miniMessage.deserialize(message));
                 // Reset flag so future automatic AFK sessions don't broadcast.
                 AfkManager.getInstance().setBroadcastedAfk(player, false);
             }
         }
+    }
+
+    /**
+     * Cleans up AFK data when a player leaves the server.
+     *
+     * @param event the player quit event
+     */
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        AfkManager.getInstance().removePlayer(event.getPlayer());
     }
 }
