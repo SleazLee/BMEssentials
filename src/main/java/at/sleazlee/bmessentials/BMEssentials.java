@@ -54,6 +54,7 @@ import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.votesystem.BMVote;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
+import at.sleazlee.bmessentials.SimplePortals.*;
 import at.sleazlee.bmessentials.playerutils.InvseeCommand;
 import at.sleazlee.bmessentials.playerutils.InvseeTabCompleter;
 import at.sleazlee.bmessentials.playerutils.SeenCommand;
@@ -106,6 +107,10 @@ public class BMEssentials extends JavaPlugin {
 
     /** The instance of the Plugin Message Encryption Code. */
     private AESEncryptor aes;
+
+    // Instances used by the SimplePortals system
+    private WildCommand wildCommandInstance;
+    private HealCommand healCommandInstance;
 
     /**
      * Gets the instance of the main plugin class.
@@ -244,11 +249,11 @@ public class BMEssentials extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new NoFallDamage(), this);
 
             // Instantiate the command executor and tab completer, passing the WildData instance.
-            WildCommand wildCommand = new WildCommand(wildData, this);
+            wildCommandInstance = new WildCommand(wildData, this);
             WildTabCompleter wildTabCompleter = new WildTabCompleter(wildData);
 
             // Register the /wild command executor and tab completer.
-            this.getCommand("wild").setExecutor(wildCommand);
+            this.getCommand("wild").setExecutor(wildCommandInstance);
             this.getCommand("wild").setTabCompleter(wildTabCompleter);
 
             // Register the /version command
@@ -261,13 +266,23 @@ public class BMEssentials extends JavaPlugin {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Spawn Systems");
 
             this.getCommand("firstjoinmessage").setExecutor(new FirstJoinCommand(this));
-            this.getCommand("springsheal").setExecutor(new HealCommand(this));
+            healCommandInstance = new HealCommand(this);
 
             AltarManager altarManager = new AltarManager(this);
             getServer().getPluginManager().registerEvents(altarManager, this);
             HealingSprings.startHealingSpringsAmbient(this);
             WishingWell.startWishingWellAmbient(this);
             Obelisk.startObeliskAmbient(this);
+        }
+
+        // SimplePortals System
+        if (config.getBoolean("Systems.SimplePortals.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled SimplePortals");
+            if (wildCommandInstance != null && healCommandInstance != null) {
+                new SimplePortals(this, wildCommandInstance, healCommandInstance);
+            } else {
+                getLogger().warning("SimplePortals could not be initialized because Wild or SpawnSystems is disabled.");
+            }
         }
 
         // Common Commands
