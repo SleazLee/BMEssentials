@@ -111,7 +111,6 @@ commands:
     description: Toggle your BlueMap visibility
     usage: /maps <toggle|show|hide>
 
-
   playtime:
     description: Shows the player their current Playtime.
     usage: /playtime
