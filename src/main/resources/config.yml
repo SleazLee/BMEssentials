@@ -235,3 +235,7 @@ Systems:
   # Enables the Lands TP Fix System
   LandsTPFix:
     Enabled: true
+
+  # Enables the SimplePortals System
+  SimplePortals:
+    Enabled: true
