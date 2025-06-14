@@ -111,9 +111,6 @@ commands:
     description: Toggle your BlueMap visibility
     usage: /maps <toggle|show|hide>
 
-  springsheal:
-    description: Heals the player.
-    usage: /springsheal
 
 
   playtime:
