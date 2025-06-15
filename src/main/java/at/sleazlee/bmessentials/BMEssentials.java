@@ -37,6 +37,7 @@ import at.sleazlee.bmessentials.Punish.VelocityMutePlayer;
 import at.sleazlee.bmessentials.PurpurFeatures.*;
 import at.sleazlee.bmessentials.SpawnSystems.FirstJoinCommand;
 import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
+import at.sleazlee.bmessentials.SimplePortals.SimplePortals;
 import at.sleazlee.bmessentials.VTell.VTellCommand;
 import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
@@ -64,6 +65,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 
 import java.nio.file.Path;
 
@@ -107,6 +113,12 @@ public class BMEssentials extends JavaPlugin {
     /** The instance of the Plugin Message Encryption Code. */
     private AESEncryptor aes;
 
+    /** Custom WorldGuard flag for sending players to wild */
+    public static StateFlag SEND_TO_WILD_FLAG;
+
+    /** Custom WorldGuard flag for triggering healing springs */
+    public static StateFlag ENTERED_HEALING_SPRINGS_FLAG;
+
     /**
      * Gets the instance of the main plugin class.
      *
@@ -114,6 +126,32 @@ public class BMEssentials extends JavaPlugin {
      */
     public static BMEssentials getInstance() {
         return getPlugin(BMEssentials.class);
+    }
+
+    @Override
+    public void onLoad() {
+        FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+        try {
+            StateFlag flag = new StateFlag("send-to-wild", false);
+            registry.register(flag);
+            SEND_TO_WILD_FLAG = flag;
+        } catch (FlagConflictException e) {
+            Flag<?> existing = registry.get("send-to-wild");
+            if (existing instanceof StateFlag stateFlag) {
+                SEND_TO_WILD_FLAG = stateFlag;
+            }
+        }
+
+        try {
+            StateFlag flag = new StateFlag("entered-healing-springs", false);
+            registry.register(flag);
+            ENTERED_HEALING_SPRINGS_FLAG = flag;
+        } catch (FlagConflictException e) {
+            Flag<?> existing = registry.get("entered-healing-springs");
+            if (existing instanceof StateFlag stateFlag) {
+                ENTERED_HEALING_SPRINGS_FLAG = stateFlag;
+            }
+        }
     }
 
     /**
@@ -255,13 +293,18 @@ public class BMEssentials extends JavaPlugin {
             getCommand("version").setExecutor(new ChunkVersion(wildData, this));
         }
 
+        // SimplePortals system using WorldGuard regions
+        if (config.getBoolean("Systems.SimplePortals.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled SimplePortals");
+            new SimplePortals(this);
+        }
+
         // Spawn Systems
         if (config.getBoolean("Systems.SpawnSystems.Enabled")) {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Spawn Systems");
 
             this.getCommand("firstjoinmessage").setExecutor(new FirstJoinCommand(this));
-            this.getCommand("springsheal").setExecutor(new HealCommand(this));
 
             AltarManager altarManager = new AltarManager(this);
             getServer().getPluginManager().registerEvents(altarManager, this);
