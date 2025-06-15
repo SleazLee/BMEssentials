@@ -107,6 +107,10 @@ Systems:
       #   Name: <Region Name>
       #   Return: <Return Value>
 
+  # Enables the SimplePortals system.
+  SimplePortals:
+    Enabled: true
+
   # Enables spawn only systems.
   SpawnSystems:
     Enabled: true
