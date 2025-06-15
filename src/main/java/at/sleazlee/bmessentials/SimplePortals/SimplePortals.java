@@ -31,8 +31,7 @@ public class SimplePortals {
         SessionManager manager = WorldGuard.getInstance().getPlatform().getSessionManager();
         manager.registerHandler(new SendToWildHandler.Factory(wildCommand), null);
         manager.registerHandler(new HealingSpringsHandler.Factory(healCommand), null);
-        manager.registerHandler(new SendToSpawnHandler.Factory(), null);
-        manager.registerHandler(new SendToRulesHandler.Factory(), null);
+        manager.registerHandler(new SendToWarpHandler.Factory(), null);
     }
 
     private static class SendToWildHandler extends FlagValueChangeHandler<StateFlag.State> {
@@ -115,70 +114,36 @@ public class SimplePortals {
         }
     }
 
-    private static class SendToSpawnHandler extends FlagValueChangeHandler<StateFlag.State> {
+    private static class SendToWarpHandler extends FlagValueChangeHandler<String> {
 
-        protected SendToSpawnHandler(Session session) {
-            super(session, BMEssentials.SEND_TO_SPAWN_FLAG);
+        protected SendToWarpHandler(Session session) {
+            super(session, BMEssentials.SEND_TO_WARP_FLAG);
         }
 
         @Override
-        protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, StateFlag.State value) {
+        protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, String value) {
         }
 
         @Override
         protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
-                                     StateFlag.State currentValue, StateFlag.State lastValue, MoveType moveType) {
-            if (currentValue == StateFlag.State.ALLOW && currentValue != lastValue) {
+                                     String currentValue, String lastValue, MoveType moveType) {
+            if (currentValue != null && !currentValue.equals(lastValue)) {
                 Player p = BukkitAdapter.adapt(player);
-                HuskHomesAPIHook.warpPlayer(p, "spawn");
+                HuskHomesAPIHook.warpPlayer(p, currentValue);
             }
             return true;
         }
 
         @Override
         protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
-                                        StateFlag.State lastValue, MoveType moveType) {
+                                        String lastValue, MoveType moveType) {
             return true;
         }
 
-        public static class Factory extends Handler.Factory<SendToSpawnHandler> {
+        public static class Factory extends Handler.Factory<SendToWarpHandler> {
             @Override
-            public SendToSpawnHandler create(Session session) {
-                return new SendToSpawnHandler(session);
-            }
-        }
-    }
-
-    private static class SendToRulesHandler extends FlagValueChangeHandler<StateFlag.State> {
-
-        protected SendToRulesHandler(Session session) {
-            super(session, BMEssentials.SEND_TO_RULES_FLAG);
-        }
-
-        @Override
-        protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, StateFlag.State value) {
-        }
-
-        @Override
-        protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
-                                     StateFlag.State currentValue, StateFlag.State lastValue, MoveType moveType) {
-            if (currentValue == StateFlag.State.ALLOW && currentValue != lastValue) {
-                Player p = BukkitAdapter.adapt(player);
-                HuskHomesAPIHook.warpPlayer(p, "rules");
-            }
-            return true;
-        }
-
-        @Override
-        protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
-                                        StateFlag.State lastValue, MoveType moveType) {
-            return true;
-        }
-
-        public static class Factory extends Handler.Factory<SendToRulesHandler> {
-            @Override
-            public SendToRulesHandler create(Session session) {
-                return new SendToRulesHandler(session);
+            public SendToWarpHandler create(Session session) {
+                return new SendToWarpHandler(session);
             }
         }
     }

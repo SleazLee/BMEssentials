@@ -58,6 +58,7 @@ import at.sleazlee.bmessentials.wild.*;
 import at.sleazlee.bmessentials.playerutils.InvseeCommand;
 import at.sleazlee.bmessentials.playerutils.InvseeTabCompleter;
 import at.sleazlee.bmessentials.playerutils.SeenCommand;
+import com.sk89q.worldguard.protection.flags.StringFlag;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -119,11 +120,8 @@ public class BMEssentials extends JavaPlugin {
     /** Custom WorldGuard flag for triggering healing springs */
     public static StateFlag ENTERED_HEALING_SPRINGS_FLAG;
 
-    /** Custom WorldGuard flag for sending players to spawn */
-    public static StateFlag SEND_TO_SPAWN_FLAG;
-
-    /** Custom WorldGuard flag for sending players to rules warp */
-    public static StateFlag SEND_TO_RULES_FLAG;
+    /** Custom WorldGuard flag for sending players to a named warp */
+    public static StringFlag SEND_TO_WARP_FLAG;
 
     /**
      * Gets the instance of the main plugin class.
@@ -161,24 +159,13 @@ public class BMEssentials extends JavaPlugin {
         }
 
         try {
-            StateFlag flag = new StateFlag("bm-send-to-spawn", false);
+            StringFlag flag = new StringFlag("bm-send-to-warp");
             registry.register(flag);
-            SEND_TO_SPAWN_FLAG = flag;
+            SEND_TO_WARP_FLAG = flag;
         } catch (FlagConflictException e) {
-            Flag<?> existing = registry.get("bm-send-to-spawn");
-            if (existing instanceof StateFlag stateFlag) {
-                SEND_TO_SPAWN_FLAG = stateFlag;
-            }
-        }
-
-        try {
-            StateFlag flag = new StateFlag("bm-send-to-rules", false);
-            registry.register(flag);
-            SEND_TO_RULES_FLAG = flag;
-        } catch (FlagConflictException e) {
-            Flag<?> existing = registry.get("bm-send-to-rules");
-            if (existing instanceof StateFlag stateFlag) {
-                SEND_TO_RULES_FLAG = stateFlag;
+            Flag<?> existing = registry.get("bm-send-to-warp");
+            if (existing instanceof StringFlag stringFlag) {
+                SEND_TO_WARP_FLAG = stringFlag;
             }
         }
     }
