@@ -134,26 +134,27 @@ public class BMEssentials extends JavaPlugin {
         return getPlugin(BMEssentials.class);
     }
 
+    // WorldGuard Custom Flags
     @Override
     public void onLoad() {
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
         try {
-            StateFlag flag = new StateFlag("send-to-wild", false);
+            StateFlag flag = new StateFlag("bm-send-to-wild", false);
             registry.register(flag);
             SEND_TO_WILD_FLAG = flag;
         } catch (FlagConflictException e) {
-            Flag<?> existing = registry.get("send-to-wild");
+            Flag<?> existing = registry.get("bm-send-to-wild");
             if (existing instanceof StateFlag stateFlag) {
                 SEND_TO_WILD_FLAG = stateFlag;
             }
         }
 
         try {
-            StateFlag flag = new StateFlag("entered-healing-springs", false);
+            StateFlag flag = new StateFlag("bm-entered-healing-springs", false);
             registry.register(flag);
             ENTERED_HEALING_SPRINGS_FLAG = flag;
         } catch (FlagConflictException e) {
-            Flag<?> existing = registry.get("entered-healing-springs");
+            Flag<?> existing = registry.get("bm-entered-healing-springs");
             if (existing instanceof StateFlag stateFlag) {
                 ENTERED_HEALING_SPRINGS_FLAG = stateFlag;
             }
