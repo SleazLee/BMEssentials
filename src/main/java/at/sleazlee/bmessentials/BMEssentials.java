@@ -119,6 +119,12 @@ public class BMEssentials extends JavaPlugin {
     /** Custom WorldGuard flag for triggering healing springs */
     public static StateFlag ENTERED_HEALING_SPRINGS_FLAG;
 
+    /** Custom WorldGuard flag for sending players to spawn */
+    public static StateFlag SEND_TO_SPAWN_FLAG;
+
+    /** Custom WorldGuard flag for sending players to rules warp */
+    public static StateFlag SEND_TO_RULES_FLAG;
+
     /**
      * Gets the instance of the main plugin class.
      *
@@ -150,6 +156,28 @@ public class BMEssentials extends JavaPlugin {
             Flag<?> existing = registry.get("entered-healing-springs");
             if (existing instanceof StateFlag stateFlag) {
                 ENTERED_HEALING_SPRINGS_FLAG = stateFlag;
+            }
+        }
+
+        try {
+            StateFlag flag = new StateFlag("bm-send-to-spawn", false);
+            registry.register(flag);
+            SEND_TO_SPAWN_FLAG = flag;
+        } catch (FlagConflictException e) {
+            Flag<?> existing = registry.get("bm-send-to-spawn");
+            if (existing instanceof StateFlag stateFlag) {
+                SEND_TO_SPAWN_FLAG = stateFlag;
+            }
+        }
+
+        try {
+            StateFlag flag = new StateFlag("bm-send-to-rules", false);
+            registry.register(flag);
+            SEND_TO_RULES_FLAG = flag;
+        } catch (FlagConflictException e) {
+            Flag<?> existing = registry.get("bm-send-to-rules");
+            if (existing instanceof StateFlag stateFlag) {
+                SEND_TO_RULES_FLAG = stateFlag;
             }
         }
     }

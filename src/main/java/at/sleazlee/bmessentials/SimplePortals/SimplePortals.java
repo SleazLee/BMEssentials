@@ -4,6 +4,7 @@ import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
 import at.sleazlee.bmessentials.wild.WildCommand;
 import at.sleazlee.bmessentials.wild.WildData;
+import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
@@ -30,6 +31,8 @@ public class SimplePortals {
         SessionManager manager = WorldGuard.getInstance().getPlatform().getSessionManager();
         manager.registerHandler(new SendToWildHandler.Factory(wildCommand), null);
         manager.registerHandler(new HealingSpringsHandler.Factory(healCommand), null);
+        manager.registerHandler(new SendToSpawnHandler.Factory(), null);
+        manager.registerHandler(new SendToRulesHandler.Factory(), null);
     }
 
     private static class SendToWildHandler extends FlagValueChangeHandler<StateFlag.State> {
@@ -108,6 +111,74 @@ public class SimplePortals {
             @Override
             public HealingSpringsHandler create(Session session) {
                 return new HealingSpringsHandler(session, heal);
+            }
+        }
+    }
+
+    private static class SendToSpawnHandler extends FlagValueChangeHandler<StateFlag.State> {
+
+        protected SendToSpawnHandler(Session session) {
+            super(session, BMEssentials.SEND_TO_SPAWN_FLAG);
+        }
+
+        @Override
+        protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, StateFlag.State value) {
+        }
+
+        @Override
+        protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
+                                     StateFlag.State currentValue, StateFlag.State lastValue, MoveType moveType) {
+            if (currentValue == StateFlag.State.ALLOW && currentValue != lastValue) {
+                Player p = BukkitAdapter.adapt(player);
+                HuskHomesAPIHook.warpPlayer(p, "spawn");
+            }
+            return true;
+        }
+
+        @Override
+        protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
+                                        StateFlag.State lastValue, MoveType moveType) {
+            return true;
+        }
+
+        public static class Factory extends Handler.Factory<SendToSpawnHandler> {
+            @Override
+            public SendToSpawnHandler create(Session session) {
+                return new SendToSpawnHandler(session);
+            }
+        }
+    }
+
+    private static class SendToRulesHandler extends FlagValueChangeHandler<StateFlag.State> {
+
+        protected SendToRulesHandler(Session session) {
+            super(session, BMEssentials.SEND_TO_RULES_FLAG);
+        }
+
+        @Override
+        protected void onInitialValue(LocalPlayer player, ApplicableRegionSet set, StateFlag.State value) {
+        }
+
+        @Override
+        protected boolean onSetValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
+                                     StateFlag.State currentValue, StateFlag.State lastValue, MoveType moveType) {
+            if (currentValue == StateFlag.State.ALLOW && currentValue != lastValue) {
+                Player p = BukkitAdapter.adapt(player);
+                HuskHomesAPIHook.warpPlayer(p, "rules");
+            }
+            return true;
+        }
+
+        @Override
+        protected boolean onAbsentValue(LocalPlayer player, Location from, Location to, ApplicableRegionSet set,
+                                        StateFlag.State lastValue, MoveType moveType) {
+            return true;
+        }
+
+        public static class Factory extends Handler.Factory<SendToRulesHandler> {
+            @Override
+            public SendToRulesHandler create(Session session) {
+                return new SendToRulesHandler(session);
             }
         }
     }

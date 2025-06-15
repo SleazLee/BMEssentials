@@ -51,4 +51,22 @@ public class HuskHomesAPIHook {
         }
     }
 
+    public static void warpPlayer(Player player, String warpName) {
+        HuskHomesAPI huskHomesAPI = HuskHomesAPI.getInstance();
+        OnlineUser onlineUser = huskHomesAPI.adaptUser(player);
+
+        huskHomesAPI.getWarp(warpName).thenAccept(optionalWarp -> optionalWarp.ifPresent(warp -> {
+            try {
+                huskHomesAPI.teleportBuilder()
+                        .teleporter(onlineUser)
+                        .target(warp)
+                        .toTeleport()
+                        .execute();
+            } catch (TeleportationException e) {
+                e.printStackTrace();
+                e.displayMessage(onlineUser);
+            }
+        }));
+    }
+
 }
