@@ -49,6 +49,7 @@ import at.sleazlee.bmessentials.rankup.RankUpManager;
 import at.sleazlee.bmessentials.tpshop.TPShopCommand;
 import at.sleazlee.bmessentials.tpshop.TPShopTabCompleter;
 import at.sleazlee.bmessentials.trophyroom.*;
+import at.sleazlee.bmessentials.Shops.Shops;
 import at.sleazlee.bmessentials.vot.PlayerEventListener;
 import at.sleazlee.bmessentials.vot.VotTabCompleter;
 import at.sleazlee.bmessentials.vot.VoteCommand;
@@ -546,6 +547,12 @@ public class BMEssentials extends JavaPlugin {
             // You can break individual slabs in a double slab block while sneaking
             getServer().getPluginManager().registerEvents(new SneakSlabBreak(), this);
 
+        }
+
+        // Shops System
+        if (config.getBoolean("Systems.Shops.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Shops System");
+            new Shops(this);
         }
 
         // AFK System
