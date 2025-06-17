@@ -835,7 +835,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
 
             if (!shop.rented) {
                 String line0 = LegacyComponentSerializer.legacySection()
-                        .serialize(Component.text("For Rent", NamedTextColor.GREEN));
+                        .serialize(Component.text("For Rent", NamedTextColor.AQUA));
                 sign.getSide(side).setLine(0, line0);
                 sign.getSide(side).setLine(1, coloredName);
                 sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
@@ -843,7 +843,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             } else {
                 long remaining = Math.max(0, shop.expires - System.currentTimeMillis());
                 String line0 = LegacyComponentSerializer.legacySection()
-                        .serialize(Component.text("Rented", TextColor.fromHexString("#ff3300")));
+                        .serialize(Component.text("Rented", NamedTextColor.DARK_AQUA));
                 sign.getSide(side).setLine(0, line0);
                 sign.getSide(side).setLine(1, coloredName);
                 sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
@@ -873,37 +873,37 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         BlockVector3 max = region.getMaximumPoint();
 
         // Remove any QuickShop shops within the region bounds
-        Location l1 = new Location(world, min.getBlockX(), -64, min.getBlockZ());
-        Location l2 = new Location(world, max.getBlockX(), 319, max.getBlockZ());
+        Location l1 = new Location(world, min.x(), -64, min.z());
+        Location l2 = new Location(world, max.x(), 319, max.z());
         QuickShopUtils.removeShopsInCuboid(l1, l2);
 
         com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(world);
-        try (EditSession session = WorldEdit.getInstance().newEditSession(weWorld)) {
+        try (EditSession session = WorldEdit.getInstance()
+                .newEditSessionBuilder().world(weWorld).build()) {
             session.setBlocks(new CuboidRegion(weWorld,
-                    BlockVector3.at(min.getBlockX(), -64, min.getBlockZ()),
-                    BlockVector3.at(max.getBlockX(), -64, max.getBlockZ())),
+                            BlockVector3.at(min.x(), -64, min.z()),
+                            BlockVector3.at(max.x(), -64, max.z())),
                     BlockTypes.BEDROCK.getDefaultState());
 
             session.setBlocks(new CuboidRegion(weWorld,
-                    BlockVector3.at(min.getBlockX(), -63, min.getBlockZ()),
-                    BlockVector3.at(max.getBlockX(), 66, max.getBlockZ())),
+                            BlockVector3.at(min.x(), -63, min.z()),
+                            BlockVector3.at(max.x(), 66, max.z())),
                     BlockTypes.STONE.getDefaultState());
 
             session.setBlocks(new CuboidRegion(weWorld,
-                    BlockVector3.at(min.getBlockX(), 67, min.getBlockZ()),
-                    BlockVector3.at(max.getBlockX(), 69, max.getBlockZ())),
+                            BlockVector3.at(min.x(), 67, min.z()),
+                            BlockVector3.at(max.x(), 69, max.z())),
                     BlockTypes.DIRT.getDefaultState());
 
             session.setBlocks(new CuboidRegion(weWorld,
-                    BlockVector3.at(min.getBlockX(), 70, min.getBlockZ()),
-                    BlockVector3.at(max.getBlockX(), 70, max.getBlockZ())),
+                            BlockVector3.at(min.x(), 70, min.z()),
+                            BlockVector3.at(max.x(), 70, max.z())),
                     BlockTypes.GRASS_BLOCK.getDefaultState());
 
             session.setBlocks(new CuboidRegion(weWorld,
-                    BlockVector3.at(min.getBlockX(), 71, min.getBlockZ()),
-                    BlockVector3.at(max.getBlockX(), 319, max.getBlockZ())),
+                            BlockVector3.at(min.x(), 71, min.z()),
+                            BlockVector3.at(max.x(), 319, max.z())),
                     BlockTypes.AIR.getDefaultState());
-            session.flushQueue();
         } catch (WorldEditException e) {
             plugin.getLogger().warning("Failed to clear region " + shop.id + ": " + e.getMessage());
         }
