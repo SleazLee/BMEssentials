@@ -550,7 +550,7 @@ public class BMEssentials extends JavaPlugin {
         }
 
         // Shops System
-        if (config.getBoolean("Systems.Shops.Enabled")) {
+        if (config.getBoolean("Shop")) {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Shops System");
             new Shops(this);
         }

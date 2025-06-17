@@ -119,7 +119,15 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             shop.extendTime = sec.getLong("extendTime", 604800000L);
             shop.maxExtendTime = sec.getLong("maxExtendTime", 31536000000L);
             shop.owner = sec.getString("Owner", "");
-            shop.coowner = sec.getString("CoOwner", "");
+            String cos = sec.getString("CoOwner", "");
+            if (!cos.isEmpty()) {
+                for (String s : cos.split(",")) {
+                    String trim = s.trim();
+                    if (!trim.isEmpty()) {
+                        shop.coowners.add(trim);
+                    }
+                }
+            }
             shop.expires = sec.getLong("Expires", 0L);
             shops.put(key, shop);
         }
@@ -141,7 +149,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             sec.set("extendTime", shop.extendTime);
             sec.set("maxExtendTime", shop.maxExtendTime);
             sec.set("Owner", shop.owner);
-            sec.set("CoOwner", shop.coowner);
+            sec.set("CoOwner", String.join(", ", shop.coowners));
             sec.set("Expires", shop.expires);
         }
         try {
@@ -199,6 +207,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 }
                 yield handleRename(player, args[1]);
             }
+            case "admin" -> handleAdmin(player, Arrays.copyOfRange(args, 1, args.length));
             default -> {
                 send(player, "unknown-command");
                 yield true;
@@ -212,9 +221,15 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("buy","disband","invite","transfer","extend","rename");
+            return Arrays.asList("buy","disband","invite","transfer","extend","rename","admin");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
+            return new ArrayList<>(shops.keySet());
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
+            return Arrays.asList("renewall","disband");
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("disband")) {
             return new ArrayList<>(shops.keySet());
         }
         return Collections.emptyList();
@@ -291,7 +306,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             return true;
         }
         shop.owner = "";
-        shop.coowner = "";
+        shop.coowners.clear();
         shop.nickname = "";
         shop.expires = 0L;
         saveShops();
@@ -322,7 +337,11 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             send(player, "player-already-manages");
             return true;
         }
-        shop.coowner = target.getUniqueId().toString();
+        if (shop.coowners.contains(target.getUniqueId().toString())) {
+            send(player, "player-already-manages");
+            return true;
+        }
+        shop.coowners.add(target.getUniqueId().toString());
         saveShops();
         send(player, "coowner-added", "player", target.getName());
         send(target, "you-are-coowner", "id", shop.id);
@@ -342,17 +361,17 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             send(player, "not-owner");
             return true;
         }
-        if (shop.coowner.isEmpty()) {
+        if (shop.coowners.isEmpty()) {
             send(player, "no-coowner");
             return true;
         }
         Player target = Bukkit.getPlayerExact(targetName);
-        if (target == null || !target.getUniqueId().toString().equals(shop.coowner)) {
+        if (target == null || !shop.coowners.contains(target.getUniqueId().toString())) {
             send(player, "not-your-coowner");
             return true;
         }
-        shop.owner = shop.coowner;
-        shop.coowner = "";
+        shop.owner = target.getUniqueId().toString();
+        shop.coowners.remove(target.getUniqueId().toString());
         shop.nickname = target.getName() + "'s shop";
         saveShops();
         updateSign(shop);
@@ -416,6 +435,63 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Handles admin commands such as renewing all plots or forcibly disbanding one.
+     */
+    private boolean handleAdmin(Player player, String[] args) {
+        if (!player.isOp()) {
+            send(player, "admin-no-permission");
+            return true;
+        }
+        if (args.length < 1) {
+            send(player, "admin-usage");
+            return true;
+        }
+        switch (args[0].toLowerCase(Locale.ROOT)) {
+            case "renewall" -> {
+                long now = System.currentTimeMillis();
+                for (Shop shop : shops.values()) {
+                    if (shop.owner.isEmpty()) continue;
+                    long remaining = Math.max(0, shop.expires - now);
+                    if (remaining + shop.extendTime <= shop.maxExtendTime) {
+                        shop.expires = now + remaining + shop.extendTime;
+                    }
+                    updateSign(shop);
+                }
+                saveShops();
+                send(player, "admin-renewall");
+                return true;
+            }
+            case "disband" -> {
+                if (args.length < 2) {
+                    send(player, "admin-disband-usage");
+                    return true;
+                }
+                Shop target = shops.get(args[1]);
+                if (target == null) {
+                    send(player, "shop-not-found");
+                    return true;
+                }
+                if (args.length < 3 || !args[2].equalsIgnoreCase("confirm")) {
+                    send(player, "admin-disband-confirm", "region", args[1]);
+                    return true;
+                }
+                target.owner = "";
+                target.coowners.clear();
+                target.nickname = "";
+                target.expires = 0L;
+                updateSign(target);
+                saveShops();
+                send(player, "admin-disbanded", "region", args[1]);
+                return true;
+            }
+            default -> {
+                send(player, "admin-usage");
+                return true;
+            }
+        }
+    }
+
+    /**
      * Gets the shop owned by the specified player.
      *
      * @param uuid the player's UUID as string
@@ -436,7 +512,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
      */
     private Shop managedShop(String uuid) {
         for (Shop shop : shops.values()) {
-            if (uuid.equals(shop.owner) || uuid.equals(shop.coowner)) return shop;
+            if (uuid.equals(shop.owner) || shop.coowners.contains(uuid)) return shop;
         }
         return null;
     }
@@ -477,7 +553,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         if (target.owner.isEmpty()) {
             handleBuy(player, target.id);
         } else if (player.getUniqueId().toString().equals(target.owner) ||
-                   player.getUniqueId().toString().equals(target.coowner)) {
+                   target.coowners.contains(player.getUniqueId().toString())) {
             handleExtend(player);
         }
     }
@@ -528,13 +604,13 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 sign.setLine(0, "For Rent");
                 sign.setLine(1, name);
                 sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
-                sign.setLine(3, timeLabel(shop.maxExtendTime));
+                sign.setLine(3, "Max: " + durationLabel(shop.maxExtendTime));
             } else {
                 long remaining = Math.max(0, shop.expires - System.currentTimeMillis());
                 sign.setLine(0, "Rented");
                 sign.setLine(1, shop.nickname.isEmpty() ? shop.id : shop.nickname);
                 sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
-                sign.setLine(3, timeLabel(remaining));
+                sign.setLine(3, "Expires in: " + durationLabel(remaining));
             }
             sign.update();
         });
@@ -556,6 +632,20 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Formats a duration into a long label like "2d 3h 4m".
+     */
+    private String durationLabel(long millis) {
+        long days = millis / 86400000L;
+        long hours = (millis % 86400000L) / 3600000L;
+        long mins = (millis % 3600000L) / 60000L;
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append("d ");
+        if (hours > 0) sb.append(hours).append("h ");
+        sb.append(mins).append("m");
+        return sb.toString().trim();
+    }
+
+    /**
      * Periodically checks for expired shops and resets them.
      */
     private void checkExpirations() {
@@ -563,7 +653,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         for (Shop shop : shops.values()) {
             if (!shop.owner.isEmpty() && shop.expires > 0 && shop.expires <= now) {
                 shop.owner = "";
-                shop.coowner = "";
+                shop.coowners.clear();
                 shop.nickname = "";
                 shop.expires = 0L;
             }
@@ -590,8 +680,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         long maxExtendTime;
         /** UUID of the owner or empty when unrented. */
         String owner = "";
-        /** UUID of the co-owner if any. */
-        String coowner = "";
+        /** UUIDs of co-owners if any. */
+        Set<String> coowners = new HashSet<>();
         /** Timestamp when the rental expires. */
         long expires = 0L;
 

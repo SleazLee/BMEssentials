@@ -9,6 +9,8 @@
 
 serverName: "blockminer"
 
+Shop: true
+
 #The start of a list of Systems.
 Systems:
 
@@ -272,4 +274,11 @@ Systems:
       rent-extended: '<green>Rent extended.</green>'
       name-too-long: '<red>Name too long.</red>'
       shop-renamed: '<green>Shop renamed.</green>'
+      shop-not-found: '<red>Shop not found.</red>'
+      admin-no-permission: '<red>You do not have permission.</red>'
+      admin-usage: '<red>Usage: /bms admin <renewall|disband></red>'
+      admin-renewall: '<green>All shops extended.</green>'
+      admin-disband-usage: '<red>/bms admin disband <region> [confirm]</red>'
+      admin-disband-confirm: '<red>Type /bms admin disband {region} confirm to disband.</red>'
+      admin-disbanded: '<green>Region {region} disbanded.</green>'
 
