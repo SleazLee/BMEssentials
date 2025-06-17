@@ -134,8 +134,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         plugin.getCommand("bms").setTabCompleter(this);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
-        Scheduler.runTimer(this::checkExpirations, 20L * 60, 20L * 60);
-        Scheduler.runTimer(this::updateAllSigns, 20L * 30, 20L * 30);
+        Scheduler.runTimer(this::checkExpirations, 20L * 30, 20L * 60);
     }
 
     /**
@@ -900,15 +899,6 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             updateSign(shop);
         }
         saveShops();
-    }
-
-    /**
-     * Updates all shop signs. Scheduled to run periodically.
-     */
-    private void updateAllSigns() {
-        for (Shop shop : shops.values()) {
-            updateSign(shop);
-        }
     }
 
     /**
