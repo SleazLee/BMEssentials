@@ -7,7 +7,15 @@ import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import net.milkbowl.vault2.economy.Economy;
 import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.*;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -140,7 +148,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             if (sec == null) continue;
             Shop shop = new Shop(key);
             shop.nickname = sec.getString("Nickname", "");
-            shop.nameColor = sec.getString("NameColor", ChatColor.AQUA.toString());
+            shop.nameColor = sec.getString("NameColor", "<black>");
             shop.sign = sec.getString("Sign", "");
             shop.price = sec.getDouble("Price", 100.0);
             shop.extendTime = sec.getLong("extendTime", 604800000L);
@@ -222,6 +230,13 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 }
                 yield handleInvite(player, args[1]);
             }
+            case "remove" -> {
+                if (args.length < 2) {
+                    send(player, "remove-usage");
+                    yield true;
+                }
+                yield handleRemove(player, args[1]);
+            }
             case "transfer" -> {
                 if (args.length < 2) {
                     send(player, "transfer-usage");
@@ -265,7 +280,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("buy","disband","invite","transfer","extend","rename","name","admin");
+            return Arrays.asList("buy","disband","invite","remove","transfer","extend","rename","name","admin");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
             return new ArrayList<>(shops.keySet());
@@ -331,10 +346,11 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         }
         shop.owner = player.getUniqueId().toString();
         shop.nickname = "";
-        shop.nameColor = ChatColor.AQUA.toString();
+        shop.nameColor = "<black>";
         shop.expires = System.currentTimeMillis() + shop.extendTime;
         shop.rented = true;
         saveShops();
+        updateRegionOwners(shop);
         updateSign(shop);
         send(player, "shop-rented");
         return true;
@@ -360,10 +376,11 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.owner = "";
         shop.coowners.clear();
         shop.nickname = "";
-        shop.nameColor = ChatColor.AQUA.toString();
+        shop.nameColor = "<black>";
         shop.expires = 0L;
         shop.rented = false;
         saveShops();
+        updateRegionOwners(shop);
         updateSign(shop);
         send(player, "shop-disbanded");
         return true;
@@ -397,8 +414,35 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         }
         shop.coowners.add(target.getUniqueId().toString());
         saveShops();
+        updateRegionOwners(shop);
         send(player, "coowner-added", "player", target.getName());
         send(target, "you-are-coowner", "id", shop.id);
+        return true;
+    }
+
+    /**
+     * Removes a co-owner from the shop.
+     */
+    private boolean handleRemove(Player player, String targetName) {
+        Shop shop = ownedShop(player.getUniqueId().toString());
+        if (shop == null) {
+            send(player, "not-owner");
+            return true;
+        }
+        if (shop.coowners.isEmpty()) {
+            send(player, "no-coowner");
+            return true;
+        }
+        Player target = Bukkit.getPlayerExact(targetName);
+        if (target == null || !shop.coowners.contains(target.getUniqueId().toString())) {
+            send(player, "not-your-coowner");
+            return true;
+        }
+        shop.coowners.remove(target.getUniqueId().toString());
+        saveShops();
+        updateRegionOwners(shop);
+        send(player, "coowner-removed", "player", target.getName());
+        send(target, "you-are-not-coowner", "id", shop.id);
         return true;
     }
 
@@ -427,8 +471,9 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.owner = target.getUniqueId().toString();
         shop.coowners.remove(target.getUniqueId().toString());
         shop.nickname = "";
-        shop.nameColor = ChatColor.AQUA.toString();
+        shop.nameColor = "<black>";
         saveShops();
+        updateRegionOwners(shop);
         updateSign(shop);
         send(player, "ownership-transferred");
         send(target, "you-now-own", "id", shop.id);
@@ -502,14 +547,16 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             send(player, "not-owner");
             return true;
         }
-        ChatColor color;
-        try {
-            color = ChatColor.valueOf(colorName.toUpperCase(Locale.ROOT));
-        } catch (IllegalArgumentException e) {
-            send(player, "invalid-color");
-            return true;
+        if (colorName.equalsIgnoreCase("reset")) {
+            shop.nameColor = "<reset>";
+        } else {
+            TextColor color = NamedTextColor.NAMES.value(colorName.toLowerCase(Locale.ROOT));
+            if (color == null) {
+                send(player, "invalid-color");
+                return true;
+            }
+            shop.nameColor = "<" + colorName.toLowerCase(Locale.ROOT) + ">";
         }
-        shop.nameColor = color.toString();
         saveShops();
         updateSign(shop);
         send(player, "color-changed");
@@ -534,14 +581,14 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             send(player, "invalid-hex");
             return true;
         }
-        ChatColor color;
+        TextColor color;
         try {
-            color = ChatColor.of(sanitized);
+            color = TextColor.fromHexString(sanitized);
         } catch (IllegalArgumentException e) {
             send(player, "invalid-hex");
             return true;
         }
-        shop.nameColor = color.toString();
+        shop.nameColor = "<" + color.asHexString() + ">";
         saveShops();
         updateSign(shop);
         send(player, "color-changed");
@@ -592,9 +639,10 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 target.owner = "";
                 target.coowners.clear();
                 target.nickname = "";
-                target.nameColor = ChatColor.AQUA.toString();
+                target.nameColor = "<black>";
                 target.expires = 0L;
                 target.rented = false;
+                updateRegionOwners(target);
                 updateSign(target);
                 saveShops();
                 send(player, "admin-disbanded", "region", args[1]);
@@ -699,6 +747,38 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Sync WorldGuard region owners with the shop state.
+     */
+    private void updateRegionOwners(Shop shop) {
+        if (shop.sign == null || shop.sign.isEmpty()) return;
+        String[] parts = shop.sign.split(";");
+        if (parts.length < 1) return;
+        World world = Bukkit.getWorld(parts[0]);
+        if (world == null) return;
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionManager manager = container.get(BukkitAdapter.adapt(world));
+        if (manager == null) return;
+        ProtectedRegion region = manager.getRegion(shop.id);
+        if (region == null) return;
+        region.getOwners().clear();
+        if (!shop.owner.isEmpty()) {
+            try {
+                region.getOwners().addPlayer(UUID.fromString(shop.owner));
+            } catch (IllegalArgumentException ignored) {}
+        }
+        for (String co : shop.coowners) {
+            try {
+                region.getOwners().addPlayer(UUID.fromString(co));
+            } catch (IllegalArgumentException ignored) {}
+        }
+        try {
+            manager.save();
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to save region owners for " + shop.id);
+        }
+    }
+
+    /**
      * Updates the sign associated with a shop to reflect its current state.
      * If the sign is missing or invalid, the method safely returns.
      */
@@ -729,16 +809,21 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             } catch (IllegalArgumentException ignored) {}
 
             String name = shop.nickname.isEmpty() ? shop.id : shop.nickname;
-            String coloredName = shop.nameColor + name;
+            String coloredName = LegacyComponentSerializer.legacySection()
+                    .serialize(miniMessage.deserialize(shop.nameColor + name));
 
             if (!shop.rented) {
-                sign.getSide(side).setLine(0, ChatColor.GREEN + "For Rent");
+                String line0 = LegacyComponentSerializer.legacySection()
+                        .serialize(Component.text("For Rent", NamedTextColor.GREEN));
+                sign.getSide(side).setLine(0, line0);
                 sign.getSide(side).setLine(1, coloredName);
                 sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
                 sign.getSide(side).setLine(3, "Max: " + durationLabel(shop.maxExtendTime));
             } else {
                 long remaining = Math.max(0, shop.expires - System.currentTimeMillis());
-                sign.getSide(side).setLine(0, ChatColor.of("#ff3300") + "Rented");
+                String line0 = LegacyComponentSerializer.legacySection()
+                        .serialize(Component.text("Rented", TextColor.fromHexString("#ff3300")));
+                sign.getSide(side).setLine(0, line0);
                 sign.getSide(side).setLine(1, coloredName);
                 sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
                 sign.getSide(side).setLine(3, durationLabel(remaining));
@@ -793,9 +878,10 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 shop.owner = "";
                 shop.coowners.clear();
                 shop.nickname = "";
-                shop.nameColor = ChatColor.AQUA.toString();
+                shop.nameColor = "<black>";
                 shop.expires = 0L;
                 shop.rented = false;
+                updateRegionOwners(shop);
             }
             updateSign(shop);
         }
@@ -811,7 +897,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         /** Player-specified nickname displayed on signs. */
         String nickname;
         /** Color code prefix for the name on signs. */
-        String nameColor = ChatColor.BLACK.toString();
+        String nameColor = "<black>";
         /** Sign location data in the format {@code world;x;y;z;facing}. */
         String sign;
         /** Cost to extend rental time. */

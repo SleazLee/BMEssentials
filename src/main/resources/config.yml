@@ -244,9 +244,10 @@ Systems:
     Enabled: true
     Messages:
       players-only: '<red>Only players can use this command.</red>'
-      usage: '<red>Usage: /bms <buy|disband|invite|transfer|extend|rename></red>'
+      usage: '<red>Usage: /bms <buy|disband|invite|remove|transfer|extend|rename></red>'
       buy-usage: '<red>/bms buy <shop></red>'
       invite-usage: '<red>/bms invite <player></red>'
+      remove-usage: '<red>/bms remove <player></red>'
       transfer-usage: '<red>/bms transfer <player></red>'
       rename-usage: '<red>/bms rename <name></red>'
       unknown-command: '<red>Unknown command.</red>'
@@ -262,6 +263,8 @@ Systems:
       player-already-manages: '<red>Player already manages a shop.</red>'
       coowner-added: '<green>{player} added as co-owner.</green>'
       you-are-coowner: '<green>You are now co-owner of shop {id}.</green>'
+      coowner-removed: '<green>{player} removed from co-owners.</green>'
+      you-are-not-coowner: '<red>You are no longer co-owner of shop {id}.</red>'
       no-coowner: '<red>You have no co-owner to transfer to.</red>'
       not-your-coowner: '<red>That player is not your co-owner.</red>'
       ownership-transferred: '<green>Ownership transferred.</green>'
