@@ -8,6 +8,7 @@ import net.milkbowl.vault2.economy.Economy;
 import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Rotatable;
@@ -631,7 +632,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 sign.getSide(side).setLine(0, "Rented");
                 sign.getSide(side).setLine(1, shop.nickname.isEmpty() ? shop.id : shop.nickname);
                 sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
-                sign.getSide(side).setLine(3, "Expires in: " + durationLabel(remaining));
+                sign.getSide(side).setLine(3, durationLabel(remaining));
             }
             sign.update();
         });
