@@ -9,8 +9,6 @@
 
 serverName: "blockminer"
 
-Shop: true
-
 #The start of a list of Systems.
 Systems:
 
