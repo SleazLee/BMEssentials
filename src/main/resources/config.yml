@@ -244,12 +244,12 @@ Systems:
     Enabled: true
     Messages:
       players-only: '<red>Only players can use this command.</red>'
-      usage: '<red>Usage: /bms <buy|disband|invite|remove|transfer|extend|rename></red>'
+      usage: '<red>Usage: /bms <buy|disband|invite|remove|transfer|extend|name></red>'
       buy-usage: '<red>/bms buy <shop></red>'
       invite-usage: '<red>/bms invite <player></red>'
       remove-usage: '<red>/bms remove <player></red>'
       transfer-usage: '<red>/bms transfer <player></red>'
-      rename-usage: '<red>/bms rename <name></red>'
+      name-set-usage: '<red>/bms name set <name></red>'
       unknown-command: '<red>Unknown command.</red>'
       not-in-shop: '<red>You are not inside a shop plot.</red>'
       shop-already-rented: '<red>This shop is already rented.</red>'
@@ -282,7 +282,7 @@ Systems:
       admin-disband-usage: '<red>/bms admin disband <region> [confirm]</red>'
       admin-disband-confirm: '<red>Type /bms admin disband {region} confirm to disband.</red>'
       admin-disbanded: '<green>Region {region} disbanded.</green>'
-      name-usage: '<red>Usage: /bms name <color|hex> <value></red>'
+      name-usage: '<red>Usage: /bms name <set|color|hex> <value></red>'
       color-changed: '<green>Shop name color updated.</green>'
       color-no-permission: '<red>You do not have permission to color your shop name.</red>'
       hex-no-permission: '<red>You do not have permission to use hex colors.</red>'
