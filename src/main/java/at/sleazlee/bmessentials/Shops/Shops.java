@@ -13,6 +13,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,7 +38,7 @@ import java.util.*;
  * ownership, extend rent time and rename their shops. Data is stored in a
  * {@code shops.yml} file located inside the plugin's data folder.
  */
-public class Shops implements CommandExecutor, TabCompleter {
+public class Shops implements CommandExecutor, TabCompleter, Listener {
 
     /** Reference to the main plugin instance. */
     private final BMEssentials plugin;
@@ -93,6 +98,7 @@ public class Shops implements CommandExecutor, TabCompleter {
 
         plugin.getCommand("bms").setExecutor(this);
         plugin.getCommand("bms").setTabCompleter(this);
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         Scheduler.runTimer(this::checkExpirations, 20L * 60, 20L * 60);
     }
@@ -164,7 +170,12 @@ public class Shops implements CommandExecutor, TabCompleter {
         }
         String sub = args[0].toLowerCase(Locale.ROOT);
         return switch (sub) {
-            case "buy" -> handleBuy(player);
+            case "buy" -> {
+                if (args.length >= 2) {
+                    yield handleBuy(player, args[1]);
+                }
+                yield handleBuy(player, null);
+            }
             case "disband" -> handleDisband(player, args);
             case "invite" -> {
                 if (args.length < 2) {
@@ -203,6 +214,9 @@ public class Shops implements CommandExecutor, TabCompleter {
         if (args.length == 1) {
             return Arrays.asList("buy","disband","invite","transfer","extend","rename");
         }
+        if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
+            return new ArrayList<>(shops.keySet());
+        }
         return Collections.emptyList();
     }
 
@@ -227,10 +241,15 @@ public class Shops implements CommandExecutor, TabCompleter {
      * @param player the player attempting to rent
      * @return true always to indicate the command was handled
      */
-    private boolean handleBuy(Player player) {
-        Shop shop = shopAt(player);
+    private boolean handleBuy(Player player, String targetShop) {
+        Shop shop = targetShop == null ? shopAt(player) : shops.get(targetShop);
         if (shop == null) {
-            send(player, "not-in-shop");
+            if (targetShop == null) {
+                send(player, "not-in-shop");
+                send(player, "buy-usage");
+            } else {
+                send(player, "shop-not-found");
+            }
             return true;
         }
         if (!shop.owner.isEmpty()) {
@@ -423,6 +442,47 @@ public class Shops implements CommandExecutor, TabCompleter {
     }
 
     /**
+     * Handles right-click interactions with shop signs. If the sign corresponds
+     * to an unrented shop the player will attempt to purchase it. Otherwise, if
+     * the player manages the shop the rental time will be extended.
+     */
+    @EventHandler
+    public void onSignInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (!(block.getState() instanceof Sign)) return;
+
+        Location loc = block.getLocation();
+        Shop target = null;
+        for (Shop shop : shops.values()) {
+            if (shop.sign == null || shop.sign.isEmpty()) continue;
+            String[] parts = shop.sign.split(";");
+            if (parts.length < 5) continue;
+            World w = Bukkit.getWorld(parts[0]);
+            if (w == null) continue;
+            int x = (int) Double.parseDouble(parts[1]);
+            int y = (int) Double.parseDouble(parts[2]);
+            int z = (int) Double.parseDouble(parts[3]);
+            if (loc.getWorld().equals(w) && loc.getBlockX() == x && loc.getBlockY() == y && loc.getBlockZ() == z) {
+                target = shop;
+                break;
+            }
+        }
+        if (target == null) return;
+
+        event.setCancelled(true);
+        Player player = event.getPlayer();
+        if (target.owner.isEmpty()) {
+            handleBuy(player, target.id);
+        } else if (player.getUniqueId().toString().equals(target.owner) ||
+                   player.getUniqueId().toString().equals(target.coowner)) {
+            handleExtend(player);
+        }
+    }
+
+    /**
      * Checks if the player already manages a shop.
      */
     private boolean ownsShop(String uuid) {
@@ -459,22 +519,25 @@ public class Shops implements CommandExecutor, TabCompleter {
         int x = (int) Double.parseDouble(parts[1]);
         int y = (int) Double.parseDouble(parts[2]);
         int z = (int) Double.parseDouble(parts[3]);
-        Block block = world.getBlockAt(x, y, z);
-        if (!(block.getState() instanceof Sign sign)) return;
-        if (shop.owner.isEmpty()) {
-            String name = shop.nickname.isEmpty() ? shop.id : shop.nickname;
-            sign.setLine(0, "For Rent");
-            sign.setLine(1, name);
-            sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
-            sign.setLine(3, timeLabel(shop.maxExtendTime));
-        } else {
-            long remaining = Math.max(0, shop.expires - System.currentTimeMillis());
-            sign.setLine(0, "Rented");
-            sign.setLine(1, shop.nickname.isEmpty() ? shop.id : shop.nickname);
-            sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
-            sign.setLine(3, timeLabel(remaining));
-        }
-        sign.update();
+        Location loc = new Location(world, x, y, z);
+        Scheduler.run(loc, () -> {
+            Block b = loc.getBlock();
+            if (!(b.getState() instanceof Sign sign)) return;
+            if (shop.owner.isEmpty()) {
+                String name = shop.nickname.isEmpty() ? shop.id : shop.nickname;
+                sign.setLine(0, "For Rent");
+                sign.setLine(1, name);
+                sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
+                sign.setLine(3, timeLabel(shop.maxExtendTime));
+            } else {
+                long remaining = Math.max(0, shop.expires - System.currentTimeMillis());
+                sign.setLine(0, "Rented");
+                sign.setLine(1, shop.nickname.isEmpty() ? shop.id : shop.nickname);
+                sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
+                sign.setLine(3, timeLabel(remaining));
+            }
+            sign.update();
+        });
     }
 
     /**
@@ -503,8 +566,8 @@ public class Shops implements CommandExecutor, TabCompleter {
                 shop.coowner = "";
                 shop.nickname = "";
                 shop.expires = 0L;
-                updateSign(shop);
             }
+            updateSign(shop);
         }
         saveShops();
     }

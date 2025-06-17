@@ -245,6 +245,7 @@ Systems:
     Messages:
       players-only: '<red>Only players can use this command.</red>'
       usage: '<red>Usage: /bms <buy|disband|invite|transfer|extend|rename></red>'
+      buy-usage: '<red>/bms buy <shop></red>'
       invite-usage: '<red>/bms invite <player></red>'
       transfer-usage: '<red>/bms transfer <player></red>'
       rename-usage: '<red>/bms rename <name></red>'
