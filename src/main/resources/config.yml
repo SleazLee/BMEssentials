@@ -239,3 +239,38 @@ Systems:
   # Enables the Lands TP Fix System
   LandsTPFix:
     Enabled: true
+
+  Shops:
+    Enabled: true
+    Messages:
+      players-only: '<red>Only players can use this command.</red>'
+      usage: '<red>Usage: /bms <buy|disband|invite|transfer|extend|rename></red>'
+      buy-usage: '<red>/bms buy <shop></red>'
+      invite-usage: '<red>/bms invite <player></red>'
+      transfer-usage: '<red>/bms transfer <player></red>'
+      rename-usage: '<red>/bms rename <name></red>'
+      unknown-command: '<red>Unknown command.</red>'
+      not-in-shop: '<red>You are not inside a shop plot.</red>'
+      shop-already-rented: '<red>This shop is already rented.</red>'
+      already-manage: '<red>You already manage another shop.</red>'
+      cannot-afford-shop: '<red>You cannot afford this shop.</red>'
+      shop-not-found: '<red>Shop not found.</red>'
+      shop-rented: '<green>Shop rented.</green>'
+      not-owner: '<red>You do not own a shop.</red>'
+      disband-confirm: '<red>Type /bms disband confirm to disband your shop.</red>'
+      shop-disbanded: '<green>Shop disbanded.</green>'
+      player-not-found: '<red>Player not found.</red>'
+      player-already-manages: '<red>Player already manages a shop.</red>'
+      coowner-added: '<green>{player} added as co-owner.</green>'
+      you-are-coowner: '<green>You are now co-owner of shop {id}.</green>'
+      no-coowner: '<red>You have no co-owner to transfer to.</red>'
+      not-your-coowner: '<red>That player is not your co-owner.</red>'
+      ownership-transferred: '<green>Ownership transferred.</green>'
+      you-now-own: '<green>You now own shop {id}.</green>'
+      not-manage: '<red>You do not manage a shop.</red>'
+      beyond-max: '<red>Cannot extend beyond maximum time.</red>'
+      cannot-afford-rent: '<red>You cannot afford the rent.</red>'
+      rent-extended: '<green>Rent extended.</green>'
+      name-too-long: '<red>Name too long.</red>'
+      shop-renamed: '<green>Shop renamed.</green>'
+

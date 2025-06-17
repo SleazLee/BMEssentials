@@ -238,6 +238,10 @@ commands:
     description: Shows when a player was last online.
     usage: /seen <player>
 
+  bms:
+    description: Manage Block Miner shops.
+    usage: /bms <buy [shop]|disband|invite|transfer|extend|rename>
+
 
 permissions:
   bmessentials.vot.use:
