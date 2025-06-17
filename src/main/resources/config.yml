@@ -279,4 +279,10 @@ Systems:
       admin-disband-usage: '<red>/bms admin disband <region> [confirm]</red>'
       admin-disband-confirm: '<red>Type /bms admin disband {region} confirm to disband.</red>'
       admin-disbanded: '<green>Region {region} disbanded.</green>'
+      name-usage: '<red>Usage: /bms name <color|hex> <value></red>'
+      color-changed: '<green>Shop name color updated.</green>'
+      color-no-permission: '<red>You do not have permission to color your shop name.</red>'
+      hex-no-permission: '<red>You do not have permission to use hex colors.</red>'
+      invalid-color: '<red>Invalid color.</red>'
+      invalid-hex: '<red>Invalid hex color.</red>'
 

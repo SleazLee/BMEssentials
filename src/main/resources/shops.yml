@@ -1,6 +1,7 @@
 '001':
   Rented: false
   Nickname: ''
+  NameColor: "§b"
   Price: 100.0
   Sign: world;251.0;71.0;128.0;NORTH
   extendTime: 604800000
