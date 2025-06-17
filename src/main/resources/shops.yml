@@ -1,7 +1,7 @@
 '001':
   Rented: false
   Nickname: ''
-  NameColor: "§b"
+  NameColor: ''
   Price: 100.0
   Sign: world;251.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -13,6 +13,7 @@
 '002':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;231.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -24,6 +25,7 @@
 '003':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;227.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -35,6 +37,7 @@
 '004':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;207.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -46,6 +49,7 @@
 '005':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;187.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -57,6 +61,7 @@
 '006':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;132.0;71.0;162.0;WEST
   extendTime: 604800000
@@ -68,6 +73,7 @@
 '007':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;132.0;71.0;198.0;WEST
   extendTime: 604800000
@@ -79,6 +85,7 @@
 '008':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;132.0;71.0;242.0;WEST
   extendTime: 604800000
@@ -90,6 +97,7 @@
 '009':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;132.0;71.0;262.0;WEST
   extendTime: 604800000
@@ -101,6 +109,7 @@
 '010':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;132.0;71.0;266.0;WEST
   extendTime: 604800000
@@ -112,6 +121,7 @@
 '011':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;132.0;71.0;286.0;WEST
   extendTime: 604800000
@@ -123,6 +133,7 @@
 '012':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;132.0;71.0;306.0;WEST
   extendTime: 604800000
@@ -134,6 +145,7 @@
 '013':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;166.0;71.0;361.0;SOUTH
   extendTime: 604800000
@@ -145,6 +157,7 @@
 '014':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;202.0;71.0;361.0;SOUTH
   extendTime: 604800000
@@ -156,6 +169,7 @@
 '015':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;246.0;71.0;361.0;SOUTH
   extendTime: 604800000
@@ -167,6 +181,7 @@
 '016':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;266.0;71.0;361.0;SOUTH
   extendTime: 604800000
@@ -178,6 +193,7 @@
 '017':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;270.0;71.0;361.0;SOUTH
   extendTime: 604800000
@@ -189,6 +205,7 @@
 '018':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;290.0;71.0;361.0;SOUTH
   extendTime: 604800000
@@ -200,6 +217,7 @@
 '019':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;310.0;71.0;361.0;SOUTH
   extendTime: 604800000
@@ -211,6 +229,7 @@
 '020':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;365.0;71.0;327.0;EAST
   extendTime: 604800000
@@ -222,6 +241,7 @@
 '021':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;365.0;71.0;291.0;EAST
   extendTime: 604800000
@@ -233,6 +253,7 @@
 '022':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;365.0;71.0;247.0;EAST
   extendTime: 604800000
@@ -244,6 +265,7 @@
 '023':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;365.0;71.0;227.0;EAST
   extendTime: 604800000
@@ -255,6 +277,7 @@
 '024':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;365.0;71.0;223.0;EAST
   extendTime: 604800000
@@ -266,6 +289,7 @@
 '025':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;365.0;71.0;203.0;EAST
   extendTime: 604800000
@@ -277,6 +301,7 @@
 '026':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;365.0;71.0;183.0;EAST
   extendTime: 604800000
@@ -288,6 +313,7 @@
 '027':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;331.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -299,6 +325,7 @@
 '028':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;295.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -310,6 +337,7 @@
 '029':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;258.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -321,6 +349,7 @@
 '030':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;231.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -332,6 +361,7 @@
 '031':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;227.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -343,6 +373,7 @@
 '032':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;207.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -354,6 +385,7 @@
 '033':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;187.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -365,6 +397,7 @@
 '034':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;126.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -376,6 +409,7 @@
 '035':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;122.0;WEST
   extendTime: 604800000
@@ -387,6 +421,7 @@
 '036':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;124.0;71.0;167.0;EAST
   extendTime: 604800000
@@ -398,6 +433,7 @@
 '037':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;105.0;71.0;216.0;SOUTH
   extendTime: 604800000
@@ -409,6 +445,7 @@
 '038':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;124.0;71.0;235.0;EAST
   extendTime: 604800000
@@ -420,6 +457,7 @@
 '039':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;124.0;71.0;262.0;EAST
   extendTime: 604800000
@@ -431,6 +469,7 @@
 '040':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;124.0;71.0;266.0;EAST
   extendTime: 604800000
@@ -442,6 +481,7 @@
 '041':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;124.0;71.0;286.0;EAST
   extendTime: 604800000
@@ -453,6 +493,7 @@
 '042':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;124.0;71.0;306.0;EAST
   extendTime: 604800000
@@ -464,6 +505,7 @@
 '043':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;367.0;WEST
   extendTime: 604800000
@@ -475,6 +517,7 @@
 '044':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;126.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -486,6 +529,7 @@
 '045':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;171.0;71.0;369.0;NORTH
   extendTime: 604800000
@@ -497,6 +541,7 @@
 '046':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;191.0;71.0;369.0;NORTH
   extendTime: 604800000
@@ -508,6 +553,7 @@
 '047':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;239.0;71.0;369.0;NORTH
   extendTime: 604800000
@@ -519,6 +565,7 @@
 '048':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;266.0;71.0;369.0;NORTH
   extendTime: 604800000
@@ -530,6 +577,7 @@
 '049':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;270.0;71.0;369.0;NORTH
   extendTime: 604800000
@@ -541,6 +589,7 @@
 '050':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;290.0;71.0;369.0;NORTH
   extendTime: 604800000
@@ -552,6 +601,7 @@
 '051':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;310.0;71.0;369.0;NORTH
   extendTime: 604800000
@@ -563,6 +613,7 @@
 '052':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;371.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -574,6 +625,7 @@
 '053':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;367.0;EAST
   extendTime: 604800000
@@ -585,6 +637,7 @@
 '054':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;373.0;71.0;322.0;WEST
   extendTime: 604800000
@@ -596,6 +649,7 @@
 '055':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;373.0;71.0;302.0;WEST
   extendTime: 604800000
@@ -607,6 +661,7 @@
 '056':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;373.0;71.0;254.0;WEST
   extendTime: 604800000
@@ -618,6 +673,7 @@
 '057':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;373.0;71.0;227.0;WEST
   extendTime: 604800000
@@ -629,6 +685,7 @@
 '058':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;373.0;71.0;223.0;WEST
   extendTime: 604800000
@@ -640,6 +697,7 @@
 '059':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;373.0;71.0;203.0;WEST
   extendTime: 604800000
@@ -651,6 +709,7 @@
 '060':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;373.0;71.0;183.0;WEST
   extendTime: 604800000
@@ -662,6 +721,7 @@
 '061':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;122.0;EAST
   extendTime: 604800000
@@ -673,6 +733,7 @@
 '062':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;371.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -684,6 +745,7 @@
 '063':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;326.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -695,6 +757,7 @@
 '064':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;306.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -706,6 +769,7 @@
 '065':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;258.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -717,6 +781,7 @@
 '066':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;231.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -728,6 +793,7 @@
 '067':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;211.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -739,6 +805,7 @@
 '068':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;191.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -750,6 +817,7 @@
 '069':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;171.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -761,6 +829,7 @@
 '070':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;167.0;WEST
   extendTime: 604800000
@@ -772,6 +841,7 @@
 '071':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;187.0;WEST
   extendTime: 604800000
@@ -783,6 +853,7 @@
 '072':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;235.0;WEST
   extendTime: 604800000
@@ -794,6 +865,7 @@
 '073':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;262.0;WEST
   extendTime: 604800000
@@ -805,6 +877,7 @@
 '074':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;282.0;WEST
   extendTime: 604800000
@@ -816,6 +889,7 @@
 '075':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;302.0;WEST
   extendTime: 604800000
@@ -827,6 +901,7 @@
 '076':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;78.0;71.0;322.0;WEST
   extendTime: 604800000
@@ -838,6 +913,7 @@
 '077':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;171.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -849,6 +925,7 @@
 '078':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;191.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -860,6 +937,7 @@
 '079':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;239.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -871,6 +949,7 @@
 '080':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;266.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -882,6 +961,7 @@
 '081':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;286.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -893,6 +973,7 @@
 '082':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;306.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -904,6 +985,7 @@
 '083':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;326.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -915,6 +997,7 @@
 '084':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;322.0;EAST
   extendTime: 604800000
@@ -926,6 +1009,7 @@
 '085':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;302.0;EAST
   extendTime: 604800000
@@ -937,6 +1021,7 @@
 '086':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;254.0;EAST
   extendTime: 604800000
@@ -948,6 +1033,7 @@
 '087':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;227.0;EAST
   extendTime: 604800000
@@ -959,6 +1045,7 @@
 '088':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;207.0;EAST
   extendTime: 604800000
@@ -970,6 +1057,7 @@
 '089':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;187.0;EAST
   extendTime: 604800000
@@ -981,6 +1069,7 @@
 '090':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;419.0;71.0;167.0;EAST
   extendTime: 604800000
@@ -992,6 +1081,7 @@
 '091':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;326.0;71.0;74.0;NORTH
   extendTime: 604800000
@@ -1003,6 +1093,7 @@
 '092':
   Rented: false
   Nickname: ''
+  NameColor: ''
   Price: 100.0
   Sign: world;306.0;71.0;74.0;NORTH
   extendTime: 604800000
