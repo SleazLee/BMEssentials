@@ -7,6 +7,7 @@ import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import net.milkbowl.vault2.economy.Economy;
 import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.*;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -58,6 +59,27 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     private final FileConfiguration config;
     /** MiniMessage instance for formatting output. */
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
+
+    /** Tab suggestions for the named colors. */
+    private static final List<String> COLOR_NAMES = List.of(
+            "reset",
+            "black",
+            "dark_blue",
+            "dark_green",
+            "dark_aqua",
+            "dark_red",
+            "dark_purple",
+            "gold",
+            "gray",
+            "dark_gray",
+            "blue",
+            "green",
+            "aqua",
+            "red",
+            "light_purple",
+            "yellow",
+            "white"
+    );
 
     /**
      * Sends a formatted message to the given command sender using the
@@ -118,6 +140,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             if (sec == null) continue;
             Shop shop = new Shop(key);
             shop.nickname = sec.getString("Nickname", "");
+            shop.nameColor = sec.getString("NameColor", ChatColor.AQUA.toString());
             shop.sign = sec.getString("Sign", "");
             shop.price = sec.getDouble("Price", 100.0);
             shop.extendTime = sec.getLong("extendTime", 604800000L);
@@ -149,6 +172,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             ConfigurationSection sec = shopsConfig.getConfigurationSection(key);
             if (sec == null) sec = shopsConfig.createSection(key);
             sec.set("Nickname", shop.nickname);
+            sec.set("NameColor", shop.nameColor);
             sec.set("Sign", shop.sign);
             sec.set("Price", shop.price);
             sec.set("extendTime", shop.extendTime);
@@ -213,6 +237,20 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 }
                 yield handleRename(player, args[1]);
             }
+            case "name" -> {
+                if (args.length < 3) {
+                    send(player, "name-usage");
+                    yield true;
+                }
+                if (args[1].equalsIgnoreCase("color")) {
+                    yield handleNameColor(player, args[2]);
+                } else if (args[1].equalsIgnoreCase("hex")) {
+                    yield handleNameHex(player, args[2]);
+                } else {
+                    send(player, "name-usage");
+                    yield true;
+                }
+            }
             case "admin" -> handleAdmin(player, Arrays.copyOfRange(args, 1, args.length));
             default -> {
                 send(player, "unknown-command");
@@ -227,10 +265,16 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("buy","disband","invite","transfer","extend","rename","admin");
+            return Arrays.asList("buy","disband","invite","transfer","extend","rename","name","admin");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
             return new ArrayList<>(shops.keySet());
+        }
+        if (args.length == 2 && args[0].equalsIgnoreCase("name")) {
+            return Arrays.asList("color","hex");
+        }
+        if (args.length == 3 && args[0].equalsIgnoreCase("name") && args[1].equalsIgnoreCase("color")) {
+            return new ArrayList<>(COLOR_NAMES);
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
             return Arrays.asList("renewall","disband");
@@ -286,7 +330,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             return true;
         }
         shop.owner = player.getUniqueId().toString();
-        shop.nickname = player.getName() + "'s shop";
+        shop.nickname = "";
+        shop.nameColor = ChatColor.AQUA.toString();
         shop.expires = System.currentTimeMillis() + shop.extendTime;
         shop.rented = true;
         saveShops();
@@ -315,6 +360,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.owner = "";
         shop.coowners.clear();
         shop.nickname = "";
+        shop.nameColor = ChatColor.AQUA.toString();
         shop.expires = 0L;
         shop.rented = false;
         saveShops();
@@ -380,7 +426,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         }
         shop.owner = target.getUniqueId().toString();
         shop.coowners.remove(target.getUniqueId().toString());
-        shop.nickname = target.getName() + "'s shop";
+        shop.nickname = "";
+        shop.nameColor = ChatColor.AQUA.toString();
         saveShops();
         updateSign(shop);
         send(player, "ownership-transferred");
@@ -443,6 +490,65 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Changes the sign color using a named ChatColor.
+     */
+    private boolean handleNameColor(Player player, String colorName) {
+        if (!player.hasPermission("bm.shops.color")) {
+            send(player, "color-no-permission");
+            return true;
+        }
+        Shop shop = ownedShop(player.getUniqueId().toString());
+        if (shop == null) {
+            send(player, "not-owner");
+            return true;
+        }
+        ChatColor color;
+        try {
+            color = ChatColor.valueOf(colorName.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException e) {
+            send(player, "invalid-color");
+            return true;
+        }
+        shop.nameColor = color.toString();
+        saveShops();
+        updateSign(shop);
+        send(player, "color-changed");
+        return true;
+    }
+
+    /**
+     * Changes the sign color using a hex code.
+     */
+    private boolean handleNameHex(Player player, String hex) {
+        if (!player.hasPermission("bm.shops.hex")) {
+            send(player, "hex-no-permission");
+            return true;
+        }
+        Shop shop = ownedShop(player.getUniqueId().toString());
+        if (shop == null) {
+            send(player, "not-owner");
+            return true;
+        }
+        String sanitized = hex.startsWith("#") ? hex : "#" + hex;
+        if (!sanitized.matches("^#[0-9a-fA-F]{6}$")) {
+            send(player, "invalid-hex");
+            return true;
+        }
+        ChatColor color;
+        try {
+            color = ChatColor.of(sanitized);
+        } catch (IllegalArgumentException e) {
+            send(player, "invalid-hex");
+            return true;
+        }
+        shop.nameColor = color.toString();
+        saveShops();
+        updateSign(shop);
+        send(player, "color-changed");
+        return true;
+    }
+
+    /**
      * Handles admin commands such as renewing all plots or forcibly disbanding one.
      */
     private boolean handleAdmin(Player player, String[] args) {
@@ -486,6 +592,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 target.owner = "";
                 target.coowners.clear();
                 target.nickname = "";
+                target.nameColor = ChatColor.AQUA.toString();
                 target.expires = 0L;
                 target.rented = false;
                 updateSign(target);
@@ -621,16 +728,18 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 if (actual != configFace) side = org.bukkit.block.sign.Side.BACK;
             } catch (IllegalArgumentException ignored) {}
 
+            String name = shop.nickname.isEmpty() ? shop.id : shop.nickname;
+            String coloredName = shop.nameColor + name;
+
             if (!shop.rented) {
-                String name = shop.nickname.isEmpty() ? shop.id : shop.nickname;
-                sign.getSide(side).setLine(0, "For Rent");
-                sign.getSide(side).setLine(1, name);
+                sign.getSide(side).setLine(0, ChatColor.GREEN + "For Rent");
+                sign.getSide(side).setLine(1, coloredName);
                 sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
                 sign.getSide(side).setLine(3, "Max: " + durationLabel(shop.maxExtendTime));
             } else {
                 long remaining = Math.max(0, shop.expires - System.currentTimeMillis());
-                sign.getSide(side).setLine(0, "Rented");
-                sign.getSide(side).setLine(1, shop.nickname.isEmpty() ? shop.id : shop.nickname);
+                sign.getSide(side).setLine(0, ChatColor.of("#ff3300") + "Rented");
+                sign.getSide(side).setLine(1, coloredName);
                 sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
                 sign.getSide(side).setLine(3, durationLabel(remaining));
             }
@@ -684,6 +793,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 shop.owner = "";
                 shop.coowners.clear();
                 shop.nickname = "";
+                shop.nameColor = ChatColor.AQUA.toString();
                 shop.expires = 0L;
                 shop.rented = false;
             }
@@ -700,6 +810,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         final String id;
         /** Player-specified nickname displayed on signs. */
         String nickname;
+        /** Color code prefix for the name on signs. */
+        String nameColor = ChatColor.AQUA.toString();
         /** Sign location data in the format {@code world;x;y;z;facing}. */
         String sign;
         /** Cost to extend rental time. */
