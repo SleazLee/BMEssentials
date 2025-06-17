@@ -12,6 +12,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
@@ -392,6 +398,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.nameColor = "<black>";
         shop.expires = 0L;
         shop.rented = false;
+        clearRegion(shop);
         saveShops();
         updateRegionOwners(shop);
         updateSign(shop);
@@ -655,6 +662,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 target.nameColor = "<black>";
                 target.expires = 0L;
                 target.rented = false;
+                clearRegion(target);
                 updateRegionOwners(target);
                 updateSign(target);
                 saveShops();
@@ -846,6 +854,62 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Clears the entire shop region, removing any QuickShop shops inside and
+     * resetting the terrain using WorldEdit.
+     */
+    private void clearRegion(Shop shop) {
+        if (shop.sign == null || shop.sign.isEmpty()) return;
+        String[] parts = shop.sign.split(";");
+        if (parts.length < 1) return;
+        World world = Bukkit.getWorld(parts[0]);
+        if (world == null) return;
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionManager manager = container.get(BukkitAdapter.adapt(world));
+        if (manager == null) return;
+        ProtectedRegion region = manager.getRegion(shop.id);
+        if (region == null) return;
+
+        BlockVector3 min = region.getMinimumPoint();
+        BlockVector3 max = region.getMaximumPoint();
+
+        // Remove any QuickShop shops within the region bounds
+        Location l1 = new Location(world, min.getBlockX(), -64, min.getBlockZ());
+        Location l2 = new Location(world, max.getBlockX(), 319, max.getBlockZ());
+        QuickShopUtils.removeShopsInCuboid(l1, l2);
+
+        com.sk89q.worldedit.world.World weWorld = BukkitAdapter.adapt(world);
+        try (EditSession session = WorldEdit.getInstance().newEditSession(weWorld)) {
+            session.setBlocks(new CuboidRegion(weWorld,
+                    BlockVector3.at(min.getBlockX(), -64, min.getBlockZ()),
+                    BlockVector3.at(max.getBlockX(), -64, max.getBlockZ())),
+                    BlockTypes.BEDROCK.getDefaultState());
+
+            session.setBlocks(new CuboidRegion(weWorld,
+                    BlockVector3.at(min.getBlockX(), -63, min.getBlockZ()),
+                    BlockVector3.at(max.getBlockX(), 66, max.getBlockZ())),
+                    BlockTypes.STONE.getDefaultState());
+
+            session.setBlocks(new CuboidRegion(weWorld,
+                    BlockVector3.at(min.getBlockX(), 67, min.getBlockZ()),
+                    BlockVector3.at(max.getBlockX(), 69, max.getBlockZ())),
+                    BlockTypes.DIRT.getDefaultState());
+
+            session.setBlocks(new CuboidRegion(weWorld,
+                    BlockVector3.at(min.getBlockX(), 70, min.getBlockZ()),
+                    BlockVector3.at(max.getBlockX(), 70, max.getBlockZ())),
+                    BlockTypes.GRASS_BLOCK.getDefaultState());
+
+            session.setBlocks(new CuboidRegion(weWorld,
+                    BlockVector3.at(min.getBlockX(), 71, min.getBlockZ()),
+                    BlockVector3.at(max.getBlockX(), 319, max.getBlockZ())),
+                    BlockTypes.AIR.getDefaultState());
+            session.flushQueue();
+        } catch (WorldEditException e) {
+            plugin.getLogger().warning("Failed to clear region " + shop.id + ": " + e.getMessage());
+        }
+    }
+
+    /**
      * Formats a duration into a short label used on rental signs.
      *
      * @param millis duration in milliseconds
@@ -894,6 +958,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 shop.nameColor = "<black>";
                 shop.expires = 0L;
                 shop.rented = false;
+                clearRegion(shop);
                 updateRegionOwners(shop);
             }
             updateSign(shop);

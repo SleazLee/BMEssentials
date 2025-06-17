@@ -8,7 +8,7 @@ folia-supported: true
 
 loadbefore: [Lands, ChestSort]
 depend: [WorldGuard, WorldEdit]
-softdepend: [VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms, Lands, BlueMap]
+softdepend: [VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms, Lands, BlueMap, QuickShop-Hikari]
 
 commands:
   bme:
