@@ -135,6 +135,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         Scheduler.runTimer(this::checkExpirations, 20L * 60, 20L * 60);
+        Scheduler.runTimer(this::updateAllSigns, 20L * 30, 20L * 30);
     }
 
     /**
@@ -245,25 +246,38 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 yield handleTransfer(player, args[1]);
             }
             case "extend" -> handleExtend(player);
-            case "rename" -> {
-                if (args.length < 2) {
-                    send(player, "rename-usage");
-                    yield true;
-                }
-                yield handleRename(player, args[1]);
-            }
             case "name" -> {
-                if (args.length < 3) {
+                if (args.length < 2) {
                     send(player, "name-usage");
                     yield true;
                 }
-                if (args[1].equalsIgnoreCase("color")) {
-                    yield handleNameColor(player, args[2]);
-                } else if (args[1].equalsIgnoreCase("hex")) {
-                    yield handleNameHex(player, args[2]);
-                } else {
-                    send(player, "name-usage");
-                    yield true;
+                switch (args[1].toLowerCase(Locale.ROOT)) {
+                    case "color" -> {
+                        if (args.length < 3) {
+                            send(player, "name-usage");
+                            yield true;
+                        }
+                        yield handleNameColor(player, args[2]);
+                    }
+                    case "hex" -> {
+                        if (args.length < 3) {
+                            send(player, "name-usage");
+                            yield true;
+                        }
+                        yield handleNameHex(player, args[2]);
+                    }
+                    case "set" -> {
+                        if (args.length < 3) {
+                            send(player, "name-set-usage");
+                            yield true;
+                        }
+                        String newName = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+                        yield handleRename(player, newName);
+                    }
+                    default -> {
+                        send(player, "name-usage");
+                        yield true;
+                    }
                 }
             }
             case "admin" -> handleAdmin(player, Arrays.copyOfRange(args, 1, args.length));
@@ -280,13 +294,13 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("buy","disband","invite","remove","transfer","extend","rename","name","admin");
+            return Arrays.asList("buy","disband","invite","remove","transfer","extend","name","admin");
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
             return new ArrayList<>(shops.keySet());
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("name")) {
-            return Arrays.asList("color","hex");
+            return Arrays.asList("set","color","hex");
         }
         if (args.length == 3 && args[0].equalsIgnoreCase("name") && args[1].equalsIgnoreCase("color")) {
             return new ArrayList<>(COLOR_NAMES);
@@ -886,6 +900,15 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             updateSign(shop);
         }
         saveShops();
+    }
+
+    /**
+     * Updates all shop signs. Scheduled to run periodically.
+     */
+    private void updateAllSigns() {
+        for (Shop shop : shops.values()) {
+            updateSign(shop);
+        }
     }
 
     /**
