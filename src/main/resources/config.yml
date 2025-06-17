@@ -47,7 +47,7 @@ Systems:
         Lower: 20224
         Upper: 29439
       3:
-        Version: 1.21.4
+        Version: 1.21.5
         Lower: 29952
         Upper: 39167
 
@@ -254,7 +254,6 @@ Systems:
       shop-already-rented: '<red>This shop is already rented.</red>'
       already-manage: '<red>You already manage another shop.</red>'
       cannot-afford-shop: '<red>You cannot afford this shop.</red>'
-      shop-not-found: '<red>Shop not found.</red>'
       shop-rented: '<green>Shop rented.</green>'
       not-owner: '<red>You do not own a shop.</red>'
       disband-confirm: '<red>Type /bms disband confirm to disband your shop.</red>'
