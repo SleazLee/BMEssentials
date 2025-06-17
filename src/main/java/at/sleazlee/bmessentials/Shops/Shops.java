@@ -134,7 +134,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         plugin.getCommand("bms").setTabCompleter(this);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
-        Scheduler.runTimer(this::checkExpirations, 20L * 30, 20L * 60);
+        Scheduler.runTimer(this::checkExpirations, 20L * 30, 20L * 30);
     }
 
     /**
