@@ -5,5 +5,6 @@
   extendTime: 604800000
   maxExtendTime: 31536000000
   Owner: ''
+  Rented: false
   CoOwner: ''
   Expires: 0

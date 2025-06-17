@@ -9,6 +9,9 @@ import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Rotatable;
+import org.bukkit.block.sign.Side;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -119,6 +122,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             shop.extendTime = sec.getLong("extendTime", 604800000L);
             shop.maxExtendTime = sec.getLong("maxExtendTime", 31536000000L);
             shop.owner = sec.getString("Owner", "");
+            shop.rented = sec.getBoolean("Rented", !shop.owner.isEmpty());
             String cos = sec.getString("CoOwner", "");
             if (!cos.isEmpty()) {
                 for (String s : cos.split(",")) {
@@ -149,6 +153,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             sec.set("extendTime", shop.extendTime);
             sec.set("maxExtendTime", shop.maxExtendTime);
             sec.set("Owner", shop.owner);
+            sec.set("Rented", shop.rented);
             sec.set("CoOwner", String.join(", ", shop.coowners));
             sec.set("Expires", shop.expires);
         }
@@ -267,7 +272,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             }
             return true;
         }
-        if (!shop.owner.isEmpty()) {
+        if (shop.rented) {
             send(player, "shop-already-rented");
             return true;
         }
@@ -282,6 +287,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.owner = player.getUniqueId().toString();
         shop.nickname = player.getName() + "'s shop";
         shop.expires = System.currentTimeMillis() + shop.extendTime;
+        shop.rented = true;
         saveShops();
         updateSign(shop);
         send(player, "shop-rented");
@@ -309,6 +315,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.coowners.clear();
         shop.nickname = "";
         shop.expires = 0L;
+        shop.rented = false;
         saveShops();
         updateSign(shop);
         send(player, "shop-disbanded");
@@ -450,7 +457,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             case "renewall" -> {
                 long now = System.currentTimeMillis();
                 for (Shop shop : shops.values()) {
-                    if (shop.owner.isEmpty()) continue;
+                    if (!shop.rented) continue;
                     long remaining = Math.max(0, shop.expires - now);
                     if (remaining + shop.extendTime <= shop.maxExtendTime) {
                         shop.expires = now + remaining + shop.extendTime;
@@ -479,6 +486,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 target.coowners.clear();
                 target.nickname = "";
                 target.expires = 0L;
+                target.rented = false;
                 updateSign(target);
                 saveShops();
                 send(player, "admin-disbanded", "region", args[1]);
@@ -550,7 +558,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
 
         event.setCancelled(true);
         Player player = event.getPlayer();
-        if (target.owner.isEmpty()) {
+        if (!target.rented) {
             handleBuy(player, target.id);
         } else if (player.getUniqueId().toString().equals(target.owner) ||
                    target.coowners.contains(player.getUniqueId().toString())) {
@@ -595,22 +603,35 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         int x = (int) Double.parseDouble(parts[1]);
         int y = (int) Double.parseDouble(parts[2]);
         int z = (int) Double.parseDouble(parts[3]);
+        String faceStr = parts.length >= 5 ? parts[4].toUpperCase(Locale.ROOT) : "NORTH";
         Location loc = new Location(world, x, y, z);
         Scheduler.run(loc, () -> {
             Block b = loc.getBlock();
             if (!(b.getState() instanceof Sign sign)) return;
-            if (shop.owner.isEmpty()) {
+            org.bukkit.block.sign.Side side = org.bukkit.block.sign.Side.FRONT;
+            try {
+                BlockFace configFace = BlockFace.valueOf(faceStr);
+                BlockFace actual = BlockFace.NORTH;
+                if (b.getBlockData() instanceof Directional dir) {
+                    actual = dir.getFacing();
+                } else if (b.getBlockData() instanceof Rotatable rot) {
+                    actual = rot.getRotation();
+                }
+                if (actual != configFace) side = org.bukkit.block.sign.Side.BACK;
+            } catch (IllegalArgumentException ignored) {}
+
+            if (!shop.rented) {
                 String name = shop.nickname.isEmpty() ? shop.id : shop.nickname;
-                sign.setLine(0, "For Rent");
-                sign.setLine(1, name);
-                sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
-                sign.setLine(3, "Max: " + durationLabel(shop.maxExtendTime));
+                sign.getSide(side).setLine(0, "For Rent");
+                sign.getSide(side).setLine(1, name);
+                sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
+                sign.getSide(side).setLine(3, "Max: " + durationLabel(shop.maxExtendTime));
             } else {
                 long remaining = Math.max(0, shop.expires - System.currentTimeMillis());
-                sign.setLine(0, "Rented");
-                sign.setLine(1, shop.nickname.isEmpty() ? shop.id : shop.nickname);
-                sign.setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
-                sign.setLine(3, "Expires in: " + durationLabel(remaining));
+                sign.getSide(side).setLine(0, "Rented");
+                sign.getSide(side).setLine(1, shop.nickname.isEmpty() ? shop.id : shop.nickname);
+                sign.getSide(side).setLine(2, shop.price + "/" + timeLabel(shop.extendTime));
+                sign.getSide(side).setLine(3, "Expires in: " + durationLabel(remaining));
             }
             sign.update();
         });
@@ -638,10 +659,17 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         long days = millis / 86400000L;
         long hours = (millis % 86400000L) / 3600000L;
         long mins = (millis % 3600000L) / 60000L;
+        long secs = (millis % 60000L) / 1000L;
         StringBuilder sb = new StringBuilder();
-        if (days > 0) sb.append(days).append("d ");
-        if (hours > 0) sb.append(hours).append("h ");
-        sb.append(mins).append("m");
+        if (days > 0) {
+            sb.append(days).append("d ");
+            if (hours > 0) sb.append(hours).append("h ");
+            if (mins > 0) sb.append(mins).append("m");
+        } else {
+            if (hours > 0) sb.append(hours).append("h ");
+            if (mins > 0) sb.append(mins).append("m ");
+            sb.append(secs).append("s");
+        }
         return sb.toString().trim();
     }
 
@@ -651,11 +679,12 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     private void checkExpirations() {
         long now = System.currentTimeMillis();
         for (Shop shop : shops.values()) {
-            if (!shop.owner.isEmpty() && shop.expires > 0 && shop.expires <= now) {
+            if (shop.rented && shop.expires > 0 && shop.expires <= now) {
                 shop.owner = "";
                 shop.coowners.clear();
                 shop.nickname = "";
                 shop.expires = 0L;
+                shop.rented = false;
             }
             updateSign(shop);
         }
@@ -684,6 +713,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         Set<String> coowners = new HashSet<>();
         /** Timestamp when the rental expires. */
         long expires = 0L;
+        /** Whether the region is currently rented. */
+        boolean rented = false;
 
         Shop(String id) { this.id = id; }
     }
