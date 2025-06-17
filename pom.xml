@@ -193,9 +193,10 @@
         </dependency>
         <dependency>
             <groupId>com.ghostchu</groupId>
-            <artifactId>quickshop-api</artifactId>
-            <version>6.2.0.10-SNAPSHOT-2</version>
+            <artifactId>quickshop-bukkit</artifactId>
+            <version>6.2.0.9-RELEASE-1</version>
             <scope>provided</scope>
+            <classifier>shaded</classifier>
         </dependency>
     </dependencies>
 </project>
