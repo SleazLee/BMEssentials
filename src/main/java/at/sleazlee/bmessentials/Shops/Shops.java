@@ -811,7 +811,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         /** Player-specified nickname displayed on signs. */
         String nickname;
         /** Color code prefix for the name on signs. */
-        String nameColor = ChatColor.AQUA.toString();
+        String nameColor = ChatColor.BLACK.toString();
         /** Sign location data in the format {@code world;x;y;z;facing}. */
         String sign;
         /** Cost to extend rental time. */
