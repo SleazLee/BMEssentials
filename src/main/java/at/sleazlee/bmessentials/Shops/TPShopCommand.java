@@ -1,4 +1,4 @@
-package at.sleazlee.bmessentials.tpshop;
+package at.sleazlee.bmessentials.Shops;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
