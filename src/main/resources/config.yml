@@ -244,7 +244,7 @@ Systems:
     Enabled: true
     Messages:
       players-only: '<red>Only players can use this command.</red>'
-      usage: '<red>Usage: /bms <buy|disband|invite|remove|transfer|extend|name></red>'
+      usage: '<red>Usage: /bms <buy|disband|invite|remove|transfer|extend|name|tp></red>'
       buy-usage: '<red>/bms buy <shop></red>'
       invite-usage: '<red>/bms invite <player></red>'
       remove-usage: '<red>/bms remove <player></red>'
@@ -288,4 +288,6 @@ Systems:
       hex-no-permission: '<red>You do not have permission to use hex colors.</red>'
       invalid-color: '<red>Invalid color.</red>'
       invalid-hex: '<red>Invalid hex color.</red>'
+      tp-set-success: '<green>Shop warp updated.</green>'
+      tp-too-far: '<red>You must be within 9 blocks of your shop.</red>'
 

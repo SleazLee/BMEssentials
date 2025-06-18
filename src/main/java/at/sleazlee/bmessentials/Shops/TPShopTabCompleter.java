@@ -8,11 +8,30 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
 public class TPShopTabCompleter implements TabCompleter {
+
+    /**
+     * Decodes a nickname stored in Base64 for backwards compatibility.
+     * If the value isn't valid Base64, the original string is returned.
+     */
+    private static String decodeNickname(String encoded) {
+        if (encoded == null || encoded.isEmpty()) {
+            return "";
+        }
+        try {
+            byte[] bytes = Base64.getDecoder().decode(encoded);
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException ex) {
+            return encoded;
+        }
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length >= 1) {
@@ -21,13 +40,12 @@ public class TPShopTabCompleter implements TabCompleter {
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
             List<String> nicknames = new ArrayList<>();
-            List<String> ids = new ArrayList<>();
             for (String key : config.getKeys(false)) {
                 String nickname = config.getString(key + ".Nickname", "");
+                nickname = decodeNickname(nickname);
                 if (nickname != null && !nickname.isEmpty()) {
                     nicknames.add(nickname);
                 }
-                ids.add(key);
             }
 
             List<String> result = new ArrayList<>();

@@ -9,18 +9,21 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;273.092635;71.000000;125.168629;47.594040;-1.200340
 
 '002':
   Rented: false
   Nickname: ''
   NameColor: ''
   Price: 100.0
+  # Price: 100.0
   Sign: world;231.0;71.0;128.0;NORTH
   extendTime: 604800000
   maxExtendTime: 31536000000
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;239.882522;71.000000;124.986007;-1.156010;-2.700340
 
 '003':
   Rented: false
@@ -33,6 +36,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;219.161121;71.000000;124.210675;0.251953;-3.750340
 
 '004':
   Rented: false
@@ -45,11 +49,12 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;199.085520;71.000000;124.778348;-0.030246;-1.950271
 
 '005':
   Rented: false
   Nickname: ''
-  NameColor: ''
+  NameColor: <black>
   Price: 100.0
   Sign: world;187.0;71.0;128.0;NORTH
   extendTime: 604800000
@@ -57,6 +62,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;174.322889;71.000000;123.021248;0.614990;-4.200280
 
 '006':
   Rented: false
@@ -69,6 +75,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;127.969338;71.000000;177.791980;-90.490700;-5.400150
 
 '007':
   Rented: false
@@ -81,6 +88,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;127.990021;71.000000;220.758703;-133.608994;-2.850190
 
 '008':
   Rented: false
@@ -93,6 +101,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;127.482027;71.000000;219.554489;-46.918900;-1.200190
 
 '009':
   Rented: false
@@ -105,6 +114,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;125.343793;71.000000;254.538583;-91.287598;-3.450190
 
 '010':
   Rented: false
@@ -117,6 +127,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;126.832781;71.000000;275.003180;-90.789299;-0.450185
 
 '011':
   Rented: false
@@ -129,6 +140,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;126.944994;71.000000;294.419981;-89.863998;-3.450180
 
 '012':
   Rented: false
@@ -141,6 +153,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;127.195882;71.000000;319.771931;-92.044899;-1.800160
 
 '013':
   Rented: false
@@ -153,6 +166,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;182.989267;71.000000;367.531152;177.944000;-4.949900
 
 '014':
   Rented: false
@@ -165,6 +179,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;225.292532;71.000000;366.642186;135.893005;0.750130
 
 '015':
   Rented: false
@@ -177,6 +192,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;223.154311;71.000000;366.559598;-134.106003;-0.749875
 
 '016':
   Rented: false
@@ -189,6 +205,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;258.410982;71.000000;366.575782;179.755005;-3.149870
 
 '017':
   Rented: false
@@ -201,6 +218,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;278.899396;71.000000;366.471901;179.518005;-2.699860
 
 '018':
   Rented: false
@@ -213,6 +231,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;298.649580;71.000000;367.105216;179.834000;-1.799850
 
 '019':
   Rented: false
@@ -225,6 +244,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;323.738706;71.000000;367.611594;179.272003;-0.449845
 
 '020':
   Rented: false
@@ -237,6 +257,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;370.526687;71.000000;312.002329;90.470497;-2.999850
 
 '021':
   Rented: false
@@ -249,6 +270,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;369.346196;71.000000;269.544133;44.783401;-1.949850
 
 '022':
   Rented: false
@@ -261,6 +283,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;370.608370;71.000000;271.010302;136.438004;-0.599844
 
 '023':
   Rented: false
@@ -273,6 +296,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;371.337072;71.000000;235.340782;88.492401;0.150161
 
 '024':
   Rented: false
@@ -285,6 +309,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;371.331770;71.000000;215.447844;89.298302;-1.649840
 
 '025':
   Rented: false
@@ -297,6 +322,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;370.911063;71.000000;195.424668;89.966301;-1.049840
 
 '026':
   Rented: false
@@ -309,6 +335,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;371.722553;71.000000;171.268393;91.207497;-1.199820
 
 '027':
   Rented: false
@@ -321,6 +348,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;315.645558;71.000000;122.442839;-0.327637;1.350200
 
 '028':
   Rented: false
@@ -333,6 +361,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;272.768745;71.000000;124.038144;-46.012501;0.450201
 
 '029':
   Rented: false
@@ -345,11 +374,12 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;272.658464;71.000000;125.414685;146.149994;-0.149787
 
 '030':
   Rented: false
   Nickname: ''
-  NameColor: ''
+  NameColor: <black>
   Price: 100.0
   Sign: world;231.0;71.0;120.0;SOUTH
   extendTime: 604800000
@@ -357,18 +387,21 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;243.083895;71.000000;125.898068;179.279007;-1.649760
 
 '031':
   Rented: false
   Nickname: ''
   NameColor: ''
   Price: 100.0
+  # Price: 100.0
   Sign: world;227.0;71.0;120.0;SOUTH
   extendTime: 604800000
   maxExtendTime: 31536000000
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;219.878029;71.000000;125.654153;179.830994;-1.499760
 
 '032':
   Rented: false
@@ -381,6 +414,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;199.728055;71.000000;125.167545;178.028000;-1.799730
 
 '033':
   Rented: false
@@ -393,6 +427,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;179.675170;71.000000;126.610745;178.776001;-1.499740
 
 '034':
   Rented: false
@@ -405,6 +440,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;163.375458;71.000000;127.106193;152.768997;-1.499720
 
 '035':
   Rented: false
@@ -417,6 +453,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;129.411784;71.000000;159.506488;116.489998;-1.649710
 
 '036':
   Rented: false
@@ -429,18 +466,21 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;128.675886;71.000000;176.146384;89.919899;-0.599700
 
 '037':
   Rented: false
   Nickname: ''
   NameColor: ''
   Price: 100.0
+  # Price: 100.0
   Sign: world;105.0;71.0;216.0;SOUTH
   extendTime: 604800000
   maxExtendTime: 31536000000
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;127.486888;71.000000;220.631864;144.169006;-0.449696
 
 '038':
   Rented: false
@@ -453,6 +493,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;129.003104;71.000000;220.529117;48.622299;1.500300
 
 '039':
   Rented: false
@@ -465,6 +506,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;129.490298;71.000000;251.581967;90.275597;-0.749696
 
 '040':
   Rented: false
@@ -477,6 +519,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;129.571604;71.000000;275.011080;89.794403;-1.349700
 
 '041':
   Rented: false
@@ -489,18 +532,21 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;128.703888;71.000000;294.314571;90.217499;0.750308
 
 '042':
   Rented: false
   Nickname: ''
   NameColor: ''
-  Price: 100.0
+  Price: 1000000.0
+  # Price: 100.0
   Sign: world;124.0;71.0;306.0;EAST
   extendTime: 604800000
   maxExtendTime: 31536000000
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;128.767728;71.000000;314.120963;90.031998;-1.349670
 
 '043':
   Rented: false
@@ -513,6 +559,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;129.532107;71.000000;329.940778;60.423599;-0.599676
 
 '044':
   Rented: false
@@ -525,6 +572,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;165.074450;71.000000;364.271233;40.463100;0.750355
 
 '045':
   Rented: false
@@ -537,6 +585,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;180.365074;71.000000;365.419319;-1.104490;0.750355
 
 '046':
   Rented: false
@@ -549,6 +598,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;226.586785;71.000000;364.822866;51.658199;-1.949640
 
 '047':
   Rented: false
@@ -561,6 +611,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;224.603111;71.000000;364.558271;-38.340801;1.950360
 
 '048':
   Rented: false
@@ -573,6 +624,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;255.368728;71.000000;364.664510;-0.125732;-1.199640
 
 '049':
   Rented: false
@@ -585,6 +637,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;278.464390;71.000000;365.382644;-0.271729;0.000402
 
 '050':
   Rented: false
@@ -597,6 +650,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;297.638245;71.000000;366.326291;-1.035890;-0.749584
 
 '051':
   Rented: false
@@ -609,6 +663,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;317.881548;71.000000;366.385373;-0.888672;-1.949520
 
 '052':
   Rented: false
@@ -621,6 +676,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;331.090372;71.000000;365.215594;-38.711899;0.300479
 
 '053':
   Rented: false
@@ -633,6 +689,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;368.739525;71.000000;330.950715;-63.307400;-0.299517
 
 '054':
   Rented: false
@@ -645,6 +702,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;368.637073;71.000000;313.922564;-91.669701;0.450510
 
 '055':
   Rented: false
@@ -657,6 +715,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;369.890621;71.000000;268.794631;-37.111599;2.250530
 
 '056':
   Rented: false
@@ -669,6 +728,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;368.800750;71.000000;271.274294;-140.153000;1.650540
 
 '057':
   Rented: false
@@ -681,6 +741,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;368.382456;71.000000;238.871993;-90.951897;1.800540
 
 '058':
   Rented: false
@@ -693,6 +754,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;368.802221;71.000000;215.606408;-91.273399;0.300538
 
 '059':
   Rented: false
@@ -705,6 +767,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;369.294742;71.000000;195.135932;-90.389900;0.600550
 
 '060':
   Rented: false
@@ -717,6 +780,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;368.608704;71.000000;175.335456;-88.447304;0.750549
 
 '061':
   Rented: false
@@ -729,6 +793,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;368.518128;71.000000;162.248380;-126.563004;1.350550
 
 '062':
   Rented: false
@@ -741,18 +806,21 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;332.488275;71.000000;125.922398;-136.759003;2.400560
 
 '063':
   Rented: false
   Nickname: ''
   NameColor: ''
   Price: 100.0
+  # Price: 100.0
   Sign: world;326.0;71.0;120.0;SOUTH
   extendTime: 604800000
   maxExtendTime: 31536000000
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;318.741754;71.000000;124.786051;179.854996;-0.149493
 
 '064':
   Rented: false
@@ -765,6 +833,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;272.133304;71.000000;124.961762;-129.302994;2.250510
 
 '065':
   Rented: false
@@ -777,6 +846,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;273.573004;71.000000;70.025773;38.744099;2.550510
 
 '066':
   Rented: false
@@ -789,6 +859,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;243.807152;71.000000;69.137773;0.538574;5.100510
 
 '067':
   Rented: false
@@ -801,6 +872,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;220.714018;71.000000;69.264566;0.101807;1.950510
 
 '068':
   Rented: false
@@ -813,6 +885,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;199.912729;71.000000;69.615141;-0.924316;1.500510
 
 '069':
   Rented: false
@@ -825,6 +898,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;180.337961;71.000000;68.305248;1.204350;0.750510
 
 '070':
   Rented: false
@@ -837,6 +911,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;73.482759;71.000000;175.691776;-90.517799;0.600510
 
 '071':
   Rented: false
@@ -849,6 +924,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;73.524393;71.000000;221.694724;-138.589996;2.550520
 
 '072':
   Rented: false
@@ -861,6 +937,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;72.998154;71.000000;217.876417;-40.510502;1.500520
 
 '073':
   Rented: false
@@ -873,6 +950,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;73.468596;71.000000;250.954665;-90.739304;-1.799460
 
 '074':
   Rented: false
@@ -885,6 +963,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;72.774894;71.000000;274.238366;-90.711700;-0.749458
 
 '075':
   Rented: false
@@ -897,6 +976,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;72.824751;71.000000;294.195430;-90.394798;0.000567
 
 '076':
   Rented: false
@@ -909,6 +989,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;71.926352;71.000000;313.161648;-90.827904;-0.599433
 
 '077':
   Rented: false
@@ -921,6 +1002,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;179.119542;71.000000;419.938198;-178.949997;-0.749435
 
 '078':
   Rented: false
@@ -933,6 +1015,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;224.687918;71.000000;419.353498;130.253998;0.900565
 
 '079':
   Rented: false
@@ -945,6 +1028,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;223.270574;71.000000;420.046629;-135.388000;1.800560
 
 '080':
   Rented: false
@@ -957,11 +1041,12 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;254.574899;71.000000;421.498898;-179.757996;0.900565
 
 '081':
   Rented: false
   Nickname: ''
-  NameColor: ''
+  NameColor: <black>
   Price: 100.0
   Sign: world;286.0;71.0;415.0;SOUTH
   extendTime: 604800000
@@ -969,6 +1054,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;277.733305;71.000000;420.769920;179.707993;-0.449435
 
 '082':
   Rented: false
@@ -981,6 +1067,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;297.655370;71.000000;421.843413;179.895996;-1.499430
 
 '083':
   Rented: false
@@ -993,6 +1080,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;318.521041;71.000000;421.611952;178.567001;-0.899430
 
 '084':
   Rented: false
@@ -1005,6 +1093,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;425.732946;71.000000;314.042594;90.481003;-0.599429
 
 '085':
   Rented: false
@@ -1017,6 +1106,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;424.441724;71.000000;268.736748;41.913101;0.450581
 
 '086':
   Rented: false
@@ -1029,6 +1119,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;424.726387;71.000000;271.240404;137.167007;2.550590
 
 '087':
   Rented: false
@@ -1041,6 +1132,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;426.434512;71.000000;239.521077;89.822800;-2.399400
 
 '088':
   Rented: false
@@ -1053,6 +1145,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;425.142936;71.000000;215.000147;89.678703;-2.249400
 
 '089':
   Rented: false
@@ -1065,6 +1158,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;425.012349;71.000000;196.034318;89.718002;0.150590
 
 '090':
   Rented: false
@@ -1077,6 +1171,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;424.973168;71.000000;176.360071;90.487999;-0.299380
 
 '091':
   Rented: false
@@ -1089,6 +1184,7 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;319.196855;71.000000;68.456972;0.569092;0.000624
 
 '092':
   Rented: false
@@ -1101,3 +1197,4 @@
   Expires: 0
   Owner: ''
   CoOwner: ''
+  DefaultTP: world;271.340069;71.000000;68.977379;-48.433102;2.550620

@@ -19,6 +19,9 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldguard.WorldGuard;
+import net.william278.huskhomes.api.HuskHomesAPI;
+import net.william278.huskhomes.position.Position;
+import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -47,7 +50,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.Base64;
 
 /**
  * Handles the Block Miner Shops system.
@@ -94,6 +99,47 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             "yellow",
             "white"
     );
+
+    /**
+     * Encodes a nickname to a Base64 string for safe YAML storage.
+     */
+    private static String encodeNickname(String nickname) {
+        if (nickname == null || nickname.isEmpty()) {
+            return "";
+        }
+        return Base64.getEncoder()
+                .encodeToString(nickname.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Decodes a nickname previously stored with {@link #encodeNickname}.
+     * If decoding fails, the original value is returned to preserve legacy data.
+     */
+    private static String decodeNickname(String encoded) {
+        if (encoded == null || encoded.isEmpty()) {
+            return "";
+        }
+        try {
+            byte[] bytes = Base64.getDecoder().decode(encoded);
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException ex) {
+            // value wasn't actually Base64 encoded
+            return encoded;
+        }
+    }
+
+    private static String decodeNicknameFromID(String encoded) {
+        if (encoded == null || encoded.isEmpty()) {
+            return "";
+        }
+        try {
+            byte[] bytes = Base64.getDecoder().decode(encoded);
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException ex) {
+            // value wasn't actually Base64 encoded
+            return encoded;
+        }
+    }
 
     /**
      * Sends a formatted message to the given command sender using the
@@ -153,12 +199,13 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             ConfigurationSection sec = shopsConfig.getConfigurationSection(key);
             if (sec == null) continue;
             Shop shop = new Shop(key);
-            shop.nickname = sec.getString("Nickname", "");
+            shop.nickname = decodeNickname(sec.getString("Nickname", ""));
             shop.nameColor = sec.getString("NameColor", "<black>");
             shop.sign = sec.getString("Sign", "");
             shop.price = sec.getDouble("Price", 100.0);
             shop.extendTime = sec.getLong("extendTime", 604800000L);
             shop.maxExtendTime = sec.getLong("maxExtendTime", 31536000000L);
+            shop.defaultTp = sec.getString("DefaultTP", "");
             shop.owner = sec.getString("Owner", "");
             shop.rented = sec.getBoolean("Rented", !shop.owner.isEmpty());
             String cos = sec.getString("CoOwner", "");
@@ -185,12 +232,13 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             Shop shop = shops.get(key);
             ConfigurationSection sec = shopsConfig.getConfigurationSection(key);
             if (sec == null) sec = shopsConfig.createSection(key);
-            sec.set("Nickname", shop.nickname);
+            sec.set("Nickname", encodeNickname(shop.nickname));
             sec.set("NameColor", shop.nameColor);
             sec.set("Sign", shop.sign);
             sec.set("Price", shop.price);
             sec.set("extendTime", shop.extendTime);
             sec.set("maxExtendTime", shop.maxExtendTime);
+            sec.set("DefaultTP", shop.defaultTp);
             sec.set("Owner", shop.owner);
             sec.set("Rented", shop.rented);
             sec.set("CoOwner", String.join(", ", shop.coowners));
@@ -251,6 +299,12 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 yield handleTransfer(player, args[1]);
             }
             case "extend" -> handleExtend(player);
+            case "tp" -> {
+                if (args.length >= 2 && args[1].equalsIgnoreCase("set")) {
+                    yield handleTpSet(player);
+                }
+                yield handleTp(player);
+            }
             case "rename","name" -> {
                 if (args.length < 2) {
                     send(player, "name-usage");
@@ -301,7 +355,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         // level-1: sub-commands
         if (args.length == 1) {
             List<String> completions = new ArrayList<>(Arrays.asList(
-                    "buy", "disband", "invite", "remove", "transfer", "extend", "name", "rename"
+                    "buy", "disband", "invite", "remove", "transfer", "extend", "name", "rename", "tp"
             ));
             if (sender.isOp()) {
                 completions.add("admin");
@@ -319,6 +373,11 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 && (args[0].equalsIgnoreCase("name") || args[0].equalsIgnoreCase("rename")))
         {
             return Arrays.asList("set", "color", "hex");
+        }
+
+        // level-2: "tp" sub-command
+        if (args.length == 2 && args[0].equalsIgnoreCase("tp")) {
+            return Collections.singletonList("set");
         }
 
         // level-3: color names under name/rename color
@@ -399,8 +458,9 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.nameColor = "<black>";
         shop.expires = System.currentTimeMillis() + shop.extendTime;
         shop.rented = true;
-        saveShops();
         updateRegionOwners(shop);
+        resetWarpLocation(shop);
+        saveShops();
         updateSign(shop);
         send(player, "shop-rented");
         return true;
@@ -615,6 +675,81 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Teleports the player to their shop warp.
+     */
+    private boolean handleTp(Player player) {
+        Shop shop = managedShop(player.getUniqueId().toString());
+        if (shop == null) {
+            send(player, "not-manage");
+            return true;
+        }
+        HuskHomesAPIHook.warpPlayer(player, shop.id);
+        return true;
+    }
+
+    /**
+     * Sets the HuskHomes warp for the player's shop to their current location
+     * if they are within 9 blocks of their shop region.
+     */
+    private boolean handleTpSet(Player player) {
+        Shop shop = ownedShop(player.getUniqueId().toString());
+        if (shop == null) {
+            send(player, "not-owner");
+            return true;
+        }
+
+        if (shop.sign == null || shop.sign.isEmpty()) {
+            send(player, "shop-not-found");
+            return true;
+        }
+
+        String[] parts = shop.sign.split(";");
+        org.bukkit.World world = Bukkit.getWorld(parts[0]);
+        if (world == null) {
+            send(player, "shop-not-found");
+            return true;
+        }
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionManager manager = container.get(BukkitAdapter.adapt(world));
+        if (manager == null) {
+            send(player, "shop-not-found");
+            return true;
+        }
+        ProtectedRegion region = manager.getRegion(shop.id);
+        if (region == null) {
+            send(player, "shop-not-found");
+            return true;
+        }
+
+        Location loc = player.getLocation();
+        BlockVector3 min = region.getMinimumPoint();
+        BlockVector3 max = region.getMaximumPoint();
+        double cx = Math.max(min.x(), Math.min(max.x(), loc.getX()));
+        double cy = Math.max(min.y(), Math.min(max.y(), loc.getY()));
+        double cz = Math.max(min.z(), Math.min(max.z(), loc.getZ()));
+        double distance = loc.distance(new Location(world, cx, cy, cz));
+
+        if (distance > 9) {
+            send(player, "tp-too-far");
+            return true;
+        }
+
+        String serverName = plugin.getConfig().getString("serverName", "server");
+        HuskHomesAPI api = HuskHomesAPI.getInstance();
+        Position pos = api.adaptPosition(loc, serverName);
+        api.getWarp(shop.id).thenAccept(opt -> {
+            if (opt.isPresent()) {
+                api.relocateWarp(shop.id, pos);
+            } else {
+                api.createWarp(shop.id, pos);
+            }
+        });
+
+        send(player, "tp-set-success");
+        return true;
+    }
+
+    /**
      * Changes the sign color using a hex code.
      */
     private boolean handleNameHex(Player player, String hex) {
@@ -695,11 +830,17 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 target.rented = false;
                 clearRegion(target);
                 updateRegionOwners(target);
+                resetWarpLocation(target);
                 updateSign(target);
                 saveShops();
                 send(player, "admin-disbanded", "region", args[1]);
                 return true;
             }
+//            case "readinwarps" -> {
+//                readDefaultWarps();
+//                send(player, "admin-readinwarps");
+//                return true;
+//            }
             default -> {
                 send(player, "admin-usage");
                 return true;
@@ -998,6 +1139,66 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Moves the HuskHomes warp for a shop back to its default location if defined.
+     */
+    private void resetWarpLocation(Shop shop) {
+        if (shop.defaultTp == null || shop.defaultTp.isEmpty()) {
+            return;
+        }
+        String[] parts = shop.defaultTp.split(";");
+        if (parts.length < 6) {
+            return;
+        }
+        org.bukkit.World world = Bukkit.getWorld(parts[0]);
+        if (world == null) {
+            return;
+        }
+        double x, y, z; float yaw, pitch;
+        try {
+            x = Double.parseDouble(parts[1]);
+            y = Double.parseDouble(parts[2]);
+            z = Double.parseDouble(parts[3]);
+            yaw = Float.parseFloat(parts[4]);
+            pitch = Float.parseFloat(parts[5]);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        Location loc = new Location(world, x, y, z, yaw, pitch);
+        String serverName = plugin.getConfig().getString("serverName", "server");
+        HuskHomesAPI api = HuskHomesAPI.getInstance();
+        Position pos = api.adaptPosition(loc, serverName);
+        api.getWarp(shop.id).thenAccept(opt -> {
+            if (opt.isPresent()) {
+                api.relocateWarp(shop.id, pos);
+            } else {
+                api.createWarp(shop.id, pos);
+            }
+        });
+    }
+
+//    /**
+//     * Reads existing HuskHomes warp positions and stores them as defaults.
+//     */
+//    private void readDefaultWarps() {
+//        HuskHomesAPI api = HuskHomesAPI.getInstance();
+//        for (Shop shop : shops.values()) {
+//            api.getWarp(shop.id).thenAccept(opt -> opt.ifPresent(warp -> {
+//                String worldName = warp.getWorld().getName();
+//                shop.defaultTp = String.format(
+//                        "%s;%f;%f;%f;%f;%f",
+//                        worldName,
+//                        warp.getX(),
+//                        warp.getY(),
+//                        warp.getZ(),
+//                        warp.getYaw(),
+//                        warp.getPitch()
+//                );
+//                saveShops();
+//            }));
+//        }
+//    }
+
+    /**
      * Container for shop configuration and runtime state.
      */
     private static class Shop {
@@ -1009,6 +1210,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         String nameColor = "<black>";
         /** Sign location data in the format {@code world;x;y;z;facing}. */
         String sign;
+        /** Default warp location string {@code world;x;y;z;yaw;pitch}. */
+        String defaultTp = "";
         /** Cost to extend rental time. */
         double price;
         /** Amount of time purchased per extension in milliseconds. */

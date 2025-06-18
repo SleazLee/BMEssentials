@@ -240,7 +240,7 @@ commands:
 
   bms:
     description: Manage Block Miner shops.
-    usage: /bms <buy [shop]|disband|invite|remove|transfer|extend|rename|admin>
+    usage: /bms <buy [shop]|disband|invite|remove|transfer|extend|rename|tp|admin>
 
 
 permissions:

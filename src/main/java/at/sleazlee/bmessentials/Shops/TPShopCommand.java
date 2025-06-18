@@ -10,8 +10,26 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class TPShopCommand implements CommandExecutor {
+
+    /**
+     * Decodes a nickname stored in Base64 for backwards compatibility.
+     * If the value isn't valid Base64, the original string is returned.
+     */
+    private static String decodeNickname(String encoded) {
+        if (encoded == null || encoded.isEmpty()) {
+            return "";
+        }
+        try {
+            byte[] bytes = Base64.getDecoder().decode(encoded);
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException ex) {
+            return encoded;
+        }
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -20,7 +38,7 @@ public class TPShopCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            player.sendMessage("§b§lBMS§7 You need the shops plot number! Try §b/tpshop §8<§b###§8>§7.");
+            player.sendMessage("§b§lBMS§7 You need the shops name! Try §b/tpshop §8<§bName§8>§7.");
             return true;
         }
 
@@ -36,6 +54,7 @@ public class TPShopCommand implements CommandExecutor {
                 break;
             }
             String nickname = config.getString(key + ".Nickname", "");
+            nickname = decodeNickname(nickname);
             if (!nickname.isEmpty() && nickname.equalsIgnoreCase(query)) {
                 matchId = key;
                 break;
@@ -45,7 +64,7 @@ public class TPShopCommand implements CommandExecutor {
         if (matchId != null) {
             Bukkit.getServer().dispatchCommand(player, "warp " + matchId);
         } else {
-            player.sendMessage("§b§lBMS§7 You need the shops plot number! Try §b/tpshop §8<§b###§8>§7.");
+            player.sendMessage("§b§lBMS§7 You need the shops name! Try §b/tpshop §8<§bName§8>§7.");
         }
 
         return true;
