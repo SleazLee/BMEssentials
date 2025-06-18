@@ -251,7 +251,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 yield handleTransfer(player, args[1]);
             }
             case "extend" -> handleExtend(player);
-            case "name" -> {
+            case "rename","name" -> {
                 if (args.length < 2) {
                     send(player, "name-usage");
                     yield true;
@@ -298,26 +298,57 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
      */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        // level-1: sub-commands
         if (args.length == 1) {
-            return Arrays.asList("buy","disband","invite","remove","transfer","extend","name","admin");
+            List<String> completions = new ArrayList<>(Arrays.asList(
+                    "buy", "disband", "invite", "remove", "transfer", "extend", "name", "rename"
+            ));
+            if (sender.isOp()) {
+                completions.add("admin");
+            }
+            return completions;
         }
+
+        // level-2: “buy” shops
         if (args.length == 2 && args[0].equalsIgnoreCase("buy")) {
             return new ArrayList<>(shops.keySet());
         }
-        if (args.length == 2 && args[0].equalsIgnoreCase("name")) {
-            return Arrays.asList("set","color","hex");
+
+        // level-2: “name” / “rename” actions
+        if (args.length == 2
+                && (args[0].equalsIgnoreCase("name") || args[0].equalsIgnoreCase("rename")))
+        {
+            return Arrays.asList("set", "color", "hex");
         }
-        if (args.length == 3 && args[0].equalsIgnoreCase("name") && args[1].equalsIgnoreCase("color")) {
+
+        // level-3: color names under name/rename color
+        if (args.length == 3
+                && (args[0].equalsIgnoreCase("name") || args[0].equalsIgnoreCase("rename"))
+                && args[1].equalsIgnoreCase("color"))
+        {
             return new ArrayList<>(COLOR_NAMES);
         }
-        if (args.length == 2 && args[0].equalsIgnoreCase("admin")) {
-            return Arrays.asList("renewall","disband");
+
+        // level-2: admin actions (ops only)
+        if (args.length == 2
+                && args[0].equalsIgnoreCase("admin")
+                && sender.isOp())
+        {
+            return Arrays.asList("renewall", "disband");
         }
-        if (args.length == 3 && args[0].equalsIgnoreCase("admin") && args[1].equalsIgnoreCase("disband")) {
+
+        // level-3: shops under admin disband (ops only)
+        if (args.length == 3
+                && args[0].equalsIgnoreCase("admin")
+                && args[1].equalsIgnoreCase("disband")
+                && sender.isOp())
+        {
             return new ArrayList<>(shops.keySet());
         }
+
         return Collections.emptyList();
     }
+
 
     /**
      * Gets the shop region the player is currently standing in.

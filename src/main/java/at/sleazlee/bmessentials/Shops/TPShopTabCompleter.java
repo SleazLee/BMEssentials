@@ -36,11 +36,6 @@ public class TPShopTabCompleter implements TabCompleter {
                     result.add(name);
                 }
             }
-            for (String id : ids) {
-                if (id.toLowerCase().startsWith(prefix)) {
-                    result.add(id);
-                }
-            }
             return result;
         }
         return Collections.emptyList();
