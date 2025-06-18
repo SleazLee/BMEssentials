@@ -17,7 +17,7 @@ commands:
 
   tpshop:
     description: Sends the player to a shop of their choosing.
-    usage: /tpshop <###>
+    usage: /tpshop <shop>
 
   wild:
     description: Teleport to a random location.
