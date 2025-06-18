@@ -57,7 +57,7 @@ public class InvseeCommand implements CommandExecutor, Listener {
             sender.sendMessage(mm.deserialize("<red>This command can only be used by players.</red>"));
             return true;
         }
-        if (!player.hasPermission("bm.invsee.use")) {
+        if (!player.hasPermission("bmessentials.invsee.use")) {
             player.sendMessage(mm.deserialize("<red>You do not have permission to use this command.</red>"));
             return true;
         }

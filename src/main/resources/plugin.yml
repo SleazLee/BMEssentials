@@ -232,7 +232,7 @@ commands:
   invsee:
     description: View and edit another player's inventory.
     usage: /invsee <player>
-    permission: bm.invsee.use
+    permission: bmessentials.invsee.use
 
   seen:
     description: Shows when a player was last online.
@@ -264,6 +264,14 @@ permissions:
     description: Access to all economy admin commands
     default: op
 
-  bm.invsee.use:
+  bmessentials.invsee.use:
     description: Allows the player to open other players' inventories.
     default: op
+
+  bmessentials.shops.color:
+    description: Allows the player chose any Legacy color for their shops name on the shops sign.
+    default: false
+
+  bmessentials.shops.hex:
+    description: Allows the player chose any Hex color for their shops name on the shops sign.
+    default: false

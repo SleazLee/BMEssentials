@@ -649,7 +649,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
      * Changes the sign color using a named ChatColor.
      */
     private boolean handleNameColor(Player player, String colorName) {
-        if (!player.hasPermission("bm.shops.color")) {
+        if (!player.hasPermission("bmessentials.shops.color")) {
             send(player, "color-no-permission");
             return true;
         }
@@ -753,7 +753,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
      * Changes the sign color using a hex code.
      */
     private boolean handleNameHex(Player player, String hex) {
-        if (!player.hasPermission("bm.shops.hex")) {
+        if (!player.hasPermission("bmessentials.shops.hex")) {
             send(player, "hex-no-permission");
             return true;
         }
