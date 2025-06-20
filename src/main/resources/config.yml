@@ -166,6 +166,10 @@ Systems:
   Containers:
     Enabled: true
 
+  # Allows applying unsafe enchantment books to items using anvils.
+  CombineSystem:
+    Enabled: true
+
   # Enables the Velocity Tell system.
   VTell:
     Enabled: true
