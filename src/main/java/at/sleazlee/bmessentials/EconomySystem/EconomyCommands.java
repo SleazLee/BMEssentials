@@ -388,7 +388,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleEcoGive(CommandSender sender, String[] args) {
-        // Check OP (or could check a permission "bmessentials.eco.give")
+        // Check OP
         if (!sender.isOp()) {
             sender.sendMessage(mini("<red>You must be OP (or have permission) to run this command."));
             return true;

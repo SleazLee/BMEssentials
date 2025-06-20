@@ -30,7 +30,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Rotatable;
-import org.bukkit.block.sign.Side;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -78,6 +77,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     private final FileConfiguration config;
     /** MiniMessage instance for formatting output. */
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
+    /** Pending co-owner invites indexed by the invitee's UUID. */
+    private final Map<UUID, Invite> pendingInvites = new HashMap<>();
 
     /** Tab suggestions for the named colors. */
     private static final List<String> COLOR_NAMES = List.of(
@@ -187,6 +188,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         Scheduler.runTimer(this::checkExpirations, 20L * 30, 20L * 30);
+        // periodically clean up expired co-owner invites
+        Scheduler.runTimer(this::cleanupInvites, 20L * 60, 20L * 60);
     }
 
     /**
@@ -298,6 +301,9 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 }
                 yield handleTransfer(player, args[1]);
             }
+            case "leave" -> handleLeave(player, args);
+            case "accept" -> handleAccept(player);
+            case "decline" -> handleDecline(player, sender);
             case "extend" -> handleExtend(player);
             case "tp" -> {
                 if (args.length >= 2 && args[1].equalsIgnoreCase("set")) {
@@ -355,7 +361,8 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         // level-1: sub-commands
         if (args.length == 1) {
             List<String> completions = new ArrayList<>(Arrays.asList(
-                    "buy", "disband", "invite", "remove", "transfer", "extend", "name", "rename", "tp"
+                    "buy", "disband", "invite", "remove", "transfer", "leave",
+                    "accept", "decline", "extend", "name", "rename", "tp"
             ));
             if (sender.isOp()) {
                 completions.add("admin");
@@ -459,7 +466,6 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         shop.expires = System.currentTimeMillis() + shop.extendTime;
         shop.rented = true;
         updateRegionOwners(shop);
-        resetWarpLocation(shop);
         saveShops();
         updateSign(shop);
         send(player, "shop-rented");
@@ -492,6 +498,7 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         clearRegion(shop);
         saveShops();
         updateRegionOwners(shop);
+        resetWarpLocation(shop);
         updateSign(shop);
         send(player, "shop-disbanded");
         return true;
@@ -523,11 +530,18 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             send(player, "player-already-manages");
             return true;
         }
-        shop.coowners.add(target.getUniqueId().toString());
-        saveShops();
-        updateRegionOwners(shop);
-        send(player, "coowner-added", "player", target.getName());
-        send(target, "you-are-coowner", "id", shop.id);
+        pendingInvites.put(target.getUniqueId(),
+                new Invite(shop.id, player.getUniqueId(), System.currentTimeMillis() + 180_000));
+
+        send(player, "invite-sent", "player", target.getName());
+        String msg = String.format(
+                "<green><bold>%s</bold> has requested you to Co-Own their shop.<newline><gray>Click an option: " +
+                        "<click:run_command:/bms accept><hover:show_text:'<green>Accept and become a Co-Owner.'>" +
+                        "<green><bold>Accept</bold></hover></click> <dark_gray>/ " +
+                        "<click:run_command:/bms decline><hover:show_text:'<#ff3300>Decline to become a Co-Owner.'>" +
+                        "<#ff3300><bold>Decline</bold></hover></click>",
+                player.getName());
+        target.sendMessage(miniMessage.deserialize(msg));
         return true;
     }
 
@@ -579,8 +593,12 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
             send(player, "not-your-coowner");
             return true;
         }
+        String oldOwner = shop.owner;
         shop.owner = target.getUniqueId().toString();
         shop.coowners.remove(target.getUniqueId().toString());
+        if (oldOwner != null && !oldOwner.isEmpty()) {
+            shop.coowners.add(oldOwner);
+        }
         shop.nickname = "";
         shop.nameColor = "<black>";
         saveShops();
@@ -588,6 +606,78 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         updateSign(shop);
         send(player, "ownership-transferred");
         send(target, "you-now-own", "id", shop.id);
+        return true;
+    }
+
+    /**
+     * Allows a co-owner to remove themselves from a shop.
+     */
+    private boolean handleLeave(Player player, String[] args) {
+        Shop shop = managedShop(player.getUniqueId().toString());
+        if (shop == null) {
+            send(player, "not-manage");
+            return true;
+        }
+        if (shop.owner.equals(player.getUniqueId().toString())) {
+            send(player, "leave-owner");
+            return true;
+        }
+        if (args.length < 2 || !args[1].equalsIgnoreCase("confirm")) {
+            send(player, "leave-confirm");
+            return true;
+        }
+        shop.coowners.remove(player.getUniqueId().toString());
+        saveShops();
+        updateRegionOwners(shop);
+        send(player, "left-shop", "id", shop.id);
+        return true;
+    }
+
+    /**
+     * Accepts a pending co-owner invite.
+     */
+    private boolean handleAccept(Player player) {
+        cleanupInvites();
+        Invite invite = pendingInvites.remove(player.getUniqueId());
+        if (invite == null) {
+            send(player, "invite-expired");
+            return true;
+        }
+        Shop shop = shops.get(invite.shopId);
+        if (shop == null) {
+            send(player, "shop-not-found");
+            return true;
+        }
+        if (ownsShop(player.getUniqueId().toString()) || shop.coowners.contains(player.getUniqueId().toString())) {
+            send(player, "player-already-manages");
+            return true;
+        }
+        shop.coowners.add(player.getUniqueId().toString());
+        saveShops();
+        updateRegionOwners(shop);
+        Player inviter = Bukkit.getPlayer(invite.inviter);
+        if (inviter != null) {
+            send(inviter, "coowner-added", "player", player.getName());
+        }
+        send(player, "you-are-coowner", "id", shop.id);
+        return true;
+    }
+
+    /**
+     * Declines a pending co-owner invite.
+     */
+    private boolean handleDecline(Player player, CommandSender sender) {
+        cleanupInvites();
+        Invite invite = pendingInvites.remove(player.getUniqueId());
+        if (invite == null) {
+            send(player, "invite-expired");
+            return true;
+        }
+        Player inviter = Bukkit.getPlayer(invite.inviter);
+        if (inviter != null) {
+            send(inviter, "invite-declined", "player", player.getName());
+        }
+        send(player, "invite-declined-you", "sender", sender.getName());
         return true;
     }
 
@@ -1139,6 +1229,14 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
     }
 
     /**
+     * Removes expired co-owner invites from memory.
+     */
+    private void cleanupInvites() {
+        long now = System.currentTimeMillis();
+        pendingInvites.entrySet().removeIf(e -> e.getValue().expires <= now);
+    }
+
+    /**
      * Moves the HuskHomes warp for a shop back to its default location if defined.
      */
     private void resetWarpLocation(Shop shop) {
@@ -1197,6 +1295,22 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
 //            }));
 //        }
 //    }
+
+    /**
+     * Container for shop configuration and runtime state.
+     */
+    /** Container for a pending co-owner invite. */
+    private static class Invite {
+        final String shopId;
+        final UUID inviter;
+        final long expires;
+
+        Invite(String shopId, UUID inviter, long expires) {
+            this.shopId = shopId;
+            this.inviter = inviter;
+            this.expires = expires;
+        }
+    }
 
     /**
      * Container for shop configuration and runtime state.
