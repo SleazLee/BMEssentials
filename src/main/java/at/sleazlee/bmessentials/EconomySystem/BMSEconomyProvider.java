@@ -383,6 +383,46 @@ public class BMSEconomyProvider implements Economy {
         return new EconomyResponse(amount, BigDecimal.valueOf(newVal), EconomyResponse.ResponseType.SUCCESS, "");
     }
 
+    // -------------------------
+    // Set (VaultUnlocked 2.10+)
+    // -------------------------
+    @NotNull
+    @Override
+    public EconomyResponse set(@NotNull String pluginName,
+                               @NotNull UUID accountID,
+                               @NotNull BigDecimal amount) {
+        return set(pluginName, accountID, "no_world", amount);
+    }
+
+    @NotNull
+    @Override
+    public EconomyResponse set(@NotNull String pluginName,
+                               @NotNull UUID accountID,
+                               @NotNull String worldName,
+                               @NotNull BigDecimal amount) {
+        return set(pluginName, accountID, worldName, CURRENCY_DOLLARS, amount);
+    }
+
+    @NotNull
+    @Override
+    public EconomyResponse set(@NotNull String pluginName,
+                               @NotNull UUID accountID,
+                               @NotNull String worldName,
+                               @NotNull String currency,
+                               @NotNull BigDecimal amount) {
+        if (!hasAccount(accountID) || !hasCurrency(currency)) {
+            return new EconomyResponse(amount, BigDecimal.ZERO, EconomyResponse.ResponseType.FAILURE,
+                    "Account or currency doesn't exist.");
+        }
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            return new EconomyResponse(amount, BigDecimal.ZERO, EconomyResponse.ResponseType.FAILURE,
+                    "Cannot set negative amounts.");
+        }
+
+        updateBalance(accountID, currency, amount.doubleValue());
+        return new EconomyResponse(amount, amount, EconomyResponse.ResponseType.SUCCESS, "");
+    }
+
     private void updateBalance(UUID accountID, String currency, double newVal) {
         String uuidStr = accountID.toString();
         if (CURRENCY_VP.equalsIgnoreCase(currency)) {
