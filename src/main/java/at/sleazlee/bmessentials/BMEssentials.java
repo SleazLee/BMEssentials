@@ -58,6 +58,7 @@ import at.sleazlee.bmessentials.wild.*;
 import at.sleazlee.bmessentials.playerutils.InvseeCommand;
 import at.sleazlee.bmessentials.playerutils.InvseeTabCompleter;
 import at.sleazlee.bmessentials.playerutils.SeenCommand;
+import at.sleazlee.bmessentials.CombineSystem.CombineListener;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -373,6 +374,12 @@ public class BMEssentials extends JavaPlugin {
 
             // Anvil
             this.getCommand("anvil").setExecutor(new AnvilCommand());
+        }
+
+        // Combine System
+        if (config.getBoolean("Systems.CombineSystem.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Combine System");
+            getServer().getPluginManager().registerEvents(new CombineListener(), this);
         }
 
         // Inventory tools
