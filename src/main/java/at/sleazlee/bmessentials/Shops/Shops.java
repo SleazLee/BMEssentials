@@ -442,7 +442,6 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         if (shop == null) {
             if (targetShop == null) {
                 send(player, "not-in-shop");
-                send(player, "buy-usage");
             } else {
                 send(player, "shop-not-found");
             }
@@ -695,18 +694,26 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
         }
         long now = System.currentTimeMillis();
         long remaining = Math.max(0, shop.expires - now);
-        if (remaining + shop.extendTime > shop.maxExtendTime) {
+        long maxAdditional = shop.maxExtendTime - remaining;
+        if (maxAdditional <= 0) {
             send(player, "beyond-max");
             return true;
         }
-        if (!withdraw(player, shop.price)) {
+        long added = Math.min(shop.extendTime, maxAdditional);
+        double fraction = (double) added / (double) shop.extendTime;
+        double cost = shop.price * fraction;
+        cost = Math.round(cost * 100.0) / 100.0;
+
+        if (!withdraw(player, cost)) {
             send(player, "cannot-afford-rent");
             return true;
         }
-        shop.expires = now + remaining + shop.extendTime;
+        shop.expires = now + remaining + added;
         saveShops();
         updateSign(shop);
-        send(player, "rent-extended");
+        String amt = String.format("%.2f", cost);
+        String time = durationLabel(added);
+        send(player, "rent-extended", "amount", amt, "time", time);
         return true;
     }
 
