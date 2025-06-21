@@ -10,6 +10,7 @@ import at.sleazlee.bmessentials.AltarSystem.Altars.Obelisk;
 import at.sleazlee.bmessentials.AltarSystem.Altars.WishingWell;
 import at.sleazlee.bmessentials.BlueMapFunctions.MapCommand;
 import at.sleazlee.bmessentials.BlueMapFunctions.MapTabCompleter;
+import at.sleazlee.bmessentials.CombineSystem.CombineListener;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueTabCompleter;
@@ -373,6 +374,12 @@ public class BMEssentials extends JavaPlugin {
 
             // Anvil
             this.getCommand("anvil").setExecutor(new AnvilCommand());
+        }
+
+        // Combine System
+        if (config.getBoolean("Systems.CombineSystem.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Combine System");
+            getServer().getPluginManager().registerEvents(new CombineListener(), this);
         }
 
         // Inventory tools
