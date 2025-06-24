@@ -94,6 +94,9 @@ public class BMEssentials extends JavaPlugin {
     /** The database for the trophy system. */
     private TrophyDatabase trophiesDB;
 
+    /** Database storing pregenerated wild locations. */
+    private WildLocationsDatabase wildDB;
+
     /** The database for the PlayerData system.
      * -- GETTER --
      *  Gets the instance of the DatabaseManager.
@@ -294,12 +297,13 @@ public class BMEssentials extends JavaPlugin {
 
             // Create an instance of WildData with the plugin instance
             WildData wildData = new WildData(this);
+            wildDB = new WildLocationsDatabase(this, wildData);
 
             // Register the NoFallDamage event listener.
             getServer().getPluginManager().registerEvents(new NoFallDamage(), this);
 
             // Instantiate the command executor and tab completer, passing the WildData instance.
-            WildCommand wildCommand = new WildCommand(wildData, this);
+            WildCommand wildCommand = new WildCommand(wildData, wildDB, this);
             WildTabCompleter wildTabCompleter = new WildTabCompleter(wildData);
 
             // Register the /wild command executor and tab completer.
@@ -641,6 +645,10 @@ public class BMEssentials extends JavaPlugin {
         // Close the PlayerData Database Connection
         if (PlayerDataDBManager != null) {
             PlayerDataDBManager.closeConnection();
+        }
+
+        if (wildDB != null) {
+            wildDB.close();
         }
 
         // Log a message to indicate the plugin has been successfully disabled
