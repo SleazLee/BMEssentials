@@ -553,6 +553,19 @@ public class BMEssentials extends JavaPlugin {
             // You can break individual slabs in a double slab block while sneaking
             getServer().getPluginManager().registerEvents(new SneakSlabBreak(), this);
 
+            // Increase beacon effect range when activated
+            getServer().getPluginManager().registerEvents(new BeaconRangeModifier(), this);
+
+            // Enchanting tables retain lapis between uses
+            getServer().getPluginManager().registerEvents(new EnchantTableStoresLapis(this), this);
+
+            // Disables mob spawners while powered by redstone
+            getServer().getPluginManager().registerEvents(new RedstoneDisableSpawner(), this);
+
+            // Bulk compost items by sneaking
+            getServer().getPluginManager().registerEvents(new ComposterBulkProcess(), this);
+
+
         }
 
         // Shops System
