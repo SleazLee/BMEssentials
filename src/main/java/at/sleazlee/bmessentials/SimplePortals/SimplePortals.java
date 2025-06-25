@@ -6,6 +6,7 @@ import at.sleazlee.bmessentials.wild.WildCommand;
 import at.sleazlee.bmessentials.wild.WildData;
 import at.sleazlee.bmessentials.wild.WildLocationsDatabase;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
+import at.sleazlee.bmessentials.wild.WildLocationsDatabase;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
