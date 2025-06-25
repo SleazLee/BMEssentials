@@ -20,8 +20,8 @@ commands:
     usage: /tpshop <shop>
 
   wild:
-    description: Teleport to a random location.
-    usage: /wild [version]
+    description: Teleport to a random location or manage pregenerated spots.
+    usage: /wild [version|admin]
     aliases:
     - rtp
     - randomtp
@@ -275,3 +275,7 @@ permissions:
   bmessentials.shops.hex:
     description: Allows the player chose any Hex color for their shops name on the shops sign.
     default: false
+
+  bmessentials.wild.admin:
+    description: Allows use of /wild admin commands.
+    default: op
