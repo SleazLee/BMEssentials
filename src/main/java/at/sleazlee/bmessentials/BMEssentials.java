@@ -317,7 +317,7 @@ public class BMEssentials extends JavaPlugin {
         // SimplePortals system using WorldGuard regions
         if (config.getBoolean("Systems.SimplePortals.Enabled")) {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled SimplePortals");
-            new SimplePortals(this);
+            new SimplePortals(this, wildDB);
         }
 
         // Spawn Systems

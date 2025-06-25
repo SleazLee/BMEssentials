@@ -5,6 +5,7 @@ import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
 import at.sleazlee.bmessentials.wild.WildCommand;
 import at.sleazlee.bmessentials.wild.WildData;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
+import at.sleazlee.bmessentials.wild.WildLocationsDatabase;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldguard.LocalPlayer;
@@ -23,9 +24,9 @@ import org.bukkit.entity.Player;
  */
 public class SimplePortals {
 
-    public SimplePortals(BMEssentials plugin) {
+    public SimplePortals(BMEssentials plugin, WildLocationsDatabase wildDB) {
         WildData wildData = new WildData(plugin);
-        WildCommand wildCommand = new WildCommand(wildData, plugin);
+        WildCommand wildCommand = new WildCommand(wildData, wildDB, plugin);
         HealCommand healCommand = new HealCommand(plugin);
 
         SessionManager manager = WorldGuard.getInstance().getPlatform().getSessionManager();
