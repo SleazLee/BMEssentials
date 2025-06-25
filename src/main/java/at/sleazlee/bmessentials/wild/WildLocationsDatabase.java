@@ -58,6 +58,7 @@ public class WildLocationsDatabase {
             logger.severe("Error creating table " + table + ": " + e.getMessage());
         }
     }
+
     /**
      * Sanitize a bound/version name for use as a SQLite table. All characters
      * other than letters, numbers and underscore are replaced with an

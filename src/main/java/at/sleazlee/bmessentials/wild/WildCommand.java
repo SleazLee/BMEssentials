@@ -321,38 +321,52 @@ public class WildCommand implements CommandExecutor {
         double centerZ = wildData.getCenterZ();
         double finalY = 345;
         Random random = new Random();
-        int generated = 0;
+        int[] generated = {0};
 
-        while (generated < toGenerate) {
+        World world = plugin.getServer().getWorld("world");
+        if (world == null) {
+            sender.sendMessage("§c§lWild §cWorld not found.");
+            return;
+        }
+
+        Scheduler.Task[] taskHolder = new Scheduler.Task[1];
+        taskHolder[0] = Scheduler.runTimer(() -> {
+            if (generated[0] >= toGenerate) {
+                taskHolder[0].cancel();
+                int total = database.getLocationCount(bound);
+                sender.sendMessage("§aGenerated " + generated[0] + " locations for " + bound + ". Total: " + total);
+                sender.sendMessage("§aGeneration complete.");
+                return;
+            }
+
             double xOffset = random.nextDouble() * (2 * upper) - upper;
             double zOffset = random.nextDouble() * (2 * upper) - upper;
             double chebDist = Math.max(Math.abs(xOffset), Math.abs(zOffset));
             if (chebDist < lower || chebDist > upper) {
-                continue;
+                return;
             }
 
             int finalX = (int) Math.round(centerX + xOffset);
             int finalZ = (int) Math.round(centerZ + zOffset);
 
-            boolean isWater = false;
-            for (int y = 0; y < finalY; y++) {
-                Material type = new Location(plugin.getServer().getWorld("world"), finalX, y, finalZ).getBlock().getType();
-                if (type == Material.WATER) {
-                    isWater = true;
-                    break;
+            Location loc = new Location(world, finalX, 0, finalZ);
+            Scheduler.run(loc, () -> {
+                boolean isWater = false;
+                for (int y = 0; y < finalY; y++) {
+                    Material type = world.getBlockAt(finalX, y, finalZ).getType();
+                    if (type == Material.WATER) {
+                        isWater = true;
+                        break;
+                    }
                 }
-            }
 
-            if (!isWater) {
-                database.insertLocation(bound, finalX, finalZ);
-                sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
-                generated++;
-            }
-        }
-
-        int total = database.getLocationCount(bound);
-        sender.sendMessage("§aGenerated " + generated + " locations for " + bound + ". Total: " + total);
-        sender.sendMessage("§aGeneration complete.");
+                if (!isWater) {
+                    database.insertLocationAsync(bound, finalX, finalZ);
+                    sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
+                    generated[0]++;
+                }
+            });
+        }, 0L, 10L);
     }
 
     /**
