@@ -4,6 +4,7 @@ import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.SpawnSystems.HealCommand;
 import at.sleazlee.bmessentials.wild.WildCommand;
 import at.sleazlee.bmessentials.wild.WildData;
+import at.sleazlee.bmessentials.wild.WildLocationsDatabase;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
 import at.sleazlee.bmessentials.wild.WildLocationsDatabase;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;

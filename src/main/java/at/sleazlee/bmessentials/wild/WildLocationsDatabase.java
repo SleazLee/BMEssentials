@@ -58,9 +58,18 @@ public class WildLocationsDatabase {
             logger.severe("Error creating table " + table + ": " + e.getMessage());
         }
     }
-
+    /**
+     * Sanitize a bound/version name for use as a SQLite table. All characters
+     * other than letters, numbers and underscore are replaced with an
+     * underscore. If the resulting name does not begin with a letter or
+     * underscore, a 'v' prefix is added to produce a valid identifier.
+     */
     private String sanitize(String version) {
-        return version.replaceAll("[^a-zA-Z0-9_]", "_");
+        String table = version.replaceAll("[^a-zA-Z0-9_]", "_");
+        if (!table.matches("^[A-Za-z_].*")) {
+            table = "v" + table;
+        }
+        return table;
     }
 
     public void insertLocation(String version, int x, int z) {
