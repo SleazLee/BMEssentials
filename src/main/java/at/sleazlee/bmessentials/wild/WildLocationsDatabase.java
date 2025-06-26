@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class WildLocationsDatabase {
 
     /** Maximum number of locations to store per version. */
-    private static final int MAX_LOCATIONS = 5000;
+    public static final int MAX_LOCATIONS = 10000;
 
     private final JavaPlugin plugin;
     private final Logger logger;
@@ -32,7 +32,7 @@ public class WildLocationsDatabase {
         }
     }
 
-    private void connect() {
+    private synchronized void connect() {
         try {
             if (connection != null && !connection.isClosed()) {
                 return;
@@ -47,13 +47,13 @@ public class WildLocationsDatabase {
         }
     }
 
-    private void createTables(Set<String> versions) {
+    private synchronized void createTables(Set<String> versions) {
         for (String version : versions) {
             createTable(version);
         }
     }
 
-    private void createTable(String version) {
+    private synchronized void createTable(String version) {
         String table = sanitize(version);
         try (Statement stmt = connection.createStatement()) {
             stmt.execute("CREATE TABLE IF NOT EXISTS " + table + " (" +
@@ -66,7 +66,7 @@ public class WildLocationsDatabase {
         }
     }
 
-    private void createTrackerTable() {
+    private synchronized void createTrackerTable() {
         try (Statement stmt = connection.createStatement()) {
             stmt.execute("CREATE TABLE IF NOT EXISTS wild_tracker (" +
                     "version TEXT PRIMARY KEY," +
@@ -77,7 +77,7 @@ public class WildLocationsDatabase {
         }
     }
 
-    private void ensureTrackerRow(String version) {
+    private synchronized void ensureTrackerRow(String version) {
         String table = sanitize(version);
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT OR IGNORE INTO wild_tracker(version,current) VALUES(?,1)")) {
@@ -102,12 +102,17 @@ public class WildLocationsDatabase {
         return table;
     }
 
-    public void insertLocation(String version, int x, int z) {
+    /**
+     * Insert a location into the database if under the MAX_LOCATIONS limit.
+     *
+     * @return {@code true} if the location was inserted
+     */
+    public synchronized boolean insertLocation(String version, int x, int z) {
         createTable(version);
         String table = sanitize(version);
         ensureTrackerRow(version);
         if (getLocationCount(version) >= MAX_LOCATIONS) {
-            return;
+            return false;
         }
 
         String sql = "INSERT INTO " + table + " (x, z) VALUES (?, ?)";
@@ -115,8 +120,10 @@ public class WildLocationsDatabase {
             pstmt.setInt(1, x);
             pstmt.setInt(2, z);
             pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             logger.severe("Error inserting location into " + table + ": " + e.getMessage());
+            return false;
         }
     }
 
@@ -129,11 +136,11 @@ public class WildLocationsDatabase {
      * @param z        z-coordinate
      * @param callback optional task to run on the main server thread when done
      */
-    public void insertLocationAsync(String version, int x, int z, Runnable callback) {
+    public void insertLocationAsync(String version, int x, int z, Consumer<Boolean> callback) {
         Scheduler.runAsync(() -> {
-            insertLocation(version, x, z);
+            boolean inserted = insertLocation(version, x, z);
             if (callback != null) {
-                Scheduler.run(callback);
+                Scheduler.run(() -> callback.accept(inserted));
             }
         });
     }
@@ -151,7 +158,7 @@ public class WildLocationsDatabase {
      * @param version the version/bound name
      * @return the x/z pair or {@code null} if none are stored
      */
-    public int[] getNextLocation(String version) {
+    public synchronized int[] getNextLocation(String version) {
         createTable(version);
         ensureTrackerRow(version);
         String table = sanitize(version);
@@ -239,7 +246,7 @@ public class WildLocationsDatabase {
         });
     }
 
-    public int getLocationCount(String version) {
+    public synchronized int getLocationCount(String version) {
         String table = sanitize(version);
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS cnt FROM " + table);
@@ -267,7 +274,7 @@ public class WildLocationsDatabase {
      *
      * @param version the bound/version name
      */
-    public void purgeLocations(String version) {
+    public synchronized void purgeLocations(String version) {
         String table = sanitize(version);
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("DELETE FROM " + table);
@@ -294,7 +301,7 @@ public class WildLocationsDatabase {
         });
     }
 
-    public void close() {
+    public synchronized void close() {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();

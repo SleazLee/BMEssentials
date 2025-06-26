@@ -84,8 +84,8 @@ public class WildCommand implements CommandExecutor {
                     case "clear":
                         if (args.length >= 3) {
                             String bound = args[2];
-                            database.purgeLocations(bound);
-                            sender.sendMessage("§aCleared locations for " + bound);
+                            database.purgeLocationsAsync(bound, () ->
+                                    sender.sendMessage("§aCleared locations for " + bound));
                         } else {
                             sender.sendMessage("§c§lWild §cUsage: /wild admin clear <bound>");
                         }
@@ -93,8 +93,8 @@ public class WildCommand implements CommandExecutor {
                     case "count":
                         if (args.length >= 3) {
                             String bound = args[2];
-                            int count = database.getLocationCount(bound);
-                            sender.sendMessage("§a" + count + " stored locations for " + bound);
+                            database.getLocationCountAsync(bound, count ->
+                                    sender.sendMessage("§a" + count + " stored locations for " + bound));
                         } else {
                             sender.sendMessage("§c§lWild §cUsage: /wild admin count <bound>");
                         }
@@ -334,7 +334,8 @@ public class WildCommand implements CommandExecutor {
 //    }
 
     /**
-     * Generates and stores random locations for the specified bound until 10000 entries exist.
+     * Generates and stores random locations for the specified bound until
+     * {@link WildLocationsDatabase#MAX_LOCATIONS} entries exist.
      */
     private void generateLocations(CommandSender sender, String bound) {
         WildData.CoordinateBounds bounds = wildData.getBounds(bound);
@@ -343,37 +344,38 @@ public class WildCommand implements CommandExecutor {
             return;
         }
 
-        int current = database.getLocationCount(bound);
-        int target = 10000;
-        int toGenerate = target - current;
-        if (toGenerate <= 0) {
-            sender.sendMessage("§aAlready have " + current + " locations for " + bound);
-            return;
-        }
-
-        double lower = bounds.getLower();
-        double upper = bounds.getUpper();
-        double centerX = wildData.getCenterX();
-        double centerZ = wildData.getCenterZ();
-        double finalY = 345;
-        Random random = new Random();
-        int[] generated = {0};
-
-        World world = plugin.getServer().getWorld("world");
-        if (world == null) {
-            sender.sendMessage("§c§lWild §cWorld not found.");
-            return;
-        }
-
-        Scheduler.Task[] taskHolder = new Scheduler.Task[1];
-        taskHolder[0] = Scheduler.runTimer(() -> {
-            if (generated[0] >= toGenerate) {
-                taskHolder[0].cancel();
-                int total = database.getLocationCount(bound);
-                sender.sendMessage("§aGenerated " + generated[0] + " locations for " + bound + ". Total: " + total);
-                sender.sendMessage("§aGeneration complete.");
+        database.getLocationCountAsync(bound, current -> {
+            int target = WildLocationsDatabase.MAX_LOCATIONS;
+            int toGenerate = target - current;
+            if (toGenerate <= 0) {
+                sender.sendMessage("§aAlready have " + current + " locations for " + bound);
                 return;
             }
+
+            double lower = bounds.getLower();
+            double upper = bounds.getUpper();
+            double centerX = wildData.getCenterX();
+            double centerZ = wildData.getCenterZ();
+            double finalY = 345;
+            Random random = new Random();
+            int[] generated = {0};
+
+            World world = plugin.getServer().getWorld("world");
+            if (world == null) {
+                sender.sendMessage("§c§lWild §cWorld not found.");
+                return;
+            }
+
+            Scheduler.Task[] taskHolder = new Scheduler.Task[1];
+            taskHolder[0] = Scheduler.runTimer(() -> {
+                if (generated[0] >= toGenerate) {
+                    taskHolder[0].cancel();
+                    database.getLocationCountAsync(bound, total -> {
+                        sender.sendMessage("§aGenerated " + generated[0] + " locations for " + bound + ". Total: " + total);
+                        sender.sendMessage("§aGeneration complete.");
+                    });
+                    return;
+                }
 
             double xOffset = random.nextDouble() * (2 * upper) - upper;
             double zOffset = random.nextDouble() * (2 * upper) - upper;
@@ -400,13 +402,16 @@ public class WildCommand implements CommandExecutor {
                 }
 
                 if (!isWater) {
-                    database.insertLocationAsync(bound, finalX, finalZ, () -> {
-                        sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
-                        generated[0]++;
+                    database.insertLocationAsync(bound, finalX, finalZ, success -> {
+                        if (success) {
+                            sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
+                            generated[0]++;
+                        }
                     });
                 }
             });
         }, 0L, 5L);
+        });
     }
 
     /**
