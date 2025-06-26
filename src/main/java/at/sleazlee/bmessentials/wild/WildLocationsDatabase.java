@@ -150,20 +150,6 @@ public class WildLocationsDatabase {
         }
     }
 
-    /**
-     * Retrieve and rotate a location asynchronously.
-     * The callback is executed on the main server thread.
-     *
-     * @param version  the bound/version name
-     * @param callback consumer receiving the x/z coordinate pair or null
-     */
-    public void getAndRotateLocationAsync(String version, Consumer<int[]> callback) {
-        Scheduler.runAsync(() -> {
-            int[] coords = getAndRotateLocation(version);
-            Scheduler.run(() -> callback.accept(coords));
-        });
-    }
-
     public int getLocationCount(String version) {
         String table = sanitize(version);
         try (Statement stmt = connection.createStatement()) {
@@ -178,6 +164,100 @@ public class WildLocationsDatabase {
     }
 
     /**
+     * Retrieve and rotate the next pregenerated location for the given version.
+     *
+     * @param version the version/bound name
+     * @return the x/z pair or {@code null} if none are stored
+     */
+    public int[] getNextLocation(String version) {
+        createTable(version);
+        ensureTrackerRow(version);
+        String table = sanitize(version);
+
+        boolean originalAutoCommit = true;
+        try {
+            int total = getLocationCount(version);
+            if (total == 0) {
+                return null;
+            }
+
+            originalAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+
+            int current;
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "SELECT current FROM wild_tracker WHERE version=?")) {
+                ps.setString(1, table);
+                ResultSet rs = ps.executeQuery();
+                current = rs.next() ? rs.getInt("current") : 1;
+                rs.close();
+            }
+
+            if (current > total) {
+                current = 1;
+            }
+
+            int x;
+            int z;
+            try (PreparedStatement select = connection.prepareStatement(
+                    "SELECT x,z FROM " + table + " WHERE id=?")) {
+                select.setInt(1, current);
+                ResultSet rs = select.executeQuery();
+                if (!rs.next()) {
+                    connection.setAutoCommit(originalAutoCommit);
+                    return null;
+                }
+                x = rs.getInt("x");
+                z = rs.getInt("z");
+                rs.close();
+            }
+
+            int next = current + 1;
+            if (next > Math.min(total, MAX_LOCATIONS)) {
+                next = 1;
+            }
+
+            try (PreparedStatement update = connection.prepareStatement(
+                    "UPDATE wild_tracker SET current=? WHERE version=?")) {
+                update.setInt(1, next);
+                update.setString(2, table);
+                update.executeUpdate();
+            }
+
+            connection.commit();
+            connection.setAutoCommit(originalAutoCommit);
+            return new int[]{x, z};
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                logger.severe("Error during rollback: " + ex.getMessage());
+            }
+            logger.severe("Error getting next location for " + table + ": " + e.getMessage());
+            return null;
+        } finally {
+            try {
+                connection.setAutoCommit(originalAutoCommit);
+            } catch (SQLException ignore) {
+            }
+        }
+    }
+
+    /**
+     * Retrieve the next location asynchronously.
+     * The callback is executed on the main server thread.
+     *
+     * @param version  the bound/version name
+     * @param callback consumer receiving the x/z coordinate pair or null
+     */
+    public void getNextLocationAsync(String version, Consumer<int[]> callback) {
+        Scheduler.runAsync(() -> {
+            int[] coords = getNextLocation(version);
+            Scheduler.run(() -> callback.accept(coords));
+        });
+    }
+
+    /**
      * Asynchronously count locations.
      */
     public void getLocationCountAsync(String version, Consumer<Integer> callback) {
@@ -186,6 +266,8 @@ public class WildLocationsDatabase {
             Scheduler.run(() -> callback.accept(count));
         });
     }
+
+
 
     /**
      * Remove all stored locations for the specified version.

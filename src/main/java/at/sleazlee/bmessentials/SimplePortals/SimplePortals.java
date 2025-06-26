@@ -53,7 +53,7 @@ public class SimplePortals {
                                      StateFlag.State currentValue, StateFlag.State lastValue, MoveType moveType) {
             if (currentValue == StateFlag.State.ALLOW && currentValue != lastValue) {
                 Player bukkitPlayer = BukkitAdapter.adapt(player);
-                wild.randomLocation(bukkitPlayer, "all");
+                wild.teleportFromDatabase(bukkitPlayer, "all");
             }
             return true;
         }
