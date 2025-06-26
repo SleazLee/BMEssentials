@@ -109,6 +109,7 @@ public class WildLocationsDatabase {
         if (getLocationCount(version) >= MAX_LOCATIONS) {
             return;
         }
+
         String sql = "INSERT INTO " + table + " (x, z) VALUES (?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, x);
