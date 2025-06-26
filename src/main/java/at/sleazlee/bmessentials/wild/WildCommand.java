@@ -50,11 +50,7 @@ public class WildCommand implements CommandExecutor {
      * @param wildData the WildData that contains version bounds.
      * @param plugin   the main plugin instance (for logging, scheduling, etc.).
      */
-<<<<<<< alycv2-codex/refactor-wild-system-to-use-sqlite
-    public WildCommand(WildData wildData, WildLocationsDatabase database, JavaPlugin plugin) {
-=======
     public WildCommand(WildData wildData, WildLocationsDatabase database, BMEssentials plugin) {
->>>>>>> main
         this.wildData = wildData;
         this.database = database;
         this.logger = plugin.getLogger();
@@ -153,7 +149,6 @@ public class WildCommand implements CommandExecutor {
      * Teleport the player using a pregenerated location from the database.
      */
     public void teleportFromDatabase(Player player, String version) {
-<<<<<<< alycv2-codex/refactor-wild-system-to-use-sqlite
         Random random = new Random();
 
         String chosenVersion = version;
@@ -194,8 +189,6 @@ public class WildCommand implements CommandExecutor {
     public void randomLocation(Player player, String version) {
         // 1) Choose the version’s bounds
         WildData.CoordinateBounds bounds;
-=======
->>>>>>> main
         Random random = new Random();
 
         String chosenVersion = version;
@@ -400,91 +393,6 @@ public class WildCommand implements CommandExecutor {
                 for (int y = (int) finalY - 1; y >= 0; y--) {
                     Material type = world.getBlockAt(finalX, y, finalZ).getType();
                     if (type != Material.AIR) {
-                        if (type == Material.WATER || type == Material.LAVA) {
-                            isWater = true;
-                        }
-                        break;
-                    }
-                }
-
-                if (!isWater) {
-                    database.insertLocationAsync(bound, finalX, finalZ, () -> {
-                        sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
-                        generated[0]++;
-                    });
-                }
-            });
-        }, 0L, 5L);
-    }
-
-    /**
-     * Generate locations for all configured bounds.
-     */
-    private void generateAllLocations(CommandSender sender) {
-        for (String ver : wildData.getVersions()) {
-            generateLocations(sender, ver);
-        }
-    }
-
-    /**
-     * Generates and stores random locations for the specified bound until 5000 entries exist.
-     */
-    private void generateLocations(CommandSender sender, String bound) {
-        WildData.CoordinateBounds bounds = wildData.getBounds(bound);
-        if (bounds == null) {
-            sender.sendMessage("§c§lWild §cUnknown bound " + bound);
-            return;
-        }
-
-        int current = database.getLocationCount(bound);
-        int target = 5000;
-        int toGenerate = target - current;
-        if (toGenerate <= 0) {
-            sender.sendMessage("§aAlready have " + current + " locations for " + bound);
-            return;
-        }
-
-        double lower = bounds.getLower();
-        double upper = bounds.getUpper();
-        double centerX = wildData.getCenterX();
-        double centerZ = wildData.getCenterZ();
-        double finalY = 345;
-        Random random = new Random();
-        int[] generated = {0};
-
-        World world = plugin.getServer().getWorld("world");
-        if (world == null) {
-            sender.sendMessage("§c§lWild §cWorld not found.");
-            return;
-        }
-
-        Scheduler.Task[] taskHolder = new Scheduler.Task[1];
-        taskHolder[0] = Scheduler.runTimer(() -> {
-            if (generated[0] >= toGenerate) {
-                taskHolder[0].cancel();
-                int total = database.getLocationCount(bound);
-                sender.sendMessage("§aGenerated " + generated[0] + " locations for " + bound + ". Total: " + total);
-                sender.sendMessage("§aGeneration complete.");
-                return;
-            }
-
-            double xOffset = random.nextDouble() * (2 * upper) - upper;
-            double zOffset = random.nextDouble() * (2 * upper) - upper;
-            double chebDist = Math.max(Math.abs(xOffset), Math.abs(zOffset));
-            if (chebDist < lower || chebDist > upper) {
-                return;
-            }
-
-            int finalX = (int) Math.round(centerX + xOffset);
-            int finalZ = (int) Math.round(centerZ + zOffset);
-
-            Location loc = new Location(world, finalX, 0, finalZ);
-            Scheduler.run(loc, () -> {
-                boolean isWater = false;
-                // Scan downward from the top Y and find the first non-air block
-                for (int y = (int) finalY - 1; y >= 0; y--) {
-                    Material type = world.getBlockAt(finalX, y, finalZ).getType();
-                    if (type != Material.AIR) {
                         if (type == Material.WATER) {
                             isWater = true;
                         }
@@ -499,7 +407,7 @@ public class WildCommand implements CommandExecutor {
                     });
                 }
             });
-        }, 0L, 10L);
+        }, 0L, 5L);
     }
 
     /**
