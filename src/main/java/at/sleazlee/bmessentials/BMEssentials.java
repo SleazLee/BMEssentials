@@ -43,6 +43,7 @@ import at.sleazlee.bmessentials.art.Art;
 import at.sleazlee.bmessentials.bmefunctions.BMECommandExecutor;
 import at.sleazlee.bmessentials.bmefunctions.BMRestart;
 import at.sleazlee.bmessentials.bmefunctions.CommonCommands;
+import at.sleazlee.bmessentials.bmefunctions.WalkSpeedSystem;
 import at.sleazlee.bmessentials.crypto.AESEncryptor;
 import at.sleazlee.bmessentials.huskhomes.LandsTeleportFixListener;
 import at.sleazlee.bmessentials.rankup.RankUpManager;
@@ -70,6 +71,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.DoubleFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 
@@ -127,6 +129,9 @@ public class BMEssentials extends JavaPlugin {
     /** Custom WorldGuard flag for sending players to a named warp */
     public static StringFlag SEND_TO_WARP_FLAG;
 
+    /** Custom WorldGuard flag for setting player walk speed */
+    public static DoubleFlag SET_WALK_SPEED_FLAG;
+
     /**
      * Gets the instance of the main plugin class.
      *
@@ -172,6 +177,17 @@ public class BMEssentials extends JavaPlugin {
                 SEND_TO_WARP_FLAG = stringFlag;
             }
         }
+
+        try {
+            DoubleFlag flag = new DoubleFlag("bm-set-walk-speed");
+            registry.register(flag);
+            SET_WALK_SPEED_FLAG = flag;
+        } catch (FlagConflictException e) {
+            Flag<?> existing = registry.get("bm-set-walk-speed");
+            if (existing instanceof DoubleFlag doubleFlag) {
+                SET_WALK_SPEED_FLAG = doubleFlag;
+            }
+        }
     }
 
     /**
@@ -208,6 +224,9 @@ public class BMEssentials extends JavaPlugin {
         for (String line : startArt) {
             getServer().getConsoleSender().sendMessage(ChatColor.AQUA + line);
         }
+
+        // Register the WorldGuard walk speed handler
+        new WalkSpeedSystem();
 
         // Enable PlayerData Systems
         if (getConfig().getBoolean("Systems.PlayerData.Enabled")) {
