@@ -1,10 +1,12 @@
 package at.sleazlee.bmessentials.wild;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.bmefunctions.IsInWorldGuardRegion;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -298,7 +300,7 @@ public class WildCommand implements CommandExecutor {
     }
 
     /**
-     * Generates and stores random locations for the specified bound until 5000 entries exist.
+     * Generates and stores random locations for the specified bound until 10000 entries exist.
      */
     private void generateLocations(CommandSender sender, String bound) {
         WildData.CoordinateBounds bounds = wildData.getBounds(bound);
@@ -308,7 +310,7 @@ public class WildCommand implements CommandExecutor {
         }
 
         int current = database.getLocationCount(bound);
-        int target = 5000;
+        int target = 10000;
         int toGenerate = target - current;
         if (toGenerate <= 0) {
             sender.sendMessage("§aAlready have " + current + " locations for " + bound);
