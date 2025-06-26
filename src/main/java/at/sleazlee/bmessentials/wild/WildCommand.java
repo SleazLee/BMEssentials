@@ -32,8 +32,7 @@ import java.util.logging.Logger;
  *   <li>Retrieve the [Lower, Upper] bounds for that version.</li>
  *   <li>Randomly pick X, Z offsets in [-Upper, +Upper] and accept only if
  *       Chebyshev distance is in [Lower, Upper].</li>
- *   <li>Check if any block from Y=0 up to Y=344 beneath the teleport location is water. If so, retry up to 5 times.</li>
- *   <li>If all 5 attempts result in water, generate a new location and teleport without checking.</li>
+ *   <li>Check if the block directly beneath the teleport location is water.</li>
  *   <li>Offset by the configured center and teleport the player there.</li>
  * </ol>
  */
