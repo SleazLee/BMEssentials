@@ -14,6 +14,9 @@ import java.util.logging.Logger;
  */
 public class WildLocationsDatabase {
 
+    /** Maximum number of locations to store per version. */
+    private static final int MAX_LOCATIONS = 5000;
+
     private final JavaPlugin plugin;
     private final Logger logger;
     private Connection connection;
@@ -23,6 +26,10 @@ public class WildLocationsDatabase {
         this.logger = plugin.getLogger();
         connect();
         createTables(wildData.getVersions());
+        createTrackerTable();
+        for (String ver : wildData.getVersions()) {
+            ensureTrackerRow(ver);
+        }
     }
 
     private void connect() {
@@ -59,6 +66,28 @@ public class WildLocationsDatabase {
         }
     }
 
+    private void createTrackerTable() {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("CREATE TABLE IF NOT EXISTS wild_tracker (" +
+                    "version TEXT PRIMARY KEY," +
+                    "current INTEGER"
+                    + ")");
+        } catch (SQLException e) {
+            logger.severe("Error creating tracker table: " + e.getMessage());
+        }
+    }
+
+    private void ensureTrackerRow(String version) {
+        String table = sanitize(version);
+        try (PreparedStatement ps = connection.prepareStatement(
+                "INSERT OR IGNORE INTO wild_tracker(version,current) VALUES(?,1)")) {
+            ps.setString(1, table);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            logger.severe("Error ensuring tracker row for " + table + ": " + e.getMessage());
+        }
+    }
+
     /**
      * Sanitize a bound/version name for use as a SQLite table. All characters
      * other than letters, numbers and underscore are replaced with an
@@ -76,6 +105,11 @@ public class WildLocationsDatabase {
     public void insertLocation(String version, int x, int z) {
         createTable(version);
         String table = sanitize(version);
+        ensureTrackerRow(version);
+        if (getLocationCount(version) >= MAX_LOCATIONS) {
+            return;
+        }
+
         String sql = "INSERT INTO " + table + " (x, z) VALUES (?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, x);
@@ -109,58 +143,6 @@ public class WildLocationsDatabase {
      */
     public void insertLocationAsync(String version, int x, int z) {
         insertLocationAsync(version, x, z, null);
-    }
-
-    public int[] getAndRotateLocation(String version) {
-        createTable(version);
-        String table = sanitize(version);
-        String select = "SELECT id,x,z FROM " + table + " ORDER BY id ASC LIMIT 1";
-        try (PreparedStatement stmt = connection.prepareStatement(select)) {
-            ResultSet rs = stmt.executeQuery();
-            if (!rs.next()) {
-                return null;
-            }
-            int id = rs.getInt("id");
-            int x = rs.getInt("x");
-            int z = rs.getInt("z");
-            rs.close();
-
-            connection.setAutoCommit(false);
-            try {
-                try (PreparedStatement del = connection.prepareStatement("DELETE FROM " + table + " WHERE id = ?")) {
-                    del.setInt(1, id);
-                    del.executeUpdate();
-                }
-                try (PreparedStatement ins = connection.prepareStatement("INSERT INTO " + table + " (x,z) VALUES (?,?)")) {
-                    ins.setInt(1, x);
-                    ins.setInt(2, z);
-                    ins.executeUpdate();
-                }
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                throw e;
-            } finally {
-                connection.setAutoCommit(true);
-            }
-            return new int[]{x, z};
-        } catch (SQLException e) {
-            logger.severe("Error rotating location in " + table + ": " + e.getMessage());
-            return null;
-        }
-    }
-
-    public int getLocationCount(String version) {
-        String table = sanitize(version);
-        try (Statement stmt = connection.createStatement()) {
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS cnt FROM " + table);
-            int count = rs.getInt("cnt");
-            rs.close();
-            return count;
-        } catch (SQLException e) {
-            logger.severe("Error counting locations for " + table + ": " + e.getMessage());
-            return 0;
-        }
     }
 
     /**
@@ -257,6 +239,19 @@ public class WildLocationsDatabase {
         });
     }
 
+    public int getLocationCount(String version) {
+        String table = sanitize(version);
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) AS cnt FROM " + table);
+            int count = rs.getInt("cnt");
+            rs.close();
+            return count;
+        } catch (SQLException e) {
+            logger.severe("Error counting locations for " + table + ": " + e.getMessage());
+            return 0;
+        }
+    }
+
     /**
      * Asynchronously count locations.
      */
@@ -267,8 +262,6 @@ public class WildLocationsDatabase {
         });
     }
 
-
-
     /**
      * Remove all stored locations for the specified version.
      *
@@ -278,6 +271,12 @@ public class WildLocationsDatabase {
         String table = sanitize(version);
         try (Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("DELETE FROM " + table);
+            ensureTrackerRow(version);
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "UPDATE wild_tracker SET current=1 WHERE version=?")) {
+                ps.setString(1, table);
+                ps.executeUpdate();
+            }
         } catch (SQLException e) {
             logger.severe("Error purging locations for " + table + ": " + e.getMessage());
         }
