@@ -87,10 +87,28 @@ public class WildLocationsDatabase {
     }
 
     /**
-     * Asynchronously insert a new location.
+     * Asynchronously insert a new location and optionally run a callback on the
+     * main thread once the insert completes.
+     *
+     * @param version  the bound/version name
+     * @param x        x-coordinate
+     * @param z        z-coordinate
+     * @param callback optional task to run on the main server thread when done
+     */
+    public void insertLocationAsync(String version, int x, int z, Runnable callback) {
+        Scheduler.runAsync(() -> {
+            insertLocation(version, x, z);
+            if (callback != null) {
+                Scheduler.run(callback);
+            }
+        });
+    }
+
+    /**
+     * Asynchronously insert a new location without a callback.
      */
     public void insertLocationAsync(String version, int x, int z) {
-        Scheduler.runAsync(() -> insertLocation(version, x, z));
+        insertLocationAsync(version, x, z, null);
     }
 
     public int[] getAndRotateLocation(String version) {

@@ -361,9 +361,10 @@ public class WildCommand implements CommandExecutor {
                 }
 
                 if (!isWater) {
-                    database.insertLocationAsync(bound, finalX, finalZ);
-                    sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
-                    generated[0]++;
+                    database.insertLocationAsync(bound, finalX, finalZ, () -> {
+                        sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
+                        generated[0]++;
+                    });
                 }
             });
         }, 0L, 10L);
