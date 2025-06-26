@@ -1,5 +1,6 @@
 package at.sleazlee.bmessentials.wild;
 
+import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.bmefunctions.IsInWorldGuardRegion;
 import at.sleazlee.bmessentials.huskhomes.HuskHomesAPIHook;
 import org.bukkit.Location;
@@ -39,7 +40,7 @@ public class WildCommand implements CommandExecutor {
     private final WildData wildData; // Holds info about each version's Lower/Upper ring
     private final WildLocationsDatabase database; // Storage for pregenerated locations
     private final Logger logger;     // For logging
-    private final JavaPlugin plugin; // Reference to main plugin for scheduling tasks
+    private final BMEssentials plugin; // Reference to main plugin for scheduling tasks
 
     /**
      * Constructs a new WildCommand.
@@ -47,7 +48,7 @@ public class WildCommand implements CommandExecutor {
      * @param wildData the WildData that contains version bounds.
      * @param plugin   the main plugin instance (for logging, scheduling, etc.).
      */
-    public WildCommand(WildData wildData, WildLocationsDatabase database, JavaPlugin plugin) {
+    public WildCommand(WildData wildData, WildLocationsDatabase database, BMEssentials plugin) {
         this.wildData = wildData;
         this.database = database;
         this.logger = plugin.getLogger();
