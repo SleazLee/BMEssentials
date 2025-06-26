@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 public class WildCommand implements CommandExecutor {
 
     private final WildData wildData; // Holds info about each version's Lower/Upper ring
+    private final WildLocationsDatabase database; // Storage for pregenerated locations
     private final Logger logger;     // For logging
     private final JavaPlugin plugin; // Reference to main plugin for scheduling tasks
 
@@ -46,15 +47,66 @@ public class WildCommand implements CommandExecutor {
      * @param wildData the WildData that contains version bounds.
      * @param plugin   the main plugin instance (for logging, scheduling, etc.).
      */
-    public WildCommand(WildData wildData, JavaPlugin plugin) {
+    public WildCommand(WildData wildData, WildLocationsDatabase database, JavaPlugin plugin) {
         this.wildData = wildData;
+        this.database = database;
         this.logger = plugin.getLogger();
         this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // Ensure sender is a Player
+        // Admin subcommands
+        if (args.length >= 2 && args[0].equalsIgnoreCase("admin")) {
+            if (!sender.hasPermission("bmessentials.wild.admin")) {
+                sender.sendMessage("§c§lWild §cYou do not have permission to use this command.");
+                return true;
+            }
+
+            if (!(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
+                sender.sendMessage("§c§lWild §cThis command can only be run from the console.");
+                return true;
+            }
+
+            if (args.length >= 2) {
+                String sub = args[1].toLowerCase();
+                switch (sub) {
+                    case "gen":
+                        if (args.length >= 3) {
+                            String bound = args[2];
+                            generateLocations(sender, bound);
+                        } else {
+                            generateAllLocations(sender);
+                        }
+                        break;
+                    case "clear":
+                        if (args.length >= 3) {
+                            String bound = args[2];
+                            database.purgeLocations(bound);
+                            sender.sendMessage("§aCleared locations for " + bound);
+                        } else {
+                            sender.sendMessage("§c§lWild §cUsage: /wild admin clear <bound>");
+                        }
+                        break;
+                    case "count":
+                        if (args.length >= 3) {
+                            String bound = args[2];
+                            int count = database.getLocationCount(bound);
+                            sender.sendMessage("§a" + count + " stored locations for " + bound);
+                        } else {
+                            sender.sendMessage("§c§lWild §cUsage: /wild admin count <bound>");
+                        }
+                        break;
+                    default:
+                        sender.sendMessage("§c§lWild §cUsage: /wild admin <gen|clear|count> [bound]");
+                        break;
+                }
+            } else {
+                sender.sendMessage("§c§lWild §cUsage: /wild admin <gen|clear|count> [bound]");
+            }
+            return true;
+        }
+
         if (!(sender instanceof Player)) {
             sender.sendMessage("§c§lWild §cThis command can only be used by a player.");
             return true;
@@ -66,13 +118,13 @@ public class WildCommand implements CommandExecutor {
         // /wild 1.21 => specifically that version
         // /wild all => random version
         if (args.length == 0) {
-            randomLocation(player, "all");
+            teleportFromDatabase(player, "all");
         } else if (args.length == 1) {
             String version = args[0];
             if (wildData.getVersions().contains(version)) {
-                randomLocation(player, version);
+                teleportFromDatabase(player, version);
             } else if ("all".equalsIgnoreCase(version)) {
-                randomLocation(player, "all");
+                teleportFromDatabase(player, "all");
             } else {
                 player.sendMessage("§c§lWild §cInvalid version. Try /wild [version or all]");
             }
@@ -94,6 +146,47 @@ public class WildCommand implements CommandExecutor {
      *
      * @param player  the player to teleport
      * @param version a specific version or "all" to choose randomly from config
+     */
+    /**
+     * Teleport the player using a pregenerated location from the database.
+     */
+    public void teleportFromDatabase(Player player, String version) {
+        Random random = new Random();
+
+        String chosenVersion = version;
+        if ("all".equalsIgnoreCase(version)) {
+            Set<String> versionSet = wildData.getVersions();
+            if (versionSet.isEmpty()) {
+                player.sendMessage("§c§lWild §cNo versions defined in config.");
+                return;
+            }
+            List<String> versionsList = new ArrayList<>(versionSet);
+            chosenVersion = versionsList.get(random.nextInt(versionsList.size()));
+        }
+
+        database.getAndRotateLocationAsync(chosenVersion, coords -> {
+            if (coords == null) {
+                player.sendMessage("§c§lWild §cNo pregenerated locations for that bound.");
+                return;
+            }
+
+            double finalX = coords[0];
+            double finalZ = coords[1];
+            double finalY = 345;
+
+            String worldName = "world";
+            String serverName = "blockminer";
+
+            if (IsInWorldGuardRegion.isPlayerInRegion(player, "Spawn")) {
+                HuskHomesAPIHook.instantTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
+            } else {
+                HuskHomesAPIHook.timedTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
+            }
+        });
+    }
+
+    /**
+     * Legacy random teleport used for generating locations.
      */
     public void randomLocation(Player player, String version) {
         // 1) Choose the version’s bounds
@@ -200,6 +293,88 @@ public class WildCommand implements CommandExecutor {
         } else {
             // Timed teleport otherwise
             HuskHomesAPIHook.timedTeleportPlayer(player, finalX, finalY, finalZ, 0, 90, worldName, serverName);
+        }
+    }
+
+    /**
+     * Generates and stores random locations for the specified bound until 5000 entries exist.
+     */
+    private void generateLocations(CommandSender sender, String bound) {
+        WildData.CoordinateBounds bounds = wildData.getBounds(bound);
+        if (bounds == null) {
+            sender.sendMessage("§c§lWild §cUnknown bound " + bound);
+            return;
+        }
+
+        int current = database.getLocationCount(bound);
+        int target = 5000;
+        int toGenerate = target - current;
+        if (toGenerate <= 0) {
+            sender.sendMessage("§aAlready have " + current + " locations for " + bound);
+            return;
+        }
+
+        double lower = bounds.getLower();
+        double upper = bounds.getUpper();
+        double centerX = wildData.getCenterX();
+        double centerZ = wildData.getCenterZ();
+        double finalY = 345;
+        Random random = new Random();
+        int[] generated = {0};
+
+        World world = plugin.getServer().getWorld("world");
+        if (world == null) {
+            sender.sendMessage("§c§lWild §cWorld not found.");
+            return;
+        }
+
+        Scheduler.Task[] taskHolder = new Scheduler.Task[1];
+        taskHolder[0] = Scheduler.runTimer(() -> {
+            if (generated[0] >= toGenerate) {
+                taskHolder[0].cancel();
+                int total = database.getLocationCount(bound);
+                sender.sendMessage("§aGenerated " + generated[0] + " locations for " + bound + ". Total: " + total);
+                sender.sendMessage("§aGeneration complete.");
+                return;
+            }
+
+            double xOffset = random.nextDouble() * (2 * upper) - upper;
+            double zOffset = random.nextDouble() * (2 * upper) - upper;
+            double chebDist = Math.max(Math.abs(xOffset), Math.abs(zOffset));
+            if (chebDist < lower || chebDist > upper) {
+                return;
+            }
+
+            int finalX = (int) Math.round(centerX + xOffset);
+            int finalZ = (int) Math.round(centerZ + zOffset);
+
+            Location loc = new Location(world, finalX, 0, finalZ);
+            Scheduler.run(loc, () -> {
+                boolean isWater = false;
+                for (int y = 0; y < finalY; y++) {
+                    Material type = world.getBlockAt(finalX, y, finalZ).getType();
+                    if (type == Material.WATER) {
+                        isWater = true;
+                        break;
+                    }
+                }
+
+                if (!isWater) {
+                    database.insertLocationAsync(bound, finalX, finalZ, () -> {
+                        sender.sendMessage("§aAdded location: X=" + finalX + " Z=" + finalZ);
+                        generated[0]++;
+                    });
+                }
+            });
+        }, 0L, 10L);
+    }
+
+    /**
+     * Generate locations for all configured bounds.
+     */
+    private void generateAllLocations(CommandSender sender) {
+        for (String ver : wildData.getVersions()) {
+            generateLocations(sender, ver);
         }
     }
 
