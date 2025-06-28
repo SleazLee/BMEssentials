@@ -1219,7 +1219,9 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
      */
     private void checkExpirations() {
         long now = System.currentTimeMillis();
+        List<Shop> toUpdate = new ArrayList<>();
         for (Shop shop : shops.values()) {
+            boolean needsUpdate = false;
             if (shop.rented && shop.expires > 0 && shop.expires <= now) {
                 shop.owner = "";
                 shop.coowners.clear();
@@ -1229,8 +1231,21 @@ public class Shops implements CommandExecutor, TabCompleter, Listener {
                 shop.rented = false;
                 clearRegion(shop);
                 updateRegionOwners(shop);
+                needsUpdate = true; // update sign after expiring
+            } else if (shop.rented) {
+                // still rented, update remaining time on sign
+                needsUpdate = true;
             }
-            updateSign(shop);
+
+            if (needsUpdate) {
+                toUpdate.add(shop);
+            }
+        }
+
+        long delay = 0L;
+        for (Shop s : toUpdate) {
+            Shop shopRef = s;
+            Scheduler.runLater(() -> updateSign(shopRef), delay++);
         }
         saveShops();
     }
