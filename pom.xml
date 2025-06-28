@@ -131,13 +131,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.github.NuVotifier.NuVotifier/nuvotifier-api -->
-        <dependency>
-            <groupId>com.github.NuVotifier</groupId>
-            <artifactId>NuVotifier</artifactId>
-            <version>2.7.2</version>
-        </dependency>
-
         <!-- https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Hook-into-PlaceholderAPI -->
         <dependency>
             <groupId>me.clip</groupId>
