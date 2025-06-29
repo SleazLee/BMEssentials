@@ -240,6 +240,12 @@ Systems:
   AFKSystem:
     Enabled: true
 
+  # Enables automatic tree felling when chopping logs
+  # Players can toggle with /treefeller if they have
+  # permission bmessentials.treefeller.use
+  TreeFeller:
+    Enabled: true
+
   # Enables the Lands TP Fix System
   LandsTPFix:
     Enabled: true
