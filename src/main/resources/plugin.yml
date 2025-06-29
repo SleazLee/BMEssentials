@@ -238,6 +238,9 @@ commands:
     description: Shows when a player was last online.
     usage: /seen <player>
 
+  treefeller:
+    description: Toggle automatic tree felling.
+
   bms:
     description: Manage Block Miner shops.
     usage: /bms <buy [shop]|disband|invite|remove|transfer|extend|rename|tp|admin>
@@ -279,3 +282,6 @@ permissions:
   bmessentials.wild.admin:
     description: Allows use of /wild admin commands.
     default: op
+  bmessentials.treefeller.use:
+    description: Allows automatic tree felling when chopping logs.
+    default: true
