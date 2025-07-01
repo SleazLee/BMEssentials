@@ -618,12 +618,6 @@ public class BMEssentials extends JavaPlugin {
             }
         }
 
-        // TreeFeller System
-        if (config.getBoolean("Systems.TreeFeller.Enabled")) {
-            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled TreeFeller System");
-            new at.sleazlee.bmessentials.TreeFeller.TreeFellerManager(this);
-        }
-
         // Lands TP Fix System
         if (config.getBoolean("Systems.LandsTPFix.Enabled")) {
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Fixed the Lands TP System");

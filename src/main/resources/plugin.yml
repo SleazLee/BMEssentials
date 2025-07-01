@@ -6,8 +6,8 @@ author: SleazLee
 description: One plugin to rule them all!
 folia-supported: true
 
-loadbefore: [Lands, ChestSort]
-depend: [WorldGuard, WorldEdit]
+loadbefore: [Lands, ChestSort, ChestSort-Folia]
+depend: [WorldGuard, WorldEdit, mcMMO]
 softdepend: [VaultUnlocked, HuskHomes, PlaceholderAPI, LuckPerms, Lands, BlueMap, QuickShop-Hikari]
 
 commands:
@@ -238,9 +238,6 @@ commands:
     description: Shows when a player was last online.
     usage: /seen <player>
 
-  treefeller:
-    description: Toggle automatic tree felling.
-
   bms:
     description: Manage Block Miner shops.
     usage: /bms <buy [shop]|disband|invite|remove|transfer|extend|rename|tp|admin>
@@ -282,6 +279,3 @@ permissions:
   bmessentials.wild.admin:
     description: Allows use of /wild admin commands.
     default: op
-  bmessentials.treefeller.use:
-    description: Allows automatic tree felling when chopping logs.
-    default: true
