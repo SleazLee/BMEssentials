@@ -38,6 +38,9 @@
 - **AFK System** – Detects AFK players and provides PlaceholderAPI placeholders.
 - **Lands TP Fix** – Improves teleport handling when using HuskHomes and Lands.
 - **AES Message Encryption** – Secure plugin messaging using an AES key.
+- **Simple Portals** – WorldGuard flags that send players to the wild, healing springs or warps.
+- **Player Shops** – Rentable shop regions with `/bms` management commands.
+- **Combine System** – Allows unsafe enchantment books to be applied via anvils.
 
 ## Installation
 1. Build the plugin with Maven or download the compiled jar.
