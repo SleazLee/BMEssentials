@@ -302,7 +302,6 @@ Systems:
       left-shop: '<green><bold>BMS</green> <green>You are no longer a Co-Owner of shop {id}.</green>'
       leave-owner: '<#ff3300><bold>BMS</#ff3300> <red>You cannot do this!<gray> Use <aqua>/bms disband instead.</gray>'
 
-
   ImageMaps:
     Enabled: true
     DefaultWidth: 128

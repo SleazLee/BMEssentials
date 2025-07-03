@@ -8,11 +8,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 
-/**
- * Utility for creating map items from pixel data.
- */
-public class MapCreator {
-    public static void giveMap(Player player, byte[] pixels) {
+public final class MapCreator {
+
+    public static void giveMap(Player player, int[] pixels) {
         World world = player.getWorld();
         MapView view = Bukkit.createMap(world);
         view.getRenderers().clear();
@@ -22,6 +20,7 @@ public class MapCreator {
         MapMeta meta = (MapMeta) map.getItemMeta();
         meta.setMapView(view);
         map.setItemMeta(meta);
+
         player.getInventory().addItem(map);
     }
 }

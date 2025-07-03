@@ -5,25 +5,28 @@ import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import java.awt.Color;
+
 /**
- * Renderer that draws raw pixel data onto a map.
+ * Renders a 128 × 128 ARGB pixel buffer onto a map.
  */
 public class ImageMapRenderer extends MapRenderer {
-    private final byte[] pixels;
+
+    private final int[] pixels;       // ARGB
     private boolean rendered = false;
 
-    public ImageMapRenderer(byte[] pixels) {
+    public ImageMapRenderer(int[] pixels) {
         this.pixels = pixels;
     }
 
     @Override
     public void render(MapView view, MapCanvas canvas, Player player) {
         if (rendered) return;
-        int w = 128;
-        int h = 128;
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                canvas.setPixel(x, y, pixels[y * w + x]);
+
+        for (int y = 0; y < 128; y++) {
+            for (int x = 0; x < 128; x++) {
+                int argb = pixels[y * 128 + x];
+                canvas.setPixelColor(x, y, new Color(argb, true));
             }
         }
         rendered = true;

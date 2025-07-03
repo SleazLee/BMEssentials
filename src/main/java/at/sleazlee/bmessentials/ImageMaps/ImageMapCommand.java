@@ -47,7 +47,7 @@ public class ImageMapCommand implements CommandExecutor {
         Scheduler.runAsync(() -> {
             try {
                 BufferedImage img = ImageLoader.load(plugin, filename, w, h);
-                byte[] pixels = Ditherer.dither(img);
+                int[] pixels = Ditherer.dither(img);          // NEW: int[], not byte[]
                 Scheduler.run(() -> MapCreator.giveMap(player, pixels));
             } catch (Exception e) {
                 Scheduler.run(() -> player.sendMessage(ChatColor.RED + "Failed: " + e.getMessage()));
