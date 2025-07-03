@@ -1,15 +1,13 @@
 package at.sleazlee.bmessentials.PlayerData;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.wild.ChunkVersion;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.ChatColor;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
 
 /**
  * Provides custom placeholders for PlaceholderAPI.
@@ -17,6 +15,7 @@ import java.util.ArrayList;
  * - %bme_joindate%: The formatted join date of the player.
  * - %bme_centeredname%: The centered name of the player.
  * - %bme_chunkinfo%: The version or region name where the player is located.
+ * - %bme_tps%: Provides tps info depending on if folia is enabled.
  */
 public class BMEPlaceholders extends PlaceholderExpansion {
 
@@ -110,7 +109,73 @@ public class BMEPlaceholders extends PlaceholderExpansion {
             return ver;
         }
 
+        // Handle the %bme_tps% placeholder
+        if (identifier.equals("tps")) {
+            return getTPSMessage(player);
+        }
+
         // If the placeholder is not recognized, return null
         return null;
+    }
+
+    /**
+     * Builds the TPS message depending on whether the server runs Folia or Bukkit.
+     *
+     * @param player The player requesting the placeholder, used for region TPS on Folia.
+     * @return Formatted TPS string with color codes.
+     */
+    private String getTPSMessage(Player player) {
+        double tps1m;
+        double tps5m;
+        double tps15m;
+        String debug;
+
+        if (Scheduler.isFolia()) {
+            double[] regionTps = getRegionTps(player.getLocation());
+            if (regionTps == null) {
+                return "";
+            }
+            tps1m = regionTps[2];
+            tps5m = regionTps[3];
+            tps15m = regionTps[4];
+
+        } else {
+            double[] tps = Bukkit.getTPS();
+            tps1m = tps[0];
+            tps5m = tps[1];
+            tps15m = tps[2];
+        }
+
+        return "<gray>TPS: " + colorizeTps(tps1m) + ", " + colorizeTps(tps5m) + ", " + colorizeTps(tps15m) + "</gray> ";
+    }
+
+    /**
+     * Applies MiniMessage color tags to a TPS value.
+     */
+    private String colorizeTps(double tps) {
+        String color;
+        if (tps > 19.2) {
+            color = "green";
+        } else if (tps > 17.4) {
+            color = "yellow";
+        } else {
+            color = "red";
+        }
+        return "<" + color + ">" + String.format("%.1f", tps) + "</" + color + ">";
+    }
+
+    /**
+     * Invokes the Folia-only Bukkit.getRegionTPS method via reflection.
+     *
+     * @param location location to query
+     * @return region TPS array or null on failure
+     */
+    private double[] getRegionTps(org.bukkit.Location location) {
+        try {
+            java.lang.reflect.Method method = Bukkit.class.getMethod("getRegionTPS", org.bukkit.Location.class);
+            return (double[]) method.invoke(null, location);
+        } catch (ReflectiveOperationException | ClassCastException ignored) {
+            return null;
+        }
     }
 }
