@@ -33,12 +33,12 @@ public class Ditherer {
                 int gg = clamp(Math.round(g[y][x]));
                 int bb = clamp(Math.round(b[y][x]));
 
-                int rgb = new Color(rr, gg, bb).getRGB();
+                Color sample = new Color(rr, gg, bb);
                 byte mapColor;
                 if ((img.getRGB(x, y) >> 24) == 0x00) {
                     mapColor = MapPalette.TRANSPARENT;
                 } else {
-                    mapColor = MapPalette.matchColor(rgb);
+                    mapColor = MapPalette.matchColor(sample);
                 }
                 out[y * w + x] = mapColor;
                 Color newC = MapPalette.getColor(mapColor);

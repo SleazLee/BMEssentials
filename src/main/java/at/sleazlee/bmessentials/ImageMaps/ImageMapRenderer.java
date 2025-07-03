@@ -19,8 +19,8 @@ public class ImageMapRenderer extends MapRenderer {
     @Override
     public void render(MapView view, MapCanvas canvas, Player player) {
         if (rendered) return;
-        int w = canvas.getWidth();
-        int h = canvas.getHeight();
+        int w = 128;
+        int h = 128;
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
                 canvas.setPixel(x, y, pixels[y * w + x]);
