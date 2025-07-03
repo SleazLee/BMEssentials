@@ -77,6 +77,7 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 
 import java.nio.file.Path;
 
+import java.io.File;
 /**
  * The main class for the BMEssentials plugin, which extends JavaPlugin.
  * This class initializes and manages various systems within the plugin,
@@ -444,6 +445,16 @@ public class BMEssentials extends JavaPlugin {
             this.getCommand("maps").setExecutor(new MapCommand(this));
             this.getCommand("maps").setTabCompleter(new MapTabCompleter());
         }
+        // ImageMaps System
+        if (config.getBoolean("Systems.ImageMaps.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled ImageMaps");
+            File imagesDir = new File(getDataFolder(), "Images");
+            if (!imagesDir.exists()) {
+                imagesDir.mkdirs();
+            }
+            getCommand("imagemap").setExecutor(new at.sleazlee.bmessentials.ImageMaps.ImageMapCommand(this));
+        }
+
 
         // Donation System
         if (config.getBoolean("Systems.Donations.Enabled")) {
