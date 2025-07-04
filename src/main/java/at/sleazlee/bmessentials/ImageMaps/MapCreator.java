@@ -10,7 +10,7 @@ import org.bukkit.map.MapView;
 
 public final class MapCreator {
 
-    public static void giveMap(Player player, int[] pixels) {
+    public static MapView giveMap(Player player, int[] pixels) {
         World world = player.getWorld();
         MapView view = Bukkit.createMap(world);
         view.getRenderers().clear();
@@ -22,5 +22,6 @@ public final class MapCreator {
         map.setItemMeta(meta);
 
         player.getInventory().addItem(map);
+        return view;
     }
 }

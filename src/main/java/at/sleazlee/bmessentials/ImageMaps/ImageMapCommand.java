@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.map.MapView;
 
 import java.awt.image.BufferedImage;
 
@@ -48,7 +49,10 @@ public class ImageMapCommand implements CommandExecutor {
             try {
                 BufferedImage img = ImageLoader.load(plugin, filename, w, h);
                 int[] pixels = Ditherer.dither(img);          // NEW: int[], not byte[]
-                Scheduler.run(() -> MapCreator.giveMap(player, pixels));
+                Scheduler.run(() -> {
+                    MapView view = MapCreator.giveMap(player, pixels);
+                    plugin.getImageMapManager().registerMap(view.getId(), filename, w, h);
+                });
             } catch (Exception e) {
                 Scheduler.run(() -> player.sendMessage(ChatColor.RED + "Failed: " + e.getMessage()));
             }

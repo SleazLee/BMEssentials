@@ -60,6 +60,7 @@ import at.sleazlee.bmessentials.wild.*;
 import at.sleazlee.bmessentials.playerutils.InvseeCommand;
 import at.sleazlee.bmessentials.playerutils.InvseeTabCompleter;
 import at.sleazlee.bmessentials.playerutils.SeenCommand;
+import at.sleazlee.bmessentials.ImageMaps.ImageMapManager;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -113,6 +114,8 @@ public class BMEssentials extends JavaPlugin {
     private TrophyMenu trophyGUI;
 
     private CommandQueueManager queueManager;
+    @Getter
+    private ImageMapManager imageMapManager;
     private FileConfiguration config;
 
     /** The instance of the help book system. */
@@ -452,6 +455,8 @@ public class BMEssentials extends JavaPlugin {
             if (!imagesDir.exists()) {
                 imagesDir.mkdirs();
             }
+            this.imageMapManager = new ImageMapManager(this);
+            imageMapManager.loadMaps();
             getCommand("imagemap").setExecutor(new at.sleazlee.bmessentials.ImageMaps.ImageMapCommand(this));
         }
 
