@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.DonationSystem;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.crypto.AESEncryptor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -52,7 +53,7 @@ public class GetDonations implements PluginMessageListener {
         String playerName = parts[0];
         String donationPackage = parts[1];
 
-        // 4) Process the donation command
-        donationCommand.processDonationCommand(playerName, donationPackage);
+        // 4) Process the donation command on the main thread
+        Scheduler.run(() -> donationCommand.processDonationCommand(playerName, donationPackage));
     }
 }
