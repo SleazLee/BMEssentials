@@ -5,7 +5,10 @@ import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.wild.ChunkVersion;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -154,6 +157,7 @@ public class BMEPlaceholders extends PlaceholderExpansion {
      */
     private String colorizeTps(double tps) {
         String color;
+        String noLag = "";
         if (tps > 19.2) {
             color = "green";
         } else if (tps > 17.4) {
@@ -161,7 +165,12 @@ public class BMEPlaceholders extends PlaceholderExpansion {
         } else {
             color = "red";
         }
-        return "<" + color + ">" + String.format("%.1f", tps) + "</" + color + ">";
+        
+        if (tps == 20 | tps == 20.0) {
+            noLag = "*";
+        }
+        
+        return "<" + color + ">" + noLag + String.format("%.1f", tps) + "</" + color + ">";
     }
 
     /**
@@ -170,9 +179,9 @@ public class BMEPlaceholders extends PlaceholderExpansion {
      * @param location location to query
      * @return region TPS array or null on failure
      */
-    private double[] getRegionTps(org.bukkit.Location location) {
+    private double[] getRegionTps(Location location) {
         try {
-            java.lang.reflect.Method method = Bukkit.class.getMethod("getRegionTPS", org.bukkit.Location.class);
+            Method method = Bukkit.class.getMethod("getRegionTPS", Location.class);
             return (double[]) method.invoke(null, location);
         } catch (ReflectiveOperationException | ClassCastException ignored) {
             return null;

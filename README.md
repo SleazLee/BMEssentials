@@ -51,6 +51,24 @@
 ## Usage
 Most features can be toggled in `config.yml`. Use `/bme` to reload the plugin after changing the configuration.
 
+
+---
+# ImageMaps Setup Guide
+
+This plugin allows you to convert images into in‑game maps using the `/imagemap` command. Follow these rules when preparing images.
+
+## Directory
+- Place your images in the `plugins/BMEssentials/Images` folder. The directory is created automatically when the ImageMaps system is enabled in `config.yml`.
+
+## Supported formats
+- Java's `ImageIO` is used to load files, so common formats such as PNG, JPEG and BMP work. PNG is recommended for the best quality.
+- The file name you supply in `/imagemap` must include the extension and match the case of the file on disk.
+
+## Image size
+- Minecraft maps are always 128x128 pixels. The plugin will scale your image to the dimensions provided with the command (defaults are `DefaultWidth` and `DefaultHeight` in `config.yml`).
+- For the most predictable output, prepare your image at 128x128 pixels so no scaling is needed.
+---
+
 ## Contributing
 Pull requests and issues are welcome! Feel free to contribute new features or improvements.
 
