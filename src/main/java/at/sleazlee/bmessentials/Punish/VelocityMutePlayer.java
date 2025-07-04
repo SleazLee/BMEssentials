@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import at.sleazlee.bmessentials.Scheduler;
 
 public class VelocityMutePlayer implements PluginMessageListener {
 
@@ -38,8 +39,10 @@ public class VelocityMutePlayer implements PluginMessageListener {
 
 		plugin.getLogger().info("Received the message: " + muteCommandBuilder);
 
-		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-		Bukkit.dispatchCommand(console, muteCommandBuilder);
+                ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+
+                // Execute the mute command on the main thread to satisfy Folia
+                Scheduler.run(() -> Bukkit.dispatchCommand(console, muteCommandBuilder));
 
 	}
 }

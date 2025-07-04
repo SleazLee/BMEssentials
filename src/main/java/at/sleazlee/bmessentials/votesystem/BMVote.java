@@ -120,10 +120,12 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
             return;
         }
 
-        // 4) Award the votes
-        for (int i = 0; i < voteCount; i++) {
-            givePrizeByUUID(uuidString);
-        }
+        // 4) Award the votes on the main thread
+        Scheduler.run(() -> {
+            for (int i = 0; i < voteCount; i++) {
+                givePrizeByUUID(uuidString);
+            }
+        });
     }
 
 
