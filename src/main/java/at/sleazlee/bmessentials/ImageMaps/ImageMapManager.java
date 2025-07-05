@@ -21,6 +21,10 @@ public class ImageMapManager {
     private final File file;
     private FileConfiguration config;
 
+    private String keyFor(String filename) {
+        return filename.replace('.', '_');
+    }
+
     public ImageMapManager(BMEssentials plugin) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "imagemaps.yml");
@@ -41,9 +45,10 @@ public class ImageMapManager {
         if (!config.isConfigurationSection("images")) {
             return;
         }
-        Set<String> files = config.getConfigurationSection("images").getKeys(false);
-        for (String filename : files) {
-            String base = "images." + filename + ".";
+        Set<String> sections = config.getConfigurationSection("images").getKeys(false);
+        for (String key : sections) {
+            String base = "images." + key + ".";
+            String filename = config.getString(base + "file", key);
             int width = config.getInt(base + "width", 128);
             int height = config.getInt(base + "height", 128);
             List<Integer> ids = config.getIntegerList(base + "maps");
@@ -76,7 +81,9 @@ public class ImageMapManager {
      * Persist information about a set of maps that make up an image.
      */
     public void registerImage(String filename, int width, int height, List<Integer> mapIds) {
-        String base = "images." + filename + ".";
+        String key = keyFor(filename);
+        String base = "images." + key + ".";
+        config.set(base + "file", filename);
         config.set(base + "width", width);
         config.set(base + "height", height);
         config.set(base + "maps", mapIds);
@@ -87,14 +94,20 @@ public class ImageMapManager {
      * Returns true if the given file was already processed into maps.
      */
     public boolean hasImage(String filename) {
-        return config.isConfigurationSection("images." + filename);
+        String key = keyFor(filename);
+        return config.isConfigurationSection("images." + key) || config.isConfigurationSection("images." + filename);
     }
 
     /**
      * Gets the list of map ids associated with the given file.
      */
     public List<Integer> getMapIds(String filename) {
-        return config.getIntegerList("images." + filename + ".maps");
+        String key = keyFor(filename);
+        List<Integer> ids = config.getIntegerList("images." + key + ".maps");
+        if (ids.isEmpty()) {
+            ids = config.getIntegerList("images." + filename + ".maps");
+        }
+        return ids;
     }
 
     private void saveConfig() {
