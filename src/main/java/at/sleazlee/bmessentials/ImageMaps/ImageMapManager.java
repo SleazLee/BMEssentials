@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.map.MapView;
+import java.util.List;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -34,55 +35,66 @@ public class ImageMapManager {
     }
 
     /**
-     * Load all saved maps and reapply their renderers.
+     * Load all saved image maps and reapply their renderers.
      */
     public void loadMaps() {
-        if (!config.isConfigurationSection("maps")) {
+        if (!config.isConfigurationSection("images")) {
             return;
         }
-        Set<String> keys = config.getConfigurationSection("maps").getKeys(false);
-        for (String key : keys) {
-            try {
-                int id = Integer.parseInt(key);
-                String path = "maps." + key + ".";
-                String filename = config.getString(path + "file");
-                int width = config.getInt(path + "width", 128);
-                int height = config.getInt(path + "height", 128);
-                MapView view = Bukkit.getMap(id);
-                if (view == null || filename == null) continue;
+        Set<String> files = config.getConfigurationSection("images").getKeys(false);
+        for (String filename : files) {
+            String base = "images." + filename + ".";
+            int width = config.getInt(base + "width", 128);
+            int height = config.getInt(base + "height", 128);
+            List<Integer> ids = config.getIntegerList(base + "maps");
+            if (ids.isEmpty()) continue;
 
+            try {
                 BufferedImage img = ImageLoader.load(plugin, filename, width, height);
-                int[] pixels = Ditherer.dither(img);
-                view.getRenderers().clear();
-                view.addRenderer(new ImageMapRenderer(pixels));
+                int tilesX = width / 128;
+                for (int i = 0; i < ids.size(); i++) {
+                    int id = ids.get(i);
+                    MapView view = Bukkit.getMap(id);
+                    if (view == null) continue;
+
+                    int sx = (i % tilesX) * 128;
+                    int sy = (i / tilesX) * 128;
+                    BufferedImage part = img.getSubimage(sx, sy, 128, 128);
+                    int[] pixels = Ditherer.dither(part);
+                    view.getRenderers().clear();
+                    view.addRenderer(new ImageMapRenderer(pixels));
+                    view.setTrackingPosition(false);
+                    view.setLocked(true);
+                }
             } catch (Exception ex) {
-                plugin.getLogger().warning("Failed to load image map " + key + ": " + ex.getMessage());
+                plugin.getLogger().warning("Failed to load image maps for " + filename + ": " + ex.getMessage());
             }
         }
     }
 
     /**
-     * Persist information about a new map and apply its renderer immediately.
+     * Persist information about a set of maps that make up an image.
      */
-    public void registerMap(int mapId, String filename, int width, int height) {
-        String path = "maps." + mapId + ".";
-        config.set(path + "file", filename);
-        config.set(path + "width", width);
-        config.set(path + "height", height);
+    public void registerImage(String filename, int width, int height, List<Integer> mapIds) {
+        String base = "images." + filename + ".";
+        config.set(base + "width", width);
+        config.set(base + "height", height);
+        config.set(base + "maps", mapIds);
         saveConfig();
+    }
 
-        // Apply renderer now
-        try {
-            MapView view = Bukkit.getMap(mapId);
-            if (view != null) {
-                BufferedImage img = ImageLoader.load(plugin, filename, width, height);
-                int[] pixels = Ditherer.dither(img);
-                view.getRenderers().clear();
-                view.addRenderer(new ImageMapRenderer(pixels));
-            }
-        } catch (Exception ex) {
-            plugin.getLogger().warning("Failed to register image map " + mapId + ": " + ex.getMessage());
-        }
+    /**
+     * Returns true if the given file was already processed into maps.
+     */
+    public boolean hasImage(String filename) {
+        return config.isConfigurationSection("images." + filename);
+    }
+
+    /**
+     * Gets the list of map ids associated with the given file.
+     */
+    public List<Integer> getMapIds(String filename) {
+        return config.getIntegerList("images." + filename + ".maps");
     }
 
     private void saveConfig() {

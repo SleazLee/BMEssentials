@@ -242,7 +242,7 @@ commands:
     description: Manage Block Miner shops.
     usage: /bms <buy [shop]|disband|invite|remove|transfer|extend|rename|tp|admin>
   imagemap:
-    description: Render an image to a map.
+    description: Render an image to one or more maps.
     usage: /imagemap <filename> [width] [height]
 
 
