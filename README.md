@@ -66,7 +66,8 @@ This plugin allows you to convert images into in‑game maps using the `/imagema
 
 ## Image size
 - Minecraft maps are always 128x128 pixels. The plugin will scale your image to the dimensions provided with the command (defaults are `DefaultWidth` and `DefaultHeight` in `config.yml`).
-- For the most predictable output, prepare your image at 128x128 pixels so no scaling is needed.
+- If the scaled image is larger than 128 pixels in either direction and is divisible by 128, `/imagemap` automatically divides it into multiple maps.
+- For the most predictable output, prepare your image so its width and height are multiples of 128.
 ---
 
 ## Contributing
