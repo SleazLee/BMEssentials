@@ -15,6 +15,8 @@ public final class MapCreator {
         MapView view = Bukkit.createMap(world);
         view.getRenderers().clear();
         view.addRenderer(new ImageMapRenderer(pixels));
+        view.setTrackingPosition(false);
+        view.setLocked(true);
 
         ItemStack map = new ItemStack(Material.FILLED_MAP);
         MapMeta meta = (MapMeta) map.getItemMeta();
@@ -36,6 +38,8 @@ public final class MapCreator {
         if (view == null) {
             return;
         }
+        view.setTrackingPosition(false);
+        view.setLocked(true);
 
         ItemStack map = new ItemStack(Material.FILLED_MAP);
         MapMeta meta = (MapMeta) map.getItemMeta();

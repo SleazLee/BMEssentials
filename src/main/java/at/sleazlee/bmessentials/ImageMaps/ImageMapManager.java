@@ -63,6 +63,8 @@ public class ImageMapManager {
                     int[] pixels = Ditherer.dither(part);
                     view.getRenderers().clear();
                     view.addRenderer(new ImageMapRenderer(pixels));
+                    view.setTrackingPosition(false);
+                    view.setLocked(true);
                 }
             } catch (Exception ex) {
                 plugin.getLogger().warning("Failed to load image maps for " + filename + ": " + ex.getMessage());
