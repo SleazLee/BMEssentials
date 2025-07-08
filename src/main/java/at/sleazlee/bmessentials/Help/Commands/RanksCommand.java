@@ -26,7 +26,7 @@ public class RanksCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        // If no subcommand: /help
+        // If no subcommand: /ranks
         if (args.length == 0) {
             findRank(player);
             // Play a sound
@@ -87,7 +87,7 @@ public class RanksCommand implements CommandExecutor {
      * @param player   The player who will receive the book.
      */
     public void findRank(Player player) {
-        if(player.hasPermission("ranks.blockminer")) {
+        if (player.hasPermission("ranks.blockminer")) {
             books.openBook(player, "blockminerrank");
         } else if (player.hasPermission("ranks.super")) {
             books.openBook(player, "superrank");

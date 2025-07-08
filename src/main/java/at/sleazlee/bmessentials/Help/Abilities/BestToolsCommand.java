@@ -50,44 +50,6 @@ public class BestToolsCommand implements CommandExecutor {
 
 
             // Step 2: Run logic for No arguments (/besttools)
-
-
-
-
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         } else if (args.length == 0) {
 
             if (!player.hasPermission("besttools.use") && !player.hasPermission("besttools.firstuse")) {
@@ -95,33 +57,36 @@ public class BestToolsCommand implements CommandExecutor {
                 // First time running command.
 
                 // Dispatch commands from the console using Bukkit.dispatchCommand:
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.middleclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftrightclick false");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.firstuse true");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.use true");
-                books.openBook(player, "besttoolssettingstrue");
+                books.openBook(player, "besttooltruefalse");
                 return true;
 
 
             } else if (!player.hasPermission("besttools.use") && player.hasPermission("besttools.firstuse")) {
 
-                books.openBook(player, "besttoolssettingsfalse");
+                if (player.hasPermission("besttools.refill")) {
+                    books.openBook(player, "besttoolfalsetrue");
+                } else {
+                    books.openBook(player, "besttoolfalsefalse");
+                }
 
                 return true;
 
             } else if (player.hasPermission("besttools.use") && player.hasPermission("besttools.firstuse")) {
 
-                books.openBook(player, "besttoolssettingstrue");
+                if (player.hasPermission("besttools.refill")) {
+                    books.openBook(player, "besttooltruetrue");
+                } else {
+                    books.openBook(player, "besttooltruefalse");
+                }
                 return true;
 
             } else {
 
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.middleclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftrightclick false");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.firstuse true");
-                books.openBook(player, "besttoolssettingstrue");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.use true");
+                books.openBook(player, "besttooltruefalse");
                 return true;
 
             }
@@ -145,66 +110,32 @@ public class BestToolsCommand implements CommandExecutor {
 
                 if (player.hasPermission("besttools.use")) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.use false");
-                    books.openBook(player, "besttoolssettingsfalse");
+                    if (player.hasPermission("besttools.refill")) {
+                        books.openBook(player, "besttoolfalsetrue");
+                    } else {
+                        books.openBook(player, "besttoolfalsefalse");
+                    }
 
                 } else {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.use true");
-                    books.openBook(player, "besttoolssettingstrue");
+                    if (player.hasPermission("besttools.refill")) {
+                        books.openBook(player, "besttooltruetrue");
+                    } else {
+                        books.openBook(player, "besttooltruefalse");
+                    }
                 }
 
                 // Step 5: Run logic for (/besttools toggle "type")
             } else {
-
                 String subCommand = args[1].toLowerCase();
-                toggleBestToolsHotkey(player, playerName, subCommand);
+                toggleBestTools(player, playerName, subCommand);
 
             }
             return true;
 
-
-            // Step 6: Run logic for (/besttools hotkeys)
-        } else if (args[0].equalsIgnoreCase("hotkeys")) {
-
-            // If only "toggle" is present, leave a placeholder for future toggle logic
-            boolean doubleclick = player.hasPermission("besttools.hotkey.doubleclick");
-            boolean shiftclick = player.hasPermission("besttools.hotkey.shiftclick");
-            boolean middleclick = player.hasPermission("besttools.hotkey.middleclick");
-            boolean shiftrightclick = player.hasPermission("besttools.hotkey.shiftrightclick");
-
-            // Step 4: Run logic for only (/besttools hotkeys)
-            if (args.length == 1) {
-
-                books.openBook(player, "besttoolshotkeys" + doubleclick + shiftclick + middleclick + shiftrightclick);
-
-                // Step 5: Run logic for (/besttools hotkeys "type")
-            } else {
-
-                String subCommand = args[1].toLowerCase();
-                boolean toogled = toggleBestToolsHotkey(player, playerName, subCommand);
-
-                switch (subCommand) {
-                    case "doubleclick":
-                        books.openBook(player, "besttoolshotkeys" + toogled + shiftclick + middleclick + shiftrightclick);
-                        break;
-                    case "shiftclick":
-                        books.openBook(player, "besttoolshotkeys" + doubleclick + toogled + middleclick + shiftrightclick);
-                        break;
-                    case "middleclick":
-                        books.openBook(player, "besttoolshotkeys" + doubleclick + shiftclick + toogled + shiftrightclick);
-                        break;
-                    case "shiftrightclick":
-                        books.openBook(player, "besttoolshotkeys" + doubleclick + shiftclick + middleclick + toogled);
-                        break;
-                    default:
-                        player.sendMessage("Unknown subcommand for toggle.");
-                        break;
-                }
-
-            }
-            return true;
         } else {
-            // error CS101
-            player.sendMessage("Report this to SleazLee. Error CS101");
+            // error BT101
+            player.sendMessage("Report this to SleazLee. Error BT101");
             return true;
         }
 
@@ -221,50 +152,16 @@ public class BestToolsCommand implements CommandExecutor {
         return player.hasPermission(permission);
     }
 
-
-    public boolean toggleBestToolsHotkey(Player player, String playerName, String subCommand) {
-        switch (subCommand) {
-            case "doubleclick":
-                // Placeholder for "/besttools toggle DoubleClick" logic
-                if (player.hasPermission("besttools.hotkey.doubleclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.doubleclick false");
-                    return false;
-                } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.doubleclick true");
-                    return true;
-                }
-            case "shiftclick":
-                // Placeholder for "/besttools toggle ShiftClick" logic
-                if (player.hasPermission("besttools.hotkey.shiftclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftclick false");
-                    return false;
-                } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftclick true");
-                    return true;
-                }
-            case "middleclick":
-                // Placeholder for "/besttools toggle MiddleClick" logic
-                if (player.hasPermission("besttools.hotkey.middleclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.middleclick false");
-                    return false;
-                } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.middleclick true");
-                    return true;
-                }
-            case "shiftrightclick":
-                // Placeholder for "/besttools toggle ShiftRightClick" logic
-                if (player.hasPermission("besttools.hotkey.shiftrightclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftrightclick false");
-                    return false;
-                } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.hotkey.shiftrightclick true");
-                    return true;
-                }
-            default:
-                player.sendMessage("Unknown subcommand for toggle.");
-                break;
+    public void toggleBestTools(Player player, String playerName, String subCommand) {
+        if (subCommand.equals("refill")) {// Placeholder for "/besttools toggle refill" logic
+            if (player.hasPermission("besttools.refill")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.refill false");
+            } else {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttools.refill true");
+            }
+        } else {
+            player.sendMessage("Unknown subcommand for toggle.");
         }
-        return false;
     }
 
 }

@@ -229,6 +229,9 @@ commands:
   chestsort:
     description: Changes ChestSort Settings.
 
+  besttools:
+    description: Changes ChestSort Settings.
+
   invsee:
     description: View and edit another player's inventory.
     usage: /invsee <player>

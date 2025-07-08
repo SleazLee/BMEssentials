@@ -19,6 +19,8 @@ import at.sleazlee.bmessentials.DonationSystem.GetDonations;
 import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
+import at.sleazlee.bmessentials.Help.Abilities.BestToolsCommand;
+import at.sleazlee.bmessentials.Help.Abilities.BestToolsTabCompleter;
 import at.sleazlee.bmessentials.Help.Abilities.ChestSortCommand;
 import at.sleazlee.bmessentials.Help.Abilities.ChestSortTabCompleter;
 import at.sleazlee.bmessentials.Help.Commands.*;
@@ -565,6 +567,12 @@ public class BMEssentials extends JavaPlugin {
             // Chest Sort System
             getCommand("chestsort").setExecutor(new ChestSortCommand());
             getCommand("chestsort").setTabCompleter(new ChestSortTabCompleter());
+
+//            //BestTools System
+//            getCommand("besttools").setExecutor(new BestToolsCommand());
+//            getCommand("besttools").setTabCompleter(new BestToolsTabCompleter());
+
+            //AutoAdd System
         }
 
         // Purpur feature Systems

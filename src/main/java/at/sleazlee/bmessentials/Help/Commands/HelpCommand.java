@@ -58,11 +58,11 @@ public class HelpCommand implements CommandExecutor {
                 return true;
             }
             else if (args[0].equalsIgnoreCase("ranks")) {
-                books.openBook(player, "ranks");
+                books.openBook(player, "rankhelp");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("voting")) {
-                books.openBook(player, "voting");
+                books.openBook(player, "votehelp");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("commands")) {
