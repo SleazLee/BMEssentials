@@ -207,12 +207,12 @@ public class Obelisk {
      * @param plugin Main plugin instance.
      */
     public static void startObeliskAmbient(BMEssentials plugin) {
+        World world = plugin.getServer().getWorld("world");
+        if (world == null) return;
+        ALTAR_LOCATION.setWorld(world);
         Scheduler.runTimer(ALTAR_LOCATION, () -> {
             // Skip if the altar is currently running its animation
             if (altarActivated) return;
-
-            World world = plugin.getServer().getWorld("world");
-            if (world == null) return;
 
             // Slight offset from ALTAR_LOCATION
             Location center = ALTAR_LOCATION.clone().add(0.5, -1.0, 0.5);

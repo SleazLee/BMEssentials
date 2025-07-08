@@ -34,7 +34,9 @@ public class HealingSprings {
      * @param plugin Main plugin instance.
      */
     public static void startHealingSpringsAmbient(BMEssentials plugin) {
-        Location center = new Location(Bukkit.getWorld("world"), 201.5, 61.8, 164.5);
+        World world = plugin.getServer().getWorld("world");
+        if (world == null) return;
+        Location center = new Location(world, 201.5, 61.8, 164.5);
         Scheduler.runTimer(center, () -> {
             spawnParticleAtAltar(Particle.FIREWORK, altarActivated);
         }, 0L, 3L); // Every 3 ticks

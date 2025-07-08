@@ -84,7 +84,9 @@ public class WishingWell {
             for (int i = 0; i <= travelDuration; i++) {
                 final int step = i;
             Scheduler.runLater(altarCenter, () -> {
-                if (!altarActivated) return;
+                if (!altarActivated) {
+                    return;
+                }
 
                     double t = (double) step / travelDuration;
                     t = easeInQuad(t); // accelerate
@@ -278,11 +280,10 @@ public class WishingWell {
      * @param plugin Main plugin instance.
      */
     public static void startWishingWellAmbient(BMEssentials plugin) {
-        Location altarBlockLocation = new Location(plugin.getServer().getWorld("world"), 210.5, 71, 309.5);
+        World world = plugin.getServer().getWorld("world");
+        if (world == null) return;
+        Location altarBlockLocation = new Location(world, 210.5, 71, 309.5);
         Scheduler.runTimer(altarBlockLocation, () -> {
-            if (altarActivated) return;
-            World world = altarBlockLocation.getWorld();
-            if (world == null) return;
 
             // Random RGB
             int r = random.nextInt(256);
