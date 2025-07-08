@@ -389,9 +389,9 @@ public class AltarManager implements Listener {
 		floatingItem.setVelocity(new Vector(0, 0, 0));
 		floatingItem.setPickupDelay(Integer.MAX_VALUE);
 
-		// Remove the item after ~4 seconds (80 ticks).
-		Scheduler.runLater(floatingItem::remove, 80L);
-	}
+                // Remove the item after ~4 seconds (80 ticks).
+                Scheduler.runLater(adjustedCenter, floatingItem::remove, 80L);
+        }
 
 
 	/**
