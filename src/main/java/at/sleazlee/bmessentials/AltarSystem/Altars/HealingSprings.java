@@ -34,7 +34,8 @@ public class HealingSprings {
      * @param plugin Main plugin instance.
      */
     public static void startHealingSpringsAmbient(BMEssentials plugin) {
-        Scheduler.runTimer(() -> {
+        Location center = new Location(Bukkit.getWorld("world"), 201.5, 61.8, 164.5);
+        Scheduler.runTimer(center, () -> {
             spawnParticleAtAltar(Particle.FIREWORK, altarActivated);
         }, 0L, 3L); // Every 3 ticks
     }
@@ -111,7 +112,7 @@ public class HealingSprings {
         // Step 2: Beam of particles from lectern up to blossom
         for (int i = 0; i <= 10; i++) {
             final int finalI = i;
-            Scheduler.runLater(() -> {
+            Scheduler.runLater(center, () -> {
                 double y = center.getY() - 1.0 + (0.15 * finalI);
                 world.spawnParticle(Particle.DUST, center.getX(), y, center.getZ(),
                         0, 0, 0, 0, createDustOptions("#32CA65"));
@@ -124,7 +125,7 @@ public class HealingSprings {
         }
 
         // Step 4: Additional ambient sound after a short delay
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(center, () -> {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 Location adjustedCenter = center.clone().add(0.0, 0.4, 0.0);
                 players.playSound(adjustedCenter, Sound.BLOCK_AMETHYST_CLUSTER_FALL, SoundCategory.AMBIENT, 2.0f, 0.3f);
@@ -134,7 +135,7 @@ public class HealingSprings {
         // Step 5: Particles descending from the blossom
         for (int i = 0; i <= 12; i++) {
             final int finalI = i;
-            Scheduler.runLater(() -> {
+            Scheduler.runLater(center, () -> {
                 double y = center.getY() + 0.6 - (0.05 * finalI);
                 world.spawnParticle(Particle.DUST, center.getX(), y, center.getZ(),
                         0, 0, 0, 0, createDustOptions("#32bbca"));
@@ -144,7 +145,7 @@ public class HealingSprings {
         // Step 6: Small white sphere formation
         for (int i = 0; i <= 10; i++) {
             final int step = i;
-            Scheduler.runLater(() -> {
+            Scheduler.runLater(center, () -> {
                 double r = step * 0.03;
                 // Sample points on a sphere
                 for (double tTheta = 0; tTheta <= 2 * Math.PI; tTheta += Math.PI / 10) {
@@ -163,25 +164,24 @@ public class HealingSprings {
         }
 
         // Step 7: Conduit activation sound
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(center, () -> {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.playSound(center, Sound.BLOCK_CONDUIT_ACTIVATE, SoundCategory.AMBIENT, 2.0f, 0.3f);
             }
         }, 100L);
 
         // Step 8: Show the reward item (using the chosen Material).
-        Scheduler.runLater(() ->
+        Scheduler.runLater(center, () ->
                         AltarManager.showItemAnimation(plugin, player, center, world, displayType),
         100L
         );
 
         // Step 9: Puff of smoke and final sound
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(center, () -> {
             world.spawnParticle(Particle.SMOKE, center, 10, 0.2, 0.2, 0.2, 0.05);
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.playSound(center, Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.AMBIENT, 0.2f, 1.0f);
             }
             deactivateHealingSpringsAltar();
         }, 180L);
-    }
-}
+    }}

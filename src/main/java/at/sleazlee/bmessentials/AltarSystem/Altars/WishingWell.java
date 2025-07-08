@@ -55,7 +55,7 @@ public class WishingWell {
         // 1) Spiral rising from the altar
         for (int i = 0; i <= spiralDuration; i++) {
             final int step = i;
-            Scheduler.runLater(() -> {
+            Scheduler.runLater(altarCenter, () -> {
                 if (!altarActivated) return;
 
                 double progress = easeOutQuad((double) step / spiralDuration);
@@ -77,14 +77,14 @@ public class WishingWell {
         }
 
         // 2) Accelerated travel (arc) to the well
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(altarCenter, () -> {
             Location start = altarCenter.clone().add(0, 1.5, 0);
             Vector controlPoint = calculateArcControlPoint(start, wellCenter, 2.0);
 
             for (int i = 0; i <= travelDuration; i++) {
                 final int step = i;
-                Scheduler.runLater(() -> {
-                    if (!altarActivated) return;
+            Scheduler.runLater(altarCenter, () -> {
+                if (!altarActivated) return;
 
                     double t = (double) step / travelDuration;
                     t = easeInQuad(t); // accelerate
@@ -102,17 +102,17 @@ public class WishingWell {
         }, spiralDuration);
 
         // 3) Harmonic jingle at the well
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(wellCenter, () -> {
             if (!altarActivated) return;
             playHarmonicSound(wellCenter, Sound.BLOCK_NOTE_BLOCK_CHIME, 1.5f, 0.8f);
             playHarmonicSound(wellCenter, Sound.BLOCK_NOTE_BLOCK_BELL, 1.2f, 1.0f);
         }, spiralDuration + travelDuration);
 
         // 4) Purple mist vortex around the well
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(wellCenter, () -> {
             for (int i = 0; i < mistDuration; i++) {
                 final int step = i;
-                Scheduler.runLater(() -> {
+                Scheduler.runLater(wellCenter, () -> {
                     if (!altarActivated) return;
 
                     double radius = 1.0 - (double) step / mistDuration;
@@ -129,11 +129,11 @@ public class WishingWell {
         }, spiralDuration + travelDuration + 5);
 
         // 5) Lightning strike from the well back to altar
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(wellCenter, () -> {
             Vector direction = wellCenter.toVector().subtract(altarCenter.toVector()).normalize();
             for (int i = 0; i < strikeDuration; i++) {
                 final int step = i;
-                Scheduler.runLater(() -> {
+                Scheduler.runLater(wellCenter, () -> {
                     if (!altarActivated) return;
 
                     double t = (double) step / strikeDuration;
@@ -146,7 +146,7 @@ public class WishingWell {
         }, spiralDuration + travelDuration + mistDuration + 5);
 
         // 6) Final reveal: Show the reward item
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(altarCenter, () -> {
             if (!altarActivated) return;
 
             Location prizeLocation = altarCenter.clone().add(0, 0.6, 0);
@@ -168,7 +168,7 @@ public class WishingWell {
         }, spiralDuration + travelDuration + mistDuration + strikeDuration + 10);
 
         // Reactivate ambient effect after the full sequence
-        Scheduler.runLater(() -> altarActivated = false,
+        Scheduler.runLater(altarCenter, () -> altarActivated = false,
                 spiralDuration + travelDuration + mistDuration + strikeDuration + 90
         );
     }
@@ -278,10 +278,9 @@ public class WishingWell {
      * @param plugin Main plugin instance.
      */
     public static void startWishingWellAmbient(BMEssentials plugin) {
-        Scheduler.runTimer(() -> {
+        Location altarBlockLocation = new Location(plugin.getServer().getWorld("world"), 210.5, 71, 309.5);
+        Scheduler.runTimer(altarBlockLocation, () -> {
             if (altarActivated) return;
-
-            Location altarBlockLocation = new Location(plugin.getServer().getWorld("world"), 210.5, 71, 309.5);
             World world = altarBlockLocation.getWorld();
             if (world == null) return;
 
@@ -301,5 +300,4 @@ public class WishingWell {
             );
 
         }, 0L, 15L);
-    }
-}
+    }}

@@ -46,7 +46,7 @@ public class Obelisk {
         altarActivated = true;
 
         // Phase 1: Energy charge from altar center to obelisk top
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(altarCenter, () -> {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.playSound(altarCenter, Sound.ENTITY_ILLUSIONER_CAST_SPELL, 1.2f, 0.9f);
                 players.playSound(altarCenter, Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 0.8f, 1.5f);
@@ -57,7 +57,7 @@ public class Obelisk {
 
             for (int i = 0; i <= chargeDuration; i++) {
                 final int step = i;
-                Scheduler.runLater(() -> {
+                Scheduler.runLater(altarCenter, () -> {
                     double progress = easeOutQuad((double) step / chargeDuration);
                     Location currentPos = altarCenter.clone().add(direction.clone().multiply(progress));
 
@@ -76,11 +76,11 @@ public class Obelisk {
         }, 0);
 
         // Phase 2: Enhanced energy descent from obelisk top
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(OBELISK_TOP, () -> {
             int totalSteps = 60;
             for (int i = 0; i <= totalSteps; i++) {
                 final int step = i;
-                Scheduler.runLater(() -> {
+                Scheduler.runLater(OBELISK_TOP, () -> {
                     if (!altarActivated) return;
                     double progress = (double) step / totalSteps;
                     double y = OBELISK_TOP.getY() - (36 * progress);
@@ -105,7 +105,7 @@ public class Obelisk {
         }, 30);
 
         // Phase 3: Purple energy wave from the obelisk base
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(OBELISK_BASE, () -> {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.playSound(OBELISK_BASE, Sound.ENTITY_WARDEN_SONIC_CHARGE, 1.5f, 0.8f);
             }
@@ -113,7 +113,7 @@ public class Obelisk {
             int waveSteps = 20;
             for (int i = 0; i <= waveSteps; i++) {
                 final int step = i;
-                Scheduler.runLater(() -> {
+                Scheduler.runLater(OBELISK_BASE, () -> {
                     double radius = 5 * (double) step / waveSteps;
                     for (int j = 0; j < 30; j++) {
                         double angle = 2 * Math.PI * j / 30;
@@ -127,14 +127,14 @@ public class Obelisk {
         }, 80);
 
         // Phase 4: Westward enchantment wave from altar center
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(altarCenter, () -> {
             for (Player players : Bukkit.getOnlinePlayers()) {
                 players.playSound(altarCenter, Sound.BLOCK_BEACON_DEACTIVATE, 1.2f, 2.0f);
             }
 
             for (int i = 0; i < 40; i++) {
                 final int step = i;
-                Scheduler.runLater(() -> {
+                Scheduler.runLater(altarCenter, () -> {
                     double x = altarCenter.getX() - (step * 0.15);
                     double y = altarCenter.getY() + 1.0 + Math.sin(step * 0.3) * 0.8;
                     world.spawnParticle(Particle.ENCHANT, x, y, altarCenter.getZ(),
@@ -144,7 +144,7 @@ public class Obelisk {
         }, 110);
 
         // Phase 5: Explosion + reward + enchant vortex
-        Scheduler.runLater(() -> {
+        Scheduler.runLater(altarCenter, () -> {
             world.spawnParticle(Particle.EXPLOSION, altarCenter, 1);
             world.spawnParticle(Particle.FLASH, altarCenter, 10, 0.5, 0.5, 0.5, 0);
 
@@ -163,7 +163,7 @@ public class Obelisk {
         }, 150);
 
         // Reset altar to idle
-        Scheduler.runLater(() -> altarActivated = false, 230);
+        Scheduler.runLater(altarCenter, () -> altarActivated = false, 230);
     }
 
     /**
@@ -176,7 +176,7 @@ public class Obelisk {
         int vortexSteps = 60;
         for (int i = 0; i < vortexSteps; i++) {
             final int step = i;
-            Scheduler.runLater(() -> {
+            Scheduler.runLater(center, () -> {
                 double angle = 2 * Math.PI * step / 10;
                 double radius = 1.8 * (1 - (double) step / vortexSteps);
                 double y = center.getY() + (step * 0.15);
@@ -207,7 +207,7 @@ public class Obelisk {
      * @param plugin Main plugin instance.
      */
     public static void startObeliskAmbient(BMEssentials plugin) {
-        Scheduler.runTimer(() -> {
+        Scheduler.runTimer(ALTAR_LOCATION, () -> {
             // Skip if the altar is currently running its animation
             if (altarActivated) return;
 
