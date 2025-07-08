@@ -51,7 +51,7 @@ public class CommandsCommand implements CommandExecutor {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("abilities") ||
                     args[0].equalsIgnoreCase("basics") ||
-                    args[0].equalsIgnoreCase("arm") ||
+                    args[0].equalsIgnoreCase("bms") ||
                     args[0].equalsIgnoreCase("chat") ||
                     args[0].equalsIgnoreCase("communication") ||
                     args[0].equalsIgnoreCase("chestshop") ||

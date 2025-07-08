@@ -92,9 +92,9 @@ public class HelpCommand implements CommandExecutor {
             switch (args[1].toLowerCase()) {
                 case "abilities" -> commands.sendCommandInfo(player, "abilities");
                 case "basics" -> commands.sendCommandInfo(player, "basics");
-                case "bms" -> commands.sendCommandInfo(player, "arm");
+                case "bms" -> commands.sendCommandInfo(player, "bms");
                 case "chat" -> commands.sendCommandInfo(player, "communication");
-                case "chestshop" -> commands.sendCommandInfo(player, "quickshop");
+                case "chestshop" -> commands.sendCommandInfo(player, "chestshop");
                 case "fun" -> commands.sendCommandInfo(player, "fun");
                 case "lands" -> commands.sendCommandInfo(player, "lands1");
                 case "mcmmo" -> commands.sendCommandInfo(player, "mcmmo");

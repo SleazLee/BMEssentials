@@ -9,7 +9,7 @@ public class TextCenter {
      * @return the centered message
      */
     public static String center(String message) {
-        int defaultTotalSpaces = 80; // Adjust this value based on your needs
+        int defaultTotalSpaces = 79; // Adjust this value based on your needs
         return center(message, defaultTotalSpaces, null);
     }
 
@@ -21,7 +21,7 @@ public class TextCenter {
      * @return the centered message
      */
     public static String center(String message, String strikeColorName) {
-        int defaultTotalSpaces = 80; // Adjust this value based on your needs
+        int defaultTotalSpaces = 79; // Adjust this value based on your needs
         return center(message, defaultTotalSpaces, strikeColorName);
     }
 
@@ -150,7 +150,7 @@ public class TextCenter {
      * @return the full-line strikethrough string
      */
     public static String fullLineStrike(String colorName) {
-        int defaultTotalSpaces = 80; // Adjust this value as needed
+        int defaultTotalSpaces = 79; // Adjust this value as needed
         int spaceWidth = DefaultFontInfo.SPACE.getLength() + 1;
         int totalWidth = defaultTotalSpaces * spaceWidth;
 

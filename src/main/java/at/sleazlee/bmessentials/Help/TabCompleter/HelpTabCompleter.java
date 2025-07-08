@@ -20,32 +20,32 @@ public class HelpTabCompleter implements TabCompleter {
         // /help <subcommand>
         if (args.length == 1) {
             // Suggest main subcommands
-            completions.add("claiming");
-            completions.add("money");
-            completions.add("ranks");
-            completions.add("voting");
-            completions.add("commands");
-            completions.add("settings");
-            completions.add("abilities");
+            completions.add("Claiming");
+            completions.add("Money");
+            completions.add("Ranks");
+            completions.add("Voting");
+            completions.add("Commands");
+            completions.add("Settings");
+            completions.add("Abilities");
 
             return filterResults(args[0], completions);
         }
 
         // /help commands <subcommand>
         if (args.length == 2 && args[0].equalsIgnoreCase("commands")) {
-            completions.add("abilities");
-            completions.add("basics");
-            completions.add("arm");
-            completions.add("chat");
-            completions.add("chestshop");
-            completions.add("fun");
-            completions.add("lands");
-            completions.add("mcmmo");
-            completions.add("settings");
-            completions.add("teleportation");
-            completions.add("trophies");
-            completions.add("unlocks");
-            completions.add("vip");
+            completions.add("Abilities");
+            completions.add("Basics");
+            completions.add("Bms");
+            completions.add("Chat");
+            completions.add("Chestshop");
+            completions.add("Fun");
+            completions.add("Lands");
+            completions.add("Mcmmo");
+            completions.add("Settings");
+            completions.add("Teleportation");
+            completions.add("Trophies");
+            completions.add("Unlocks");
+            completions.add("Vip");
             return filterResults(args[1], completions);
         }
 

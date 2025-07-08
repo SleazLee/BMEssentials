@@ -165,7 +165,7 @@ Commands:
     - "{fullLineStrike color='dark_gray'}"
 
   abilities:
-    - "{center color='dark_gray'}<light_purple>Unlockable Abilities{/center}"
+    - "{center color='dark_gray'}<light_purple>Unlockable Abilities<black>.</black>{/center}"
     - "&7"
     - "{center}Abilities are unlocked through ranking up,{/center}"
     - "{center}check out &b/ranks&f for more info.{/center}"
@@ -215,20 +215,25 @@ Commands:
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  arm:
-    - "{center color='dark_gray'}<aqua>Advanced Region Market{/center}"
+  bms:
+    - "{center color='dark_gray'}<aqua>Blockminer Shops{/center}"
     - "&7"
-    - "<click:run_command:/arm gui><hover:show_text:'&bClick to Run!'>&b/arm gui &8-&7 Opens your shop Menu.</hover></click>"
-    - "<click:run_command:/arm info><hover:show_text:'&7Click to Run!'>&b/arm info &8-&7 Info about the shop you're at.</hover></click>"
-    - "<click:run_command:/arm extend><hover:show_text:'&bClick to Run!'>&b/arm extend &8-&7 Extend your shop's rent.</hover></click>"
-    - "<click:SUGGEST_COMMAND:/arm tp ><hover:show_text:'&7Click to Copy!'>&b/arm tp &8<&b###&8> -&7 TP to a Shop.</hover></click>"
-    - "<click:SUGGEST_COMMAND:/arm sellback ><hover:show_text:'&bClick to Copy!'>&b/arm sellback &8<&b###&8> -&7 Remove your Shop!</hover></click>"
-    - "<click:SUGGEST_COMMAND:/arm addmember ><hover:show_text:'&7Click to Copy!'>&b/arm addmember &8<&bplayer&8> -&7 Trust a player (allows editing)</hover></click>"
-    - "<click:SUGGEST_COMMAND:/arm removemember ><hover:show_text:'&bClick to Copy!'>&b/arm removemember &8<&bplayer&8> -&7 UnTrust a player.</hover></click>"
+    # Core actions players use most often
+    - "<click:run_command:/bms buy><hover:show_text:'&bClick to Run!'>&b/bms buy &8-&7 Purchase a shop plot.</hover></click>"
+    - "<click:run_command:/bms extend><hover:show_text:'&bClick to Run!'>&b/bms extend &8-&7 Pay rent to extend your shop's rental period.</hover></click>"
+    - "<click:run_command:/bms tp set><hover:show_text:'&bClick to Run!'>&b/bms tp set &8-&7 Set the tp location for your shop in /tpshop.</hover></click>"
+    # Naming & appearance
+    - "<click:run_command:/bms name><hover:show_text:'&bClick to Run!'>&b/bms name &8-&7 Options to name and customize colors.</hover></click>"
+    # Co-owner management
+    - "<click:SUGGEST_COMMAND:/bms invite ><hover:show_text:'&7Click to Copy!'>&b/bms invite &8<&bplayer&8> -&7 Invite another player as a co-owner.</hover></click>"
+    - "<click:SUGGEST_COMMAND:/bms remove ><hover:show_text:'&7Click to Copy!'>&b/bms remove &8<&bplayer&8> -&7 Remove a co-owner from your shop.</hover></click>"
+    - "<click:SUGGEST_COMMAND:/bms transfer ><hover:show_text:'&7Click to Copy!'>&b/bms transfer &8<&bplayer&8> -&7 Transfer ownership of your shop.</hover></click>"
+    # Rare / irreversible action
+    - "<click:run_command:/bms disband><hover:show_text:'&bClick to Run!'>&b/bms disband &8-&7 Permanently delete your shop. &cWARNING:&7 This will remove the building and all its contents!</hover></click>"
     - "&7"
     - "{fullLineStrike color='dark_gray'}"
 
-  quickshop:
+  chestshop:
     - "{center color='dark_gray'}<green>Chest Shop CMDs{/center}"
     - "&7"
     - "<click:SUGGEST_COMMAND:/shop buy><hover:show_text:'&aClick to Copy!'>&a/shop buy &8-&7 Changes the shop to &cBUY&7 mode.</hover></click>"

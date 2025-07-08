@@ -23,19 +23,19 @@ public class CommandTabCompleter implements TabCompleter {
         // /help <subcommand>
         if (args.length == 1) {
             // Suggest main subcommands
-            completions.add("abilities");
-            completions.add("basics");
-            completions.add("arm");
-            completions.add("chat");
-            completions.add("chestshop");
-            completions.add("fun");
-            completions.add("lands");
-            completions.add("mcmmo");
-            completions.add("settings");
-            completions.add("teleportation");
-            completions.add("trophies");
-            completions.add("unlocks");
-            completions.add("vip");
+            completions.add("Abilities");
+            completions.add("Basics");
+            completions.add("Bms");
+            completions.add("Chat");
+            completions.add("Chestshop");
+            completions.add("Fun");
+            completions.add("Lands");
+            completions.add("Mcmmo");
+            completions.add("Settings");
+            completions.add("Teleportation");
+            completions.add("Trophies");
+            completions.add("Unlocks");
+            completions.add("Vip");
 
             return filterResults(args[0], completions);
         }
