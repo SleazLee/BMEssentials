@@ -2,6 +2,7 @@ package at.sleazlee.bmessentials.Help.Commands;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Help.HelpBooks;
+import at.sleazlee.bmessentials.Help.HelpText;
 import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,8 +14,10 @@ import org.bukkit.entity.Player;
 
 public class HelpCommand implements CommandExecutor {
 
-    // Get the instance of the Help book system
+
+    // Get the instance of the Help book and text systems
     HelpBooks books = BMEssentials.getInstance().getBooks();
+    HelpText commands = new HelpText(BMEssentials.getInstance());
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -86,65 +89,26 @@ public class HelpCommand implements CommandExecutor {
         // You can adjust the logic as needed.
         if (args.length == 2 && args[0].equalsIgnoreCase("commands")) {
 
-            if (args[1].equalsIgnoreCase("abilities")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command abilities"));
-                return true;
+            switch (args[1].toLowerCase()) {
+                case "abilities" -> commands.sendCommandInfo(player, "abilities");
+                case "basics" -> commands.sendCommandInfo(player, "basics");
+                case "bms" -> commands.sendCommandInfo(player, "arm");
+                case "chat" -> commands.sendCommandInfo(player, "communication");
+                case "chestshop" -> commands.sendCommandInfo(player, "quickshop");
+                case "fun" -> commands.sendCommandInfo(player, "fun");
+                case "lands" -> commands.sendCommandInfo(player, "lands1");
+                case "mcmmo" -> commands.sendCommandInfo(player, "mcmmo");
+                case "settings" -> commands.sendCommandInfo(player, "settings");
+                case "teleportation" -> commands.sendCommandInfo(player, "teleportation");
+                case "trophies" -> commands.sendCommandInfo(player, "trophies");
+                case "unlocks" -> commands.sendCommandInfo(player, "unlocks");
+                case "vip" -> commands.sendCommandInfo(player, "vip");
+                default -> {
+                    player.sendMessage("Unknown command. Try /help commands for a list.");
+                    return true;
+                }
             }
-            else if (args[1].equalsIgnoreCase("basics")) {
-                Scheduler.run(player.getLocation(), () ->
-                        Bukkit.dispatchCommand(player, "command basics"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("bms")) {
-                Scheduler.run(player.getLocation(), () ->
-                        Bukkit.dispatchCommand(player, "command bms"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("chat")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command chat"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("chestshop")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command chestshop"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("fun")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command fun"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("lands")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command lands"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("mcmmo")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command mcmmo"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("settings")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command settings"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("teleportation")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command teleportation"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("trophies")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command trophies"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("unlocks")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command unlocks"));
-                return true;
-            }
-            else if (args[1].equalsIgnoreCase("vip")) {
-                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command vip"));
-                return true;
-            }
-            else {
-                // Unrecognized sub-subcommand
-                player.sendMessage("Unknown command. Try /help commands for a list.");
-                return true;
-            }
+        return true;
         }
 
         // If more than 2 arguments or something else, default message
