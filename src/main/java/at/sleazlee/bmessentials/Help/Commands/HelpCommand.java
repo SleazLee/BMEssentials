@@ -2,6 +2,7 @@ package at.sleazlee.bmessentials.Help.Commands;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Help.HelpBooks;
+import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -29,7 +30,7 @@ public class HelpCommand implements CommandExecutor {
 
         // If no subcommand: /help
         if (args.length == 0) {
-            Bukkit.dispatchCommand(player, "book help");
+            books.openBook(player, "help");
 
             // Play a sound
             Location location = player.getLocation();
@@ -86,55 +87,55 @@ public class HelpCommand implements CommandExecutor {
         if (args.length == 2 && args[0].equalsIgnoreCase("commands")) {
 
             if (args[1].equalsIgnoreCase("abilities")) {
-                Bukkit.dispatchCommand(player, "command abilities");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command abilities"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("basics")) {
-                Bukkit.dispatchCommand(player, "command basics");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command basics"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("bms")) {
-                Bukkit.dispatchCommand(player, "command bms");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command bms"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("chat")) {
-                Bukkit.dispatchCommand(player, "command chat");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command chat"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("chestshop")) {
-                Bukkit.dispatchCommand(player, "command chestshop");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command chestshop"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("fun")) {
-                Bukkit.dispatchCommand(player, "command fun");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command fun"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("lands")) {
-                Bukkit.dispatchCommand(player, "command lands");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command lands"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("mcmmo")) {
-                Bukkit.dispatchCommand(player, "command mcmmo");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command mcmmo"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("settings")) {
-                Bukkit.dispatchCommand(player, "command settings");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command settings"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("teleportation")) {
-                Bukkit.dispatchCommand(player, "command teleportation");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command teleportation"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("trophies")) {
-                Bukkit.dispatchCommand(player, "command trophies");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command trophies"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("unlocks")) {
-                Bukkit.dispatchCommand(player, "command unlocks");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command unlocks"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("vip")) {
-                Bukkit.dispatchCommand(player, "command vip");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command vip"));
                 return true;
             }
             else {

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class BestToolsTabCompleter implements TabCompleter {
+public class BestToolTabCompleter implements TabCompleter {
 
     private static final List<String> BASE_COMMANDS = Collections.singletonList("toggle");
     private static final List<String> TOGGLE_OPTIONS = List.of(

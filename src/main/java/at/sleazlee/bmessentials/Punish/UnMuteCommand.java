@@ -1,5 +1,6 @@
 package at.sleazlee.bmessentials.Punish;
 
+import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,7 +23,7 @@ public class UnMuteCommand implements CommandExecutor {
 
 					ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 					String CommandBuilder = "mute:mute player " + playerName + " off";
-					Bukkit.dispatchCommand(console, CommandBuilder);
+					Scheduler.run(() -> Bukkit.dispatchCommand(console, CommandBuilder));
 
 					sender.sendMessage("§c§lBM §fIf §e" + playerName + " §fwas muted, they are now §aunmuted§f!");
 				}

@@ -112,14 +112,14 @@ public class McMMOBoost {
 		// Remove the temporary permission first
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		String unSetCommandBuilder = "lp user " + playerName + " permission unsettemp " + permission;
-		Bukkit.dispatchCommand(console, unSetCommandBuilder);
+		Scheduler.run(() -> Bukkit.dispatchCommand(console, unSetCommandBuilder));
 
 		// Reassign the permission with the updated time
 		String setCommandBuilder = "lp user " + playerName + " permission settemp " + permission + " true " + hour + "h" + min + "m";
 		Scheduler.runLater(new Runnable() {
 			@Override
 			public void run() {
-				Bukkit.dispatchCommand(console, setCommandBuilder);
+				Scheduler.run(() -> Bukkit.dispatchCommand(console, setCommandBuilder));
 			}
 		}, 20L); // Delay in ticks (20 ticks = 1 second)
 	}
@@ -134,7 +134,7 @@ public class McMMOBoost {
 	public void giveReward(String permission, int minutes, String playerName) {
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		String setCommandBuilder = "lp user " + playerName + " permission settemp " + permission + " true " + minutes + "m";
-		Bukkit.dispatchCommand(console, setCommandBuilder);
+		Scheduler.run(() -> Bukkit.dispatchCommand(console, setCommandBuilder));
 	}
 
 	/**

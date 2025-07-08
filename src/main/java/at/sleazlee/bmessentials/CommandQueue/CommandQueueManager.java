@@ -122,13 +122,13 @@ public class CommandQueueManager {
                 String cmd = iterator.next();
                 if (executorType.equals("player")) {
                     if (sender instanceof Player) {
-                        Bukkit.dispatchCommand((Player) sender, cmd);
+                        Scheduler.run(() -> Bukkit.dispatchCommand((Player) sender, cmd));
                     } else {
                         sender.sendMessage(ChatColor.RED + "Only players can run commands as player.");
                         return;
                     }
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
                 }
 
                 // Schedule the next command after the specified delay

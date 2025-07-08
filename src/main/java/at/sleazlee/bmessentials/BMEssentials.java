@@ -19,10 +19,7 @@ import at.sleazlee.bmessentials.DonationSystem.GetDonations;
 import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import at.sleazlee.bmessentials.EconomySystem.EconomyCommands;
 import at.sleazlee.bmessentials.EconomySystem.LegacyEconomyProvider;
-import at.sleazlee.bmessentials.Help.Abilities.BestToolsCommand;
-import at.sleazlee.bmessentials.Help.Abilities.BestToolsTabCompleter;
-import at.sleazlee.bmessentials.Help.Abilities.ChestSortCommand;
-import at.sleazlee.bmessentials.Help.Abilities.ChestSortTabCompleter;
+import at.sleazlee.bmessentials.Help.Abilities.*;
 import at.sleazlee.bmessentials.Help.Commands.*;
 import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Help.HelpText;
@@ -568,11 +565,13 @@ public class BMEssentials extends JavaPlugin {
             getCommand("chestsort").setExecutor(new ChestSortCommand());
             getCommand("chestsort").setTabCompleter(new ChestSortTabCompleter());
 
-//            //BestTools System
-//            getCommand("besttools").setExecutor(new BestToolsCommand());
-//            getCommand("besttools").setTabCompleter(new BestToolsTabCompleter());
+            //BestTools System
+            getCommand("besttool").setExecutor(new BestToolCommand());
+            getCommand("besttool").setTabCompleter(new BestToolTabCompleter());
 
             //AutoAdd System
+            getCommand("autoadd").setExecutor(new AutoAddCommand());
+            getCommand("autoadd").setTabCompleter(new AutoAddTabCompleter());
         }
 
         // Purpur feature Systems

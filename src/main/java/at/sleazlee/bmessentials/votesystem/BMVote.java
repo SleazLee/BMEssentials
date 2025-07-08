@@ -210,9 +210,11 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
 
             // Execute the commands
             if (!commandOne.equals("none")) {
-                Bukkit.dispatchCommand(console, commandOne);
+                String finalCommandOne = commandOne;
+                Scheduler.run(() -> Bukkit.dispatchCommand(console, finalCommandOne));
             }
-            Bukkit.dispatchCommand(console, commandTwo);
+            String finalCommandTwo = commandTwo;
+            Scheduler.run(() -> Bukkit.dispatchCommand(console, finalCommandTwo));
 
             // Play a sound and spawn particles
             if (player != null) {

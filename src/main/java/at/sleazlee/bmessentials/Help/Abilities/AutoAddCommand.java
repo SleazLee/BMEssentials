@@ -2,6 +2,7 @@ package at.sleazlee.bmessentials.Help.Abilities;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Help.HelpBooks;
+import at.sleazlee.bmessentials.Scheduler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -52,33 +53,53 @@ public class AutoAddCommand implements CommandExecutor {
             // Step 2: Run logic for No arguments (/autoadd)
         } else if (args.length == 0) {
 
-            if (!player.hasPermission("autoadd.use") && !player.hasPermission("autoadd.firstuse")) {
+            if (!player.hasPermission("drop2inventory.use") && !player.hasPermission("autoadd.firstuse")) {
 
                 // First time running command.
 
                 // Dispatch commands from the console using Bukkit.dispatchCommand:
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.firstuse true");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.use true");
-                books.openBook(player, "autoaddsettingstrue");
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.firstuse true"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.use true"));
+
+                if (player.hasPermission("drop2inventory.autocondense")) {
+                    books.openBook(player, "autoaddtruetrue");
+                } else {
+                    books.openBook(player, "autoaddtruefalse");
+                }
+
                 return true;
 
 
-            } else if (!player.hasPermission("autoadd.use") && player.hasPermission("autoadd.firstuse")) {
+            } else if (!player.hasPermission("drop2inventory.use") && player.hasPermission("autoadd.firstuse")) {
 
-                books.openBook(player, "autoaddsettingsfalse");
+                if (player.hasPermission("drop2inventory.autocondense")) {
+                    books.openBook(player, "autoaddfalsetrue");
+                } else {
+                    books.openBook(player, "autoaddfalsefalse");
+                }
 
                 return true;
 
-            } else if (player.hasPermission("autoadd.use") && player.hasPermission("autoadd.firstuse")) {
+            } else if (player.hasPermission("drop2inventory.use") && player.hasPermission("autoadd.firstuse")) {
 
-                books.openBook(player, "autoaddsettingstrue");
+                if (player.hasPermission("drop2inventory.autocondense")) {
+                    books.openBook(player, "autoaddtruetrue");
+                } else {
+                    books.openBook(player, "autoaddtruefalse");
+                }
                 return true;
 
             } else {
 
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.firstuse true");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.use true");
-                books.openBook(player, "besttooltruefalse");
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.firstuse true"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.use true"));
+
+                if (player.hasPermission("drop2inventory.autocondense")) {
+                    books.openBook(player, "autoaddtruetrue");
+                } else {
+                    books.openBook(player, "autoaddtruefalse");
+                }
+
                 return true;
 
             }
@@ -89,31 +110,31 @@ public class AutoAddCommand implements CommandExecutor {
             // Step 4: Run logic for only (/autoadd toggle)
             if (args.length == 1) {
 
-                if (player.hasPermission("autoadd.use")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.use false");
+                if (player.hasPermission("drop2inventory.use")) {
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.use false"));
                     player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>AutoAdd </bold></gold><gray>You have toggled automatic sorting <color:#ff3300>off</color:#ff3300>!</gray>"));
 
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.use true");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.use true"));
                     player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>AutoAdd </bold></gold><gray>You have toggled automatic sorting <green>on</green>!</gray>"));
                 }
 
             } else if (args[1].equals("true")) {
 
-                if (player.hasPermission("autoadd.use")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.use false");
-                    if (player.hasPermission("autoadd.refill")) {
-                        books.openBook(player, "besttoolfalsetrue");
+                if (player.hasPermission("drop2inventory.use")) {
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.use false"));
+                    if (player.hasPermission("drop2inventory.autocondense")) {
+                        books.openBook(player, "autoaddfalsetrue");
                     } else {
-                        books.openBook(player, "besttoolfalsefalse");
+                        books.openBook(player, "autoaddfalsefalse");
                     }
 
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.use true");
-                    if (player.hasPermission("autoadd.refill")) {
-                        books.openBook(player, "besttooltruetrue");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.use true"));
+                    if (player.hasPermission("drop2inventory.autocondense")) {
+                        books.openBook(player, "autoaddtruetrue");
                     } else {
-                        books.openBook(player, "besttooltruefalse");
+                        books.openBook(player, "autoaddtruefalse");
                     }
                 }
 
@@ -126,8 +147,8 @@ public class AutoAddCommand implements CommandExecutor {
             return true;
 
         } else {
-            // error BT101
-            player.sendMessage("Report this to SleazLee. Error BT101");
+            // error AA101
+            player.sendMessage("Report this to SleazLee. Error AA101");
             return true;
         }
 
@@ -137,7 +158,7 @@ public class AutoAddCommand implements CommandExecutor {
      * Checks if the player has the specified permission.
      *
      * @param player     The player to check.
-     * @param permission The permission node to check, e.g. "autoadd.use".
+     * @param permission The permission node to check, e.g. "drop2inventory.use".
      * @return true if the player has the permission, false otherwise.
      */
     public static boolean hasPermission(Player player, String permission) {
@@ -145,11 +166,11 @@ public class AutoAddCommand implements CommandExecutor {
     }
 
     public void toggleAutoAdd(Player player, String playerName, String subCommand) {
-        if (subCommand.equals("refill")) {// Placeholder for "/autoadd toggle refill" logic
-            if (player.hasPermission("autoadd.refill")) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.refill false");
+        if (subCommand.equals("condense")) {// Placeholder for "/autoadd toggle condense" logic
+            if (player.hasPermission("drop2inventory.autocondense")) {
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense false"));
             } else {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set autoadd.refill true");
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense true"));
             }
         } else {
             player.sendMessage("Unknown subcommand for toggle.");

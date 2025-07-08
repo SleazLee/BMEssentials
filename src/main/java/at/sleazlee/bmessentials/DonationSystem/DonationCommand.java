@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.DonationSystem;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.VTell.VTellCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -67,7 +68,7 @@ public class DonationCommand {
 		VTellCommand.broadcastMessage("<aqua><bold>Shop</bold><white> <red>" + displayName + "<white>, just purchased <gold><bold>Free Potatoes</bold><white> from the webstore.");
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		String commandBuilder = "si give hotpotato 32 " + playerName + " true";
-		Bukkit.dispatchCommand(console, commandBuilder);
+		Scheduler.run(() -> Bukkit.dispatchCommand(console, commandBuilder));
 	}
 
 	public void buyBlockminerBlast(String playerName) {
@@ -77,7 +78,7 @@ public class DonationCommand {
 		VTellCommand.broadcastMessage("<aqua><bold>Shop</bold><white> <red>" + displayName + "<white>, just purchased <dark_aqua><bold>Blockminer Blast</bold><white> from the webstore.");
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		String commandBuilder = "si give blockminerblast 1 " + playerName + " true";
-		Bukkit.dispatchCommand(console, commandBuilder);
+		Scheduler.run(() -> Bukkit.dispatchCommand(console, commandBuilder));
 	}
 
 	public void buyLousyBrick(String playerName) {
@@ -87,7 +88,7 @@ public class DonationCommand {
 		VTellCommand.broadcastMessage("<aqua><bold>Shop</bold><white> <red>" + displayName + "<white>, just purchased <color:#B5593F><bold>A Brick</bold><white> from the webstore.");
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		String commandBuilder = "si give lousybrick 1 " + playerName + " true";
-		Bukkit.dispatchCommand(console, commandBuilder);
+		Scheduler.run(() -> Bukkit.dispatchCommand(console, commandBuilder));
 	}
 
 	public void buyPlusRank(String playerName) {

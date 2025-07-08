@@ -1,6 +1,7 @@
 package at.sleazlee.bmessentials.AltarSystem.Rewards;
 
 import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -75,6 +76,6 @@ public class DiamondCatch {
 		// Dispatch the command to give the player the diamonds
 		ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 		String commandBuilder = "si give diamonds " + rndNumber + " " + player.getName() + " true";
-		Bukkit.dispatchCommand(console, commandBuilder);
+		Scheduler.run(() -> Bukkit.dispatchCommand(console, commandBuilder));
 	}
 }

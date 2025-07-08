@@ -229,8 +229,11 @@ commands:
   chestsort:
     description: Changes ChestSort Settings.
 
-  besttools:
-    description: Changes ChestSort Settings.
+  besttool:
+    description: Changes BestTools Settings.
+
+  autoadd:
+    description: Changes Drop2Inventory Settings.
 
   invsee:
     description: View and edit another player's inventory.

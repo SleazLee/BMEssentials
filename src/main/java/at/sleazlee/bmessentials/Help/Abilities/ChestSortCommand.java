@@ -2,6 +2,7 @@ package at.sleazlee.bmessentials.Help.Abilities;
 
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Help.HelpBooks;
+import at.sleazlee.bmessentials.Scheduler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -56,12 +57,12 @@ public class ChestSortCommand implements CommandExecutor {
 
                 // First time running command.
 
-                // Dispatch commands from the console using Bukkit.dispatchCommand:
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.firstuse true");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true");
+                // Dispatch commands from the console using Scheduler.run(() -> Bukkit.dispatchCommand:
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.firstuse true"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true"));
                 books.openBook(player, "chestsortsettingstrue");
                 return true;
 
@@ -79,10 +80,10 @@ public class ChestSortCommand implements CommandExecutor {
 
             } else {
 
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.firstuse true");
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false"));
+                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.firstuse true"));
                 books.openBook(player, "chestsortsettingstrue");
                 return true;
 
@@ -95,22 +96,22 @@ public class ChestSortCommand implements CommandExecutor {
             if (args.length == 1) {
 
                 if (player.hasPermission("chestsort.use")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use false");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use false"));
                     player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>ChestSort </bold></gold><gray>You have toggled automatic sorting <color:#ff3300>off</color:#ff3300>!</gray>"));
 
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true"));
                     player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>ChestSort </bold></gold><gray>You have toggled automatic sorting <green>on</green>!</gray>"));
                 }
 
             } else if (args[1].equals("true")) {
 
                 if (player.hasPermission("chestsort.use")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use false");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use false"));
                     books.openBook(player, "chestsortsettingsfalse");
 
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.use true"));
                     books.openBook(player, "chestsortsettingstrue");
                 }
 
@@ -189,37 +190,37 @@ public class ChestSortCommand implements CommandExecutor {
             case "doubleclick":
                 // Placeholder for "/chestsort toggle DoubleClick" logic
                 if (player.hasPermission("chestsort.hotkey.doubleclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick false");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick false"));
                     return false;
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick true");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.doubleclick true"));
                     return true;
                 }
             case "shiftclick":
                 // Placeholder for "/chestsort toggle ShiftClick" logic
                 if (player.hasPermission("chestsort.hotkey.shiftclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick false"));
                     return false;
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick true");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftclick true"));
                     return true;
                 }
             case "middleclick":
                 // Placeholder for "/chestsort toggle MiddleClick" logic
                 if (player.hasPermission("chestsort.hotkey.middleclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick false"));
                     return false;
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick true");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.middleclick true"));
                     return true;
                 }
             case "shiftrightclick":
                 // Placeholder for "/chestsort toggle ShiftRightClick" logic
                 if (player.hasPermission("chestsort.hotkey.shiftrightclick")) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick false"));
                     return false;
                 } else {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick true");
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set chestsort.hotkey.shiftrightclick true"));
                     return true;
                 }
             default:

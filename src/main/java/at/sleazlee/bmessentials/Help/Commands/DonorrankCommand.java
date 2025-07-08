@@ -1,5 +1,6 @@
 package at.sleazlee.bmessentials.Help.Commands;
 
+import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -24,7 +25,7 @@ public class DonorrankCommand implements CommandExecutor {
 
         // If no subcommand: /donorranks
         if (args.length == 0) {
-            Bukkit.dispatchCommand(player, "book donorranks");
+            Scheduler.run(() -> Bukkit.dispatchCommand(player, "book donorranks"));
             // Play a sound
             Location location = player.getLocation();
             player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
@@ -40,19 +41,19 @@ public class DonorrankCommand implements CommandExecutor {
 
             // Example: /ranks plus => we run "/book plusrank"
             if (args[0].equalsIgnoreCase("plus")) {
-                Bukkit.dispatchCommand(player, "book plusrank");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book plusrank"));
                 return true;
             } else if (args[0].equalsIgnoreCase("premium")) {
-                Bukkit.dispatchCommand(player, "book premiumrank");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book premiumrank"));
                 return true;
             } else if (args[0].equalsIgnoreCase("ultra")) {
-                Bukkit.dispatchCommand(player, "book ultrarank");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book ultrarank"));
                 return true;
             } else if (args[0].equalsIgnoreCase("super")) {
-                Bukkit.dispatchCommand(player, "book superrank");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book superrank"));
                 return true;
             } else if (args[0].equalsIgnoreCase("blockminer")) {
-                Bukkit.dispatchCommand(player, "book blockminerrank");
+                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book blockminerrank"));
                 return true;
             }
 

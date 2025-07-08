@@ -367,7 +367,7 @@ public class AltarManager implements Listener {
 		// Retrieve and execute the pending command for this player.
 		String command = pendingPrizeCommands.remove(player.getUniqueId());
 		if (command != null) {
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+			Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command));
 		} else {
 			plugin.getLogger().info("No pending prize command found for player " + player.getName());
 		}
