@@ -87,55 +87,57 @@ public class HelpCommand implements CommandExecutor {
         if (args.length == 2 && args[0].equalsIgnoreCase("commands")) {
 
             if (args[1].equalsIgnoreCase("abilities")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command abilities"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command abilities"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("basics")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command basics"));
+                Scheduler.run(player.getLocation(), () ->
+                        Bukkit.dispatchCommand(player, "command basics"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("bms")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command bms"));
+                Scheduler.run(player.getLocation(), () ->
+                        Bukkit.dispatchCommand(player, "command bms"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("chat")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command chat"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command chat"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("chestshop")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command chestshop"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command chestshop"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("fun")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command fun"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command fun"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("lands")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command lands"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command lands"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("mcmmo")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command mcmmo"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command mcmmo"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("settings")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command settings"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command settings"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("teleportation")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command teleportation"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command teleportation"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("trophies")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command trophies"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command trophies"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("unlocks")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command unlocks"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command unlocks"));
                 return true;
             }
             else if (args[1].equalsIgnoreCase("vip")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "command vip"));
+                Scheduler.run(player.getLocation(), () -> Bukkit.dispatchCommand(player, "command vip"));
                 return true;
             }
             else {

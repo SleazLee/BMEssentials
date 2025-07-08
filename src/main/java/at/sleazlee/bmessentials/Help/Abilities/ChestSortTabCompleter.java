@@ -13,7 +13,10 @@ import java.util.List;
 
 public class ChestSortTabCompleter implements TabCompleter {
 
-    private static final List<String> BASE_COMMANDS = Collections.singletonList("toggle");
+    private static final List<String> BASE_COMMANDS = Arrays.asList(
+            "Toggle",
+            "Hotkeys"
+    );
     private static final List<String> TOGGLE_OPTIONS = Arrays.asList(
             "DoubleClick",
             "ShiftClick",

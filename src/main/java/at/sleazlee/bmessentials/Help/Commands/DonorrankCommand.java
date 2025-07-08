@@ -1,5 +1,7 @@
 package at.sleazlee.bmessentials.Help.Commands;
 
+import at.sleazlee.bmessentials.BMEssentials;
+import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,6 +12,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class DonorrankCommand implements CommandExecutor {
+
+    // Get the instance of the Help book system
+    HelpBooks books = BMEssentials.getInstance().getBooks();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -25,7 +30,7 @@ public class DonorrankCommand implements CommandExecutor {
 
         // If no subcommand: /donorranks
         if (args.length == 0) {
-            Scheduler.run(() -> Bukkit.dispatchCommand(player, "book donorranks"));
+            books.openBook(player, "donorranks");
             // Play a sound
             Location location = player.getLocation();
             player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 1f, 1f);
@@ -41,19 +46,19 @@ public class DonorrankCommand implements CommandExecutor {
 
             // Example: /ranks plus => we run "/book plusrank"
             if (args[0].equalsIgnoreCase("plus")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book plusrank"));
+                books.openBook(player, "plusrank");
                 return true;
             } else if (args[0].equalsIgnoreCase("premium")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book premiumrank"));
+                books.openBook(player, "premiumrank");
                 return true;
             } else if (args[0].equalsIgnoreCase("ultra")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book ultrarank"));
+                books.openBook(player, "ultrarank");
                 return true;
             } else if (args[0].equalsIgnoreCase("super")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book superrank"));
+                books.openBook(player, "superrank");
                 return true;
             } else if (args[0].equalsIgnoreCase("blockminer")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(player, "book blockminerrank"));
+                books.openBook(player, "blockminerrank");
                 return true;
             }
 
