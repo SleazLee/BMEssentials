@@ -5,6 +5,8 @@ import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Scheduler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,6 +24,10 @@ public class ChestSortCommand implements CommandExecutor {
         Player player = (Player) sender;
         String playerName = player.getName();
         HelpBooks books = BMEssentials.getInstance().getBooks();
+
+        // Play a sound
+        Location location = player.getLocation();
+        player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 0.3f, 1f);
 
 
         // Step 1: Check if the player has the proper rank.

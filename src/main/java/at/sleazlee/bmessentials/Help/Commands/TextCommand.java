@@ -46,35 +46,24 @@ public class TextCommand implements CommandExecutor {
 
         // Shows commands without prerequisites
         if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("basic") ||
-                    args[0].equalsIgnoreCase("trophies") ||
-                    args[0].equalsIgnoreCase("teleportation") ||
-                    args[0].equalsIgnoreCase("communication") ||
-                    args[0].equalsIgnoreCase("fun") ||
-                    args[0].equalsIgnoreCase("mcmmo") ||
-                    args[0].equalsIgnoreCase("settings") ||
-                    args[0].equalsIgnoreCase("abilities") ||
-                    args[0].equalsIgnoreCase("unlocks") ||
-                    args[0].equalsIgnoreCase("vip") ||
-                    args[0].equalsIgnoreCase("arm") ||
-                    args[0].equalsIgnoreCase("quickshop") ||
-                    args[0].equalsIgnoreCase("lands1") ||
-                    args[0].equalsIgnoreCase("lands2")) {
-
-                String commandName = args[0];
-                commandsSystem.sendCommandInfo(player, commandName);
-
-                return true;
-
-                // Checks if the player is an OP.
-            } else if (sender.isOp()) {
-
-                String commandName = args[0];
-                sender.sendMessage(Component.text("Opening Command as OP."));
-                commandsSystem.sendCommandInfo(player, commandName);
-
-                return true;
-
+            switch (args[0].toLowerCase()) {
+                case "abilities" -> commandsSystem.sendCommandInfo(player, "abilities");
+                case "basics" -> commandsSystem.sendCommandInfo(player, "basics");
+                case "bms" -> commandsSystem.sendCommandInfo(player, "bms");
+                case "chat" -> commandsSystem.sendCommandInfo(player, "communication");
+                case "chestshop" -> commandsSystem.sendCommandInfo(player, "chestshop");
+                case "fun" -> commandsSystem.sendCommandInfo(player, "fun");
+                case "lands" -> commandsSystem.sendCommandInfo(player, "lands1");
+                case "mcmmo" -> commandsSystem.sendCommandInfo(player, "mcmmo");
+                case "settings" -> commandsSystem.sendCommandInfo(player, "settings");
+                case "teleportation" -> commandsSystem.sendCommandInfo(player, "teleportation");
+                case "trophies" -> commandsSystem.sendCommandInfo(player, "trophies");
+                case "unlocks" -> commandsSystem.sendCommandInfo(player, "unlocks");
+                case "vip" -> commandsSystem.sendCommandInfo(player, "vip");
+                default -> {
+                    player.sendMessage("Unknown command. Try /help commands for a list.");
+                    return true;
+                }
             }
 
         }

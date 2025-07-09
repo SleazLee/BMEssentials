@@ -49,43 +49,24 @@ public class CommandsCommand implements CommandExecutor {
 
         // Shows books without prerequisites
         if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("abilities") ||
-                    args[0].equalsIgnoreCase("basics") ||
-                    args[0].equalsIgnoreCase("bms") ||
-                    args[0].equalsIgnoreCase("chat") ||
-                    args[0].equalsIgnoreCase("communication") ||
-                    args[0].equalsIgnoreCase("chestshop") ||
-                    args[0].equalsIgnoreCase("fun") ||
-                    args[0].equalsIgnoreCase("lands") ||
-                    args[0].equalsIgnoreCase("mcmmo") ||
-                    args[0].equalsIgnoreCase("settings") ||
-                    args[0].equalsIgnoreCase("teleportation") ||
-                    args[0].equalsIgnoreCase("trophies") ||
-                    args[0].equalsIgnoreCase("unlocks") ||
-                    args[0].equalsIgnoreCase("vip")) {
-
-                if (args[0].equalsIgnoreCase("chat")) {
-                    commands.sendCommandInfo(player, "communication");
+            switch (args[0].toLowerCase()) {
+                case "abilities" -> commands.sendCommandInfo(player, "abilities");
+                case "basics" -> commands.sendCommandInfo(player, "basics");
+                case "bms" -> commands.sendCommandInfo(player, "bms");
+                case "chat" -> commands.sendCommandInfo(player, "communication");
+                case "chestshop" -> commands.sendCommandInfo(player, "chestshop");
+                case "fun" -> commands.sendCommandInfo(player, "fun");
+                case "lands" -> commands.sendCommandInfo(player, "lands1");
+                case "mcmmo" -> commands.sendCommandInfo(player, "mcmmo");
+                case "settings" -> commands.sendCommandInfo(player, "settings");
+                case "teleportation" -> commands.sendCommandInfo(player, "teleportation");
+                case "trophies" -> commands.sendCommandInfo(player, "trophies");
+                case "unlocks" -> commands.sendCommandInfo(player, "unlocks");
+                case "vip" -> commands.sendCommandInfo(player, "vip");
+                default -> {
+                    player.sendMessage("Unknown command. Try /help commands for a list.");
                     return true;
                 }
-                if (args[0].equalsIgnoreCase("lands")) {
-                    commands.sendCommandInfo(player, "lands1");
-                    return true;
-                }
-
-                String textName = args[0];
-                commands.sendCommandInfo(player, textName);
-
-                return true;
-
-                // Checks if the player is an OP.
-            } else if (sender.isOp()) {
-
-                String textName = args[0];
-                commands.sendCommandInfo(player, textName);
-
-                return true;
-
             }
 
         }

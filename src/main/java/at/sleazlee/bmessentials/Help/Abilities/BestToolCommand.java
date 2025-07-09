@@ -5,6 +5,8 @@ import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Scheduler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,6 +24,10 @@ public class BestToolCommand implements CommandExecutor {
         Player player = (Player) sender;
         String playerName = player.getName();
         HelpBooks books = BMEssentials.getInstance().getBooks();
+
+        // Play a sound
+        Location location = player.getLocation();
+        player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 0.3f, 1f);
 
 
         // Step 1: Check if the player has the proper rank.
@@ -137,9 +143,36 @@ public class BestToolCommand implements CommandExecutor {
                 }
 
                 // Step 5: Run logic for (/besttool toggle "type")
-            } else {
-                String subCommand = args[1].toLowerCase();
-                toggleBestTool(player, playerName, subCommand);
+            } if (args.length == 2) {
+
+                if (args[1].equalsIgnoreCase("refill")) {// Placeholder for "/besttool toggle refill" logic
+                    if (player.hasPermission("besttool.refill")) {
+                        Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttool.refill false"));
+                        player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>BestTool </bold></gold><gray>You have toggled Item Refilling <color:#ff3300>off</color:#ff3300>!</gray>"));
+                    } else {
+                        Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttool.refill true"));
+                        player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>BestTool </bold></gold><gray>You have toggled Item Refilling <green>on</green>!</gray>"));
+                    }
+                }
+
+            } else if (args[2].equals("true")) {
+
+                if (player.hasPermission("besttool.refill")) {
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttool.refill false"));
+                    if (player.hasPermission("besttool.use")) {
+                        books.openBook(player, "besttooltruefalse");
+                    } else {
+                        books.openBook(player, "besttoolfalsefalse");
+                    }
+
+                } else {
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttool.refill true"));
+                    if (player.hasPermission("besttool.use")) {
+                        books.openBook(player, "besttooltruetrue");
+                    } else {
+                        books.openBook(player, "besttoolfalsetrue");
+                    }
+                }
 
             }
             return true;
@@ -163,17 +196,4 @@ public class BestToolCommand implements CommandExecutor {
         return player.hasPermission(permission);
     }
 
-    public void toggleBestTool(Player player, String playerName, String subCommand) {
-        if (subCommand.equals("refill")) {// Placeholder for "/besttool toggle refill" logic
-            if (player.hasPermission("besttool.refill")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttool.refill false"));
-            } else {
-                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set besttool.refill true"));
-            }
-        } else {
-            player.sendMessage("Unknown subcommand for toggle.");
-        }
-    }
-
 }
-

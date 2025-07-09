@@ -58,7 +58,7 @@ public class HelpCommand implements CommandExecutor {
                 return true;
             }
             else if (args[0].equalsIgnoreCase("money")) {
-                books.openBook(player, "money");
+                books.openBook(player, "economy");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("ranks")) {
@@ -71,7 +71,7 @@ public class HelpCommand implements CommandExecutor {
             }
             else if (args[0].equalsIgnoreCase("commands")) {
                 // If player just types "/help commands" with no second argument
-                player.sendMessage("Usage: /help commands <sub-subcommand>");
+                books.openBook(player, "commands");
                 return true;
             }
             else if (args[0].equalsIgnoreCase("settings")) {

@@ -5,6 +5,8 @@ import at.sleazlee.bmessentials.Help.HelpBooks;
 import at.sleazlee.bmessentials.Scheduler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,6 +25,9 @@ public class AutoAddCommand implements CommandExecutor {
         String playerName = player.getName();
         HelpBooks books = BMEssentials.getInstance().getBooks();
 
+        // Play a sound
+        Location location = player.getLocation();
+        player.getWorld().playSound(location, Sound.BLOCK_NOTE_BLOCK_BIT, 0.3f, 1f);
 
         // Step 1: Check if the player has the proper rank.
         if (!player.hasPermission("settings.autoadd.allow")) {
@@ -139,9 +144,36 @@ public class AutoAddCommand implements CommandExecutor {
                 }
 
                 // Step 5: Run logic for (/autoadd toggle "type")
-            } else {
-                String subCommand = args[1].toLowerCase();
-                toggleAutoAdd(player, playerName, subCommand);
+            } if (args.length == 2) {
+
+                if (args[1].equalsIgnoreCase("condense")) {// Placeholder for "/autoadd toggle condense" logic
+                    if (player.hasPermission("drop2inventory.autocondense")) {
+                        Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense false"));
+                        player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>AutoAdd </bold></gold><gray>You have toggled Auto Condense <color:#ff3300>off</color:#ff3300>!</gray>"));
+                    } else {
+                        Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense true"));
+                        player.sendMessage(MiniMessage.miniMessage().deserialize("<gold><bold>AutoAdd </bold></gold><gray>You have toggled Auto Condense <green>on</green>!</gray>"));
+                    }
+                }
+
+            } else if (args[2].equals("true")) {
+
+                if (player.hasPermission("drop2inventory.autocondense")) {
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense false"));
+                    if (player.hasPermission("drop2inventory.use")) {
+                        books.openBook(player, "autoaddtruefalse");
+                    } else {
+                        books.openBook(player, "autoaddfalsefalse");
+                    }
+
+                } else {
+                    Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense true"));
+                    if (player.hasPermission("drop2inventory.use")) {
+                        books.openBook(player, "autoaddtruetrue");
+                    } else {
+                        books.openBook(player, "autoaddfalsetrue");
+                    }
+                }
 
             }
             return true;
@@ -163,18 +195,6 @@ public class AutoAddCommand implements CommandExecutor {
      */
     public static boolean hasPermission(Player player, String permission) {
         return player.hasPermission(permission);
-    }
-
-    public void toggleAutoAdd(Player player, String playerName, String subCommand) {
-        if (subCommand.equals("condense")) {// Placeholder for "/autoadd toggle condense" logic
-            if (player.hasPermission("drop2inventory.autocondense")) {
-                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense false"));
-            } else {
-                Scheduler.run(() -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + playerName + " permission set drop2inventory.autocondense true"));
-            }
-        } else {
-            player.sendMessage("Unknown subcommand for toggle.");
-        }
     }
 
 }
