@@ -228,15 +228,19 @@ public class VoteManager {
         Bukkit.broadcast(chatMessage);
 
         if (bossBar != null) {
+            final BossBar barToHide = bossBar; // capture current bar for delayed task
             Component bossBarComponent = MiniMessage.miniMessage().deserialize(bossBarMessage);
-            bossBar.name(bossBarComponent);
-            bossBar.progress(1.0f);
+            barToHide.name(bossBarComponent);
+            barToHide.progress(1.0f);
 
             Scheduler.runLater(() -> {
                 for (Player online : Bukkit.getOnlinePlayers()) {
-                    online.hideBossBar(bossBar);
+                    online.hideBossBar(barToHide);
                 }
-                bossBar = null;
+                // Only null out the reference if no new vote replaced it
+                if (bossBar == barToHide) {
+                    bossBar = null;
+                }
             }, 120L);
         }
 
