@@ -503,4 +503,27 @@ public class BMSEconomyProvider implements Economy {
                                            boolean value) {
         return false;
     }
+
+    // VaultUnlocked 2.14 methods for retrieving account relationships
+    @Override
+    public @NotNull List<String> accountsOwnedBy(@NotNull String pluginName,
+                                                 @NotNull UUID accountID) {
+        // Shared accounts are not supported
+        return Collections.emptyList();
+    }
+
+    @Override
+    public @NotNull List<String> accountsMemberOf(@NotNull String pluginName,
+                                                  @NotNull UUID accountID) {
+        // Shared accounts are not supported
+        return Collections.emptyList();
+    }
+
+    @Override
+    public @NotNull List<String> accountsAccessTo(@NotNull String pluginName,
+                                                  @NotNull UUID accountID,
+                                                  @NotNull AccountPermission... permissions) {
+        // Shared accounts are not supported
+        return Collections.emptyList();
+    }
 }
