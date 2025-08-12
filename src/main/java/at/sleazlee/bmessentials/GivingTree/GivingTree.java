@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class GivingTree implements CommandExecutor, Listener {
 
     private static final String DONATE_TITLE = ChatColor.DARK_GRAY + "Donations";
-    private static final String TREE_TITLE = ChatColor.GOLD + "Giving Tree";
+    private static final String TREE_TITLE = ChatColor.DARK_GRAY + "The Giving Tree";
 
     private final Plugin plugin;
     private final Deque<ItemStack> donationQueue = new ConcurrentLinkedDeque<>();
@@ -195,7 +195,6 @@ public class GivingTree implements CommandExecutor, Listener {
 
         if (player.getInventory().firstEmpty() == -1) {
             claimed.remove(id);
-            player.closeInventory();
             return;
         }
 
@@ -262,19 +261,7 @@ public class GivingTree implements CommandExecutor, Listener {
         }
         treeInventory.setContents(master);
 
-        Inventory snapshot = Bukkit.createInventory(null, treeInventory.getSize(), TREE_TITLE);
-        ItemStack[] snap = new ItemStack[master.length];
-        for (int i = 0; i < master.length; i++) {
-            snap[i] = master[i] != null ? master[i].clone() : null;
-        }
-        snapshot.setContents(snap);
-        player.openInventory(snapshot);
-
-        Scheduler.runLater(() -> {
-            if (player.getOpenInventory().getTopInventory().equals(snapshot)) {
-                player.closeInventory();
-            }
-        }, 80L); // 4 seconds
+        player.openInventory(treeInventory);
     }
 
     private void loadData(Runnable postLoad) {
@@ -404,7 +391,7 @@ public class GivingTree implements CommandExecutor, Listener {
     private boolean claim(UUID id) {
         boolean added = claimed.add(id);
         if (added) {
-            Scheduler.runLater(() -> claimed.remove(id), 200L);
+            Scheduler.runLater(() -> claimed.remove(id), 400L);
         }
         return added;
     }
