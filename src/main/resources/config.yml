@@ -162,7 +162,7 @@ Systems:
   CommonCommands:
     Enabled: true
 
-  # Enables the trash system.
+  # Enables the Giving Tree system.
   Containers:
     Enabled: true
 

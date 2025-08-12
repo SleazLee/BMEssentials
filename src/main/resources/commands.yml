@@ -184,7 +184,7 @@ Commands:
     - "{center}These shortcuts are unlocked through ranking up,{/center}"
     - "{center}see /ranks for more info.{/center}"
     - "&7"
-    - "<click:run_command:/trash><hover:show_text:'&bClick to Run!'>&b/trash &8-&7 Opens a disposal inventory.</hover></click>"
+    - "<click:run_command:/donate><hover:show_text:'&bClick to Run!'>&b/donate &8-&7 Donate items to the Giving Tree.</hover></click>"
     - "&7"
     - "<click:run_command:/craft><hover:show_text:'&bClick to Run!'>&b/craft &8-&7 Opens a crafting table.</hover></click>"
     - "<click:run_command:/echest><hover:show_text:'&7Click to Run!'>&b/echest &8-&7 Opens your enderchest</hover></click>"

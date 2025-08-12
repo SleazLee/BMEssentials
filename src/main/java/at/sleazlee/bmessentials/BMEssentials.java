@@ -27,6 +27,7 @@ import at.sleazlee.bmessentials.Help.TabCompleter.CommandTabCompleter;
 import at.sleazlee.bmessentials.Help.TabCompleter.DonorranksTabCompleter;
 import at.sleazlee.bmessentials.Help.TabCompleter.HelpTabCompleter;
 import at.sleazlee.bmessentials.Help.TabCompleter.RanksTabCompleter;
+import at.sleazlee.bmessentials.GivingTree.GivingTree;
 import at.sleazlee.bmessentials.PlayerData.BMEChatPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.BMEPlaceholders;
 import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
@@ -116,6 +117,7 @@ public class BMEssentials extends JavaPlugin {
     @Getter
     private ImageMapManager imageMapManager;
     private FileConfiguration config;
+    private GivingTree givingTree;
 
     /** The instance of the help book system. */
     private HelpBooks books;
@@ -374,8 +376,10 @@ public class BMEssentials extends JavaPlugin {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Virtual Containers System");
 
-            // Trash
-            this.getCommand("trash").setExecutor(new TrashCommand());
+            // Giving Tree donation commands
+            givingTree = new GivingTree(this);
+            this.getCommand("donate").setExecutor(givingTree);
+            getServer().getPluginManager().registerEvents(givingTree, this);
 
             // Crafting Table
             this.getCommand("craft").setExecutor(new CraftCommand());
@@ -691,6 +695,10 @@ public class BMEssentials extends JavaPlugin {
 
         if (wildDB != null) {
             wildDB.close();
+        }
+
+        if (givingTree != null) {
+            givingTree.saveData();
         }
 
         // Log a message to indicate the plugin has been successfully disabled

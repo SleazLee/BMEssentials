@@ -31,10 +31,11 @@ commands:
     description: Sends repeating action bar messages to the player.
     usage: /firstjoinmessage
 
-  trash:
-    description: Opens a trash chest.
-    usage: /trash
+  donate:
+    description: Donate items to the Giving Tree.
+    usage: /donate
     aliases:
+      - trash
       - disposal
 
   craft:
