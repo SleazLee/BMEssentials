@@ -712,11 +712,24 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     }
 
     private OfflinePlayer getOfflinePlayer(String name) {
-        // Attempt a direct cache check
+        // First, check if the player is currently online
+        Player online = Bukkit.getPlayerExact(name);
+        if (online != null) {
+            return online;
+        }
+
+        // Next, attempt to grab a cached offline player. If it's not cached,
+        // we assume the player has never joined this server and return null
         OfflinePlayer cached = Bukkit.getOfflinePlayerIfCached(name);
-        if (cached != null) return cached;
-        // else fallback
-        return Bukkit.getOfflinePlayer(name);
+        if (cached != null) {
+            return cached;
+        }
+
+        // Avoid calling Bukkit#getOfflinePlayer(String) as it attempts a Mojang
+        // lookup which can throw a MinecraftClientHttpException for completely
+        // unknown names. By returning null here, callers can gracefully handle
+        // "player not found" scenarios without an uncaught exception bubbling up.
+        return null;
     }
 
     /**

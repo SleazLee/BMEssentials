@@ -152,17 +152,17 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
     public String randomKey() {
         double randomValue = Math.random();
 
-        if (randomValue < 0.10) {
-            // 10% chance, obelisk
+        if (randomValue < 0.15) {
+            // 15% chance, obelisk
             return "obelisk";
-        } else if (randomValue < 0.40) {
+        } else if (randomValue < 0.45) {
             // 30% chance, wishingwell
             return "wishingwell";
-        } else if (randomValue < 0.80) {
+        } else if (randomValue < 0.85) {
             // 40% chance, healingsprings
             return "healingsprings";
         } else {
-            // 20% chance, Nothing
+            // 15% chance, Nothing
             return "nothing";
         }
     }
