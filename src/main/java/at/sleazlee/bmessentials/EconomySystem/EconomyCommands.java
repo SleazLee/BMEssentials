@@ -6,6 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import at.sleazlee.bmessentials.TextUtils.TextCenter;
 import net.milkbowl.vault2.economy.Economy;
 import net.milkbowl.vault2.economy.EconomyResponse;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
@@ -23,6 +24,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
     private final BMEssentials plugin;
     private final PlayerDatabaseManager db;
     private final Economy economy; // VaultUnlocked Economy
+    private final Chat legacyChat; // Legacy Vault Chat for prefixes/suffixes
     private final Map<UUID, Long> payCooldowns = new HashMap<>();
 
     public EconomyCommands(BMEssentials plugin) {
@@ -38,6 +40,33 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
         } else {
             economy = null;
         }
+
+        // Attempt to grab legacy Vault chat for prefix/suffix support
+        RegisteredServiceProvider<Chat> chatRsp = plugin.getServer()
+                .getServicesManager()
+                .getRegistration(Chat.class);
+        if (chatRsp != null) {
+            legacyChat = chatRsp.getProvider();
+        } else {
+            legacyChat = null;
+        }
+    }
+
+    /**
+     * Returns the player's name with legacy Vault prefix/suffix if available.
+     */
+    private String getDisplayName(OfflinePlayer player) {
+        String baseName = player.getName() != null ? player.getName() : player.getUniqueId().toString();
+        if (legacyChat != null) {
+            String worldName = null;
+            if (player.getPlayer() != null) {
+                worldName = player.getPlayer().getWorld().getName();
+            }
+            String prefix = legacyChat.getPlayerPrefix(worldName, player);
+            String suffix = legacyChat.getPlayerSuffix(worldName, player);
+            return (prefix != null ? prefix : "") + baseName + (suffix != null ? suffix : "");
+        }
+        return baseName;
     }
 
     // -------------------------------------------------------------------------
@@ -186,11 +215,13 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                 currency
         ).doubleValue();
         String formattedSenderBalance = economy.format(plugin.getName(), BigDecimal.valueOf(senderBalance), currency);
+        String senderDisplay = getDisplayName(player);
+        String targetDisplay = getDisplayName(target);
 
         // Build sender message
         String senderMessage = String.format(
                 "<gray>You paid <white>%s</white> <%s>%s</%s><gray>. Your New balance is <%s>%s</%s><gray>.",
-                targetName,
+                targetDisplay,
                 color,
                 formattedAmount,
                 color,
@@ -217,7 +248,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                     color,
                     formattedAmount,
                     color,
-                    player.getName(),
+                    senderDisplay,
                     color,
                     formattedTargetBalance,
                     color
@@ -298,7 +329,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
             ).doubleValue();
 
             sender.sendMessage(mini("<aqua><bold>BM</bold> <gray>" +
-                    "Balance for <white>" + targetName + "</white><gray> is " +
+                    "Balance for <white>" + getDisplayName(targetOffline) + "</white><gray> is " +
                     "<green>$" + String.format("%,.2f", dollars) +
                     "</green><gray> and <yellow>" + String.format("%,.2f", votePoints) + "VPs</yellow><gray>."
             ));
@@ -344,7 +375,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
                 double balance = entry.getValue();
 
                 OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-                String name = (player.getName() != null) ? player.getName() : "Unknown (" + uuid.substring(0, 8) + ")";
+                String name = getDisplayName(player);
 
                 String formattedBalance = economy.format(plugin.getName(), BigDecimal.valueOf(balance), currency);
                 String balanceColor = currency.equals(BMSEconomyProvider.CURRENCY_VP) ? "yellow" : "green";
@@ -434,7 +465,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        sender.sendMessage(mini("<green>You gave <white>" + playerName +
+        sender.sendMessage(mini("<green>You gave <white>" + getDisplayName(target) +
                 " " + economy.format(plugin.getName(), BigDecimal.valueOf(amount), currency) +
                 "</white>."));
         return true;
@@ -607,7 +638,7 @@ public class EconomyCommands implements CommandExecutor, TabCompleter {
 
         String formattedAmount = economy.format(plugin.getName(), amount, currency);
         sender.sendMessage(mini("<green>Successfully " + action + " <white>" + formattedAmount +
-                "</white> to/from " + target.getName()));
+                "</white> to/from " + getDisplayName(target)));
 
         if (target.isOnline()) {
             Player onlineTarget = (Player) target;
