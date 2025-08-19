@@ -1,5 +1,5 @@
 name: BMEssentials
-version: 2.0
+version: 3.0
 api-version: '1.21'
 main: at.sleazlee.bmessentials.BMEssentials
 author: SleazLee
@@ -178,6 +178,10 @@ commands:
   bmrestart:
     description: Restart the server with a specified timer.
     usage: /bmrestart <30|15|5|1>
+
+  combinations:
+    description: Manage custom item combinations
+    usage: /combinations <anvil|crafting|smelting> <create|delete> <name>
 
   pay:
     description: Pay another player

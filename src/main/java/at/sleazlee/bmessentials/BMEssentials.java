@@ -10,6 +10,7 @@ import at.sleazlee.bmessentials.AltarSystem.Altars.Obelisk;
 import at.sleazlee.bmessentials.AltarSystem.Altars.WishingWell;
 import at.sleazlee.bmessentials.BlueMapFunctions.MapCommand;
 import at.sleazlee.bmessentials.BlueMapFunctions.MapTabCompleter;
+import at.sleazlee.bmessentials.Combinations.*;
 import at.sleazlee.bmessentials.CombineSystem.CombineListener;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueCommandExecutor;
 import at.sleazlee.bmessentials.CommandQueue.CommandQueueManager;
@@ -77,6 +78,7 @@ import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 import java.io.File;
 /**
@@ -118,6 +120,8 @@ public class BMEssentials extends JavaPlugin {
     private ImageMapManager imageMapManager;
     private FileConfiguration config;
     private GivingTree givingTree;
+
+    private Combinations combinations;
 
     /** The instance of the help book system. */
     private HelpBooks books;
@@ -412,6 +416,19 @@ public class BMEssentials extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new CombineListener(), this);
         }
 
+        // Custom item combinations
+        if (config.getBoolean("Systems.Combinations.Enabled")) {
+            getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Combinations System");
+            combinations = new Combinations(this);
+            CombinationsCommand combCmd = new CombinationsCommand(combinations);
+            Objects.requireNonNull(getCommand("combinations")).setExecutor(combCmd);
+            Objects.requireNonNull(getCommand("combinations")).setTabCompleter(combCmd);
+            getServer().getPluginManager().registerEvents(combCmd, this);
+            getServer().getPluginManager().registerEvents(new AnvilCombinationListener(combinations), this);
+            getServer().getPluginManager().registerEvents(new CraftingCombinationListener(combinations), this);
+            getServer().getPluginManager().registerEvents(new SmeltingCombinationListener(combinations), this);
+        }
+
         // Inventory tools
         InvseeCommand invsee = new InvseeCommand(this);
         getCommand("invsee").setExecutor(invsee);
@@ -699,6 +716,10 @@ public class BMEssentials extends JavaPlugin {
 
         if (givingTree != null) {
             givingTree.saveData();
+        }
+
+        if (combinations != null) {
+            combinations.saveSync();
         }
 
         // Log a message to indicate the plugin has been successfully disabled
