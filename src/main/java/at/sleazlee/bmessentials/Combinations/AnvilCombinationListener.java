@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.view.AnvilView;
 
 /**
  * Listens for anvil prepares and applies custom combinations when matched.
@@ -33,7 +34,7 @@ public class AnvilCombinationListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getInventory() instanceof AnvilInventory inv)) {
+        if (!(event.getInventory() instanceof AnvilInventory inv) || !(event.getView() instanceof AnvilView view)) {
             return;
         }
         if (event.getRawSlot() != 2) {
@@ -51,7 +52,7 @@ public class AnvilCombinationListener implements Listener {
         event.setCancelled(true);
         inv.setItem(0, null);
         inv.setItem(1, null);
-        inv.setRepairCost(0);
+        view.setRepairCost(0);
         ItemStack result = combo.getResult();
         if (event.isShiftClick()) {
             Player player = (Player) event.getWhoClicked();
