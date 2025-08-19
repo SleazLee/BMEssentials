@@ -63,7 +63,6 @@ import at.sleazlee.bmessentials.playerutils.InvseeTabCompleter;
 import at.sleazlee.bmessentials.playerutils.SeenCommand;
 import at.sleazlee.bmessentials.ImageMaps.ImageMapManager;
 import com.sk89q.worldguard.protection.flags.StringFlag;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -103,20 +102,13 @@ public class BMEssentials extends JavaPlugin {
     /** Database storing pregenerated wild locations. */
     private WildLocationsDatabase wildDB;
 
-    /** The database for the PlayerData system.
-     * -- GETTER --
-     *  Gets the instance of the DatabaseManager.
-     *
-     * @return the database manager
-     */
-    @Getter
+    /** The database for the PlayerData system. */
     private PlayerDatabaseManager PlayerDataDBManager;
 
     /** The menu GUI for the trophy system. */
     private TrophyMenu trophyGUI;
 
     private CommandQueueManager queueManager;
-    @Getter
     private ImageMapManager imageMapManager;
     private FileConfiguration config;
     private GivingTree givingTree;
@@ -723,6 +715,14 @@ public class BMEssentials extends JavaPlugin {
 
         // Log a message to indicate the plugin has been successfully disabled
         getLogger().info("BMEssentials has been disabled!");
+    }
+
+    public PlayerDatabaseManager getPlayerDataDBManager() {
+        return PlayerDataDBManager;
+    }
+
+    public ImageMapManager getImageMapManager() {
+        return imageMapManager;
     }
 
     public HelpBooks getBooks() {

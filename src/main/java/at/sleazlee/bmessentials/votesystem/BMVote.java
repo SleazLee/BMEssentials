@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -222,13 +223,16 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
 
                 // play a sound
                 String soundName = plugin.getConfig().getString("Systems.VoteSystem.Sounds");
-
-                try {
-                    Sound sound = Sound.valueOf(soundName); // Convert the string to a Sound
-                    player.getWorld().playSound(location, sound, 1f, 1f); // Play the sound
-                } catch (IllegalArgumentException e) {
-                    // If the soundName is not a valid Sound, this exception will be thrown.
-                    // You can add your error handling code here. For example:
+                NamespacedKey key = null;
+                if (soundName != null) {
+                    key = soundName.contains(":")
+                            ? NamespacedKey.fromString(soundName)
+                            : NamespacedKey.minecraft(soundName.toLowerCase(Locale.ROOT).replace('_', '.'));
+                }
+                Sound sound = key != null ? Registry.SOUNDS.get(key) : null;
+                if (sound != null) {
+                    player.getWorld().playSound(location, sound, 1f, 1f);
+                } else {
                     System.err.println("Invalid sound name in config: " + soundName);
                 }
 

@@ -1,7 +1,6 @@
 package at.sleazlee.bmessentials.wild;
 
 import at.sleazlee.bmessentials.Scheduler;
-import lombok.Getter;
 import net.william278.huskhomes.event.TeleportEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,8 +18,11 @@ import java.util.UUID;
  */
 public class NoFallDamage implements Listener {
 
-    @Getter
     private static final List<UUID> fallDisabled = new ArrayList<>(); // List of player UUIDs with fall damage disabled.
+
+    public static List<UUID> getFallDisabled() {
+        return fallDisabled;
+    }
 
 
     /**
