@@ -319,7 +319,7 @@ public class GivingTree implements CommandExecutor, Listener {
         ItemStack[] chest = treeInventory.getContents();
         ItemStack[] queue = donationQueue.toArray(new ItemStack[0]);
 
-        Scheduler.runAsync(() -> {
+        Runnable saveTask = () -> {
             YamlConfiguration config = new YamlConfiguration();
             config.set("chest", chest);
             config.set("queue", queue);
@@ -328,7 +328,13 @@ public class GivingTree implements CommandExecutor, Listener {
             } catch (IOException e) {
                 plugin.getLogger().severe("Failed to save Giving Tree data: " + e.getMessage());
             }
-        });
+        };
+
+        if (plugin.isEnabled()) {
+            Scheduler.runAsync(saveTask);
+        } else {
+            saveTask.run();
+        }
     }
 
     /**
