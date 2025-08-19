@@ -22,7 +22,6 @@ public class Combinations {
     private final JavaPlugin plugin;
     private final Map<String, AnvilCombination> anvilCombinations = new HashMap<>();
     private final Map<String, CraftingCombination> craftingCombinations = new HashMap<>();
-    private final Map<String, SmeltingCombination> smeltingCombinations = new HashMap<>();
 
     private final File file;
     private final FileConfiguration config;
@@ -43,7 +42,6 @@ public class Combinations {
     private void load() {
         anvilCombinations.clear();
         craftingCombinations.clear();
-        smeltingCombinations.clear();
 
         ConfigurationSection anvilSection = config.getConfigurationSection("anvil");
         if (anvilSection != null) {
@@ -72,16 +70,6 @@ public class Combinations {
             }
         }
 
-        ConfigurationSection smeltSection = config.getConfigurationSection("smelting");
-        if (smeltSection != null) {
-            for (String key : smeltSection.getKeys(false)) {
-                ItemStack input = smeltSection.getItemStack(key + ".input");
-                ItemStack result = smeltSection.getItemStack(key + ".result");
-                if (input != null && result != null) {
-                    smeltingCombinations.put(key.toLowerCase(), new SmeltingCombination(input, result));
-                }
-            }
-        }
     }
 
     /**
@@ -106,13 +94,6 @@ public class Combinations {
                 sec.set("result", entry.getValue().result);
             }
 
-            config.set("smelting", null);
-            ConfigurationSection smeltSection = config.createSection("smelting");
-            for (Map.Entry<String, SmeltingCombination> entry : smeltingCombinations.entrySet()) {
-                ConfigurationSection sec = smeltSection.createSection(entry.getKey());
-                sec.set("input", entry.getValue().input);
-                sec.set("result", entry.getValue().result);
-            }
             try {
                 config.save(file);
             } catch (IOException e) {
@@ -242,24 +223,6 @@ public class Combinations {
         }
     }
 
-    public static class SmeltingCombination {
-        private final ItemStack input;
-        private final ItemStack result;
-
-        public SmeltingCombination(ItemStack input, ItemStack result) {
-            this.input = input;
-            this.result = result;
-        }
-
-        public ItemStack getResult() {
-            return result.clone();
-        }
-
-        public boolean matches(ItemStack source) {
-            return source.isSimilar(input);
-        }
-    }
-
     public void createCrafting(String name, ItemStack[] matrix, ItemStack result) {
         craftingCombinations.put(name.toLowerCase(), new CraftingCombination(matrix, result));
         save();
@@ -284,31 +247,5 @@ public class Combinations {
 
     public Set<String> getCraftingNames() {
         return Collections.unmodifiableSet(craftingCombinations.keySet());
-    }
-
-    public void createSmelting(String name, ItemStack input, ItemStack result) {
-        smeltingCombinations.put(name.toLowerCase(), new SmeltingCombination(input, result));
-        save();
-    }
-
-    public boolean deleteSmelting(String name) {
-        boolean removed = smeltingCombinations.remove(name.toLowerCase()) != null;
-        if (removed) {
-            save();
-        }
-        return removed;
-    }
-
-    public SmeltingCombination matchSmelting(ItemStack input) {
-        for (SmeltingCombination c : smeltingCombinations.values()) {
-            if (c.matches(input)) {
-                return c;
-            }
-        }
-        return null;
-    }
-
-    public Set<String> getSmeltingNames() {
-        return Collections.unmodifiableSet(smeltingCombinations.keySet());
     }
 }

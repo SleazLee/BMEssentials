@@ -181,7 +181,7 @@ commands:
 
   combinations:
     description: Manage custom item combinations
-    usage: /combinations <anvil|crafting|smelting> <create|delete> <name>
+    usage: /combinations <anvil|crafting> <create|delete> <name>
 
   pay:
     description: Pay another player

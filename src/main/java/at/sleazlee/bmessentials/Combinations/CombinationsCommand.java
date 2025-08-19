@@ -37,12 +37,12 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
             return true;
         }
         if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "Usage: /combinations <anvil|crafting|smelting> <create|delete> <name>");
+            player.sendMessage(ChatColor.RED + "Usage: /combinations <anvil|crafting> <create|delete> <name>");
             return true;
         }
         String type = args[0].toLowerCase();
         String action = args[1].toLowerCase();
-        if (!(type.equals("anvil") || type.equals("crafting") || type.equals("smelting"))) {
+        if (!(type.equals("anvil") || type.equals("crafting"))) {
             player.sendMessage(ChatColor.RED + "Unknown combination type.");
             return true;
         }
@@ -65,7 +65,6 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
             switch (type) {
                 case "anvil" -> removed = combinations.deleteAnvil(name);
                 case "crafting" -> removed = combinations.deleteCrafting(name);
-                case "smelting" -> removed = combinations.deleteSmelting(name);
                 default -> removed = false;
             }
             if (removed) {
@@ -80,7 +79,7 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
     }
 
     private ItemStack createFiller() {
-        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS);
         ItemMeta meta = filler.getItemMeta();
         meta.displayName(Component.text(" ").color(net.kyori.adventure.text.format.NamedTextColor.BLACK));
         filler.setItemMeta(meta);
@@ -104,12 +103,9 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
                     inv.setItem(i, filler);
                 }
             }
-        } else { // smelting
-            inv = Bukkit.createInventory(player, 9, Component.text("Smelting Combo: " + name));
-            int[] slots = {0,2,3,4,5,6,8};
-            for (int slot : slots) {
-                inv.setItem(slot, filler);
-            }
+        } else {
+            // should not reach here as type validated earlier
+            return;
         }
         creating.put(player.getUniqueId(), new CreationInfo(type, name));
         player.openInventory(inv);
@@ -127,7 +123,6 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
         Component expected = switch (info.type) {
             case "anvil" -> Component.text("Anvil Combo: " + info.name);
             case "crafting" -> Component.text("Crafting Combo: " + info.name);
-            case "smelting" -> Component.text("Smelting Combo: " + info.name);
             default -> null;
         };
         if (expected == null || !event.getView().title().equals(expected)) {
@@ -143,10 +138,6 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
             if (slot < event.getInventory().getSize() && !allowed.contains(slot)) {
                 event.setCancelled(true);
             }
-        } else if (info.type.equals("smelting")) {
-            if (slot == 0 || slot == 2 || slot == 3 || slot == 4 || slot == 5 || slot == 6 || slot == 8) {
-                event.setCancelled(true);
-            }
         }
     }
 
@@ -160,7 +151,6 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
         Component expected = switch (info.type) {
             case "anvil" -> Component.text("Anvil Combo: " + info.name);
             case "crafting" -> Component.text("Crafting Combo: " + info.name);
-            case "smelting" -> Component.text("Smelting Combo: " + info.name);
             default -> null;
         };
         if (expected == null || !event.getView().title().equals(expected)) {
@@ -211,32 +201,16 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
             } else {
                 player.sendMessage(ChatColor.RED + "Combination not saved. Fill at least one ingredient and the result slot.");
             }
-        } else if (info.type.equals("smelting")) {
-            ItemStack input = inv.getItem(1);
-            ItemStack result = inv.getItem(7);
-            for (int slot : new int[]{1,7}) {
-                ItemStack item = inv.getItem(slot);
-                if (item != null) {
-                    inv.setItem(slot, null);
-                    player.getInventory().addItem(item);
-                }
-            }
-            if (input != null && result != null) {
-                combinations.createSmelting(info.name, input.clone(), result.clone());
-                player.sendMessage(ChatColor.GREEN + "Created combination '" + info.name + "'.");
-            } else {
-                player.sendMessage(ChatColor.RED + "Combination not saved. You must fill both slots.");
-            }
         }
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("anvil", "crafting", "smelting");
+            return Arrays.asList("anvil", "crafting");
         }
         if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("anvil") || args[0].equalsIgnoreCase("crafting") || args[0].equalsIgnoreCase("smelting")) {
+            if (args[0].equalsIgnoreCase("anvil") || args[0].equalsIgnoreCase("crafting")) {
                 return Arrays.asList("create", "delete");
             }
             return Collections.emptyList();
@@ -247,9 +221,6 @@ public class CombinationsCommand implements CommandExecutor, TabCompleter, Liste
             }
             if (args[0].equalsIgnoreCase("crafting")) {
                 return new ArrayList<>(combinations.getCraftingNames());
-            }
-            if (args[0].equalsIgnoreCase("smelting")) {
-                return new ArrayList<>(combinations.getSmeltingNames());
             }
         }
         return Collections.emptyList();

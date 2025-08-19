@@ -426,7 +426,6 @@ public class BMEssentials extends JavaPlugin {
             getServer().getPluginManager().registerEvents(combCmd, this);
             getServer().getPluginManager().registerEvents(new AnvilCombinationListener(combinations), this);
             getServer().getPluginManager().registerEvents(new CraftingCombinationListener(combinations), this);
-            getServer().getPluginManager().registerEvents(new SmeltingCombinationListener(combinations), this);
         }
 
         // Inventory tools
