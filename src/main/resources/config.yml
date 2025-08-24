@@ -24,9 +24,6 @@ Systems:
   VoteSystem:
     Enabled: true
 
-    # Change the sound that plays when a player votes. (Default: ENTITY_EXPERIENCE_ORB_PICKUP)
-    Sounds: "ENTITY_EXPERIENCE_ORB_PICKUP"
-
     Particles:
       # Sets the particle radius around the player. (Default: 6)
       Radius: 6

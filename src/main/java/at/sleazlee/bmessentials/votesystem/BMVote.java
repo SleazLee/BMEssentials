@@ -221,20 +221,8 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
             if (player != null) {
                 Location location = player.getLocation();
 
-                // play a sound
-                String soundName = plugin.getConfig().getString("Systems.VoteSystem.Sounds");
-                NamespacedKey key = null;
-                if (soundName != null) {
-                    key = soundName.contains(":")
-                            ? NamespacedKey.fromString(soundName)
-                            : NamespacedKey.minecraft(soundName.toLowerCase(Locale.ROOT).replace('_', '.'));
-                }
-                Sound sound = key != null ? Registry.SOUNDS.get(key) : null;
-                if (sound != null) {
-                    player.getWorld().playSound(location, sound, 1f, 1f);
-                } else {
-                    System.err.println("Invalid sound name in config: " + soundName);
-                }
+                // play the vote sound
+                player.getWorld().playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
 
                 // spawn a particle
                 spawnFallingParticleSphere(player, hexCode);
