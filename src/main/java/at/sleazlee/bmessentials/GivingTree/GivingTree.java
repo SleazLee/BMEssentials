@@ -173,7 +173,6 @@ public class GivingTree implements CommandExecutor, Listener {
 
         String idStr = getItemId(current);
         if (idStr == null) {
-            player.closeInventory();
             player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
             return;
         }
@@ -182,13 +181,11 @@ public class GivingTree implements CommandExecutor, Listener {
         try {
             id = UUID.fromString(idStr);
         } catch (IllegalArgumentException e) {
-            player.closeInventory();
             player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
             return;
         }
 
         if (!claim(id)) {
-            player.closeInventory();
             player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
             return;
         }
@@ -200,7 +197,6 @@ public class GivingTree implements CommandExecutor, Listener {
 
         if (!removeFromTree(id)) {
             claimed.remove(id);
-            player.closeInventory();
             player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
             return;
         }
@@ -209,7 +205,6 @@ public class GivingTree implements CommandExecutor, Listener {
         ItemStack toGive = current.clone();
         clearId(toGive);
         player.getInventory().addItem(toGive);
-        player.closeInventory();
         player.sendActionBar(mini.deserialize("<green>Yeah! You got it!</green>"));
     }
 
