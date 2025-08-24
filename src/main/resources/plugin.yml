@@ -179,6 +179,10 @@ commands:
     description: Restart the server with a specified timer.
     usage: /bmrestart <30|15|5|1>
 
+  combinations:
+    description: Manage custom item combinations
+    usage: /combinations <anvil|crafting> <create|delete> <name>
+
   pay:
     description: Pay another player
 

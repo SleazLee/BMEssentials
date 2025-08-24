@@ -170,6 +170,10 @@ Systems:
   CombineSystem:
     Enabled: true
 
+  # Enables the custom item combination system.
+  Combinations:
+    Enabled: true
+
   # Enables the Velocity Tell system.
   VTell:
     Enabled: true
