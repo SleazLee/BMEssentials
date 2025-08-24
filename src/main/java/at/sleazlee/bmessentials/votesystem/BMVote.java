@@ -4,6 +4,8 @@ import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.art.Art;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.type.Slab;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -249,6 +251,12 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
         Particle.DustOptions dustOptions = Art.createDustOptions(hexCode);
         double radius = plugin.getConfig().getDouble("Systems.VoteSystem.Particles.Radius");
         Location location = player.getLocation();
+
+        // If the player is standing on a bottom half slab, raise the particle center by 0.5 blocks
+        Block blockBelow = location.clone().subtract(0, 0.1, 0).getBlock();
+        if (blockBelow.getBlockData() instanceof Slab slabData && slabData.getType() == Slab.Type.BOTTOM) {
+            location.add(0, 0.5, 0);
+        }
 
         // Create a new task for the repeating particle effect
         Scheduler.Task particleTask = Scheduler.runTimer(new Runnable() {
