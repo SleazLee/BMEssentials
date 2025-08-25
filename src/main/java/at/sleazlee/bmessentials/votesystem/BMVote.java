@@ -252,12 +252,6 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
         double radius = plugin.getConfig().getDouble("Systems.VoteSystem.Particles.Radius");
         Location location = player.getLocation();
 
-        // If the player is standing on a bottom half slab, raise the particle center by 0.5 blocks
-        Block blockBelow = location.clone().subtract(0, 0.1, 0).getBlock();
-        if (blockBelow.getBlockData() instanceof Slab slabData && slabData.getType() == Slab.Type.BOTTOM) {
-            location.add(0, 0.5, 0);
-        }
-
         // Create a new task for the repeating particle effect
         Scheduler.Task particleTask = Scheduler.runTimer(new Runnable() {
             double y = radius; // Start at the top of the sphere
