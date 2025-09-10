@@ -51,9 +51,16 @@ public final class QuickShopUtils {
 
         for (int cx = minChunkX; cx <= maxChunkX; cx++) {
             for (int cz = minChunkZ; cz <= maxChunkZ; cz++) {
+                if (!world.isChunkLoaded(cx, cz)) {
+                    continue; // avoid async chunk load
+                }
+
                 Chunk chunk = world.getChunkAt(cx, cz);
                 Map<Location, Shop> shops = shopManager.getShops(chunk);
-                if (shops == null) continue;
+
+                if (shops == null) {
+                    continue;
+                }
                 for (Shop shop : shops.values()) {
                     Location sLoc = shop.getLocation();
                     if (sLoc.getX() >= minX && sLoc.getX() <= maxX
