@@ -1,12 +1,10 @@
 package at.sleazlee.bmessentials.rankup;
 
-import at.sleazlee.bmessentials.EconomySystem.BMSEconomyProvider;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 
 import net.milkbowl.vault2.economy.Economy;  // We still use VaultUnlocked for economy
-import net.milkbowl.vault2.economy.EconomyResponse;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -132,7 +130,7 @@ public class RankUpManager implements CommandExecutor {
     }
 
     /**
-     * Executes the rank-up process, deducting costs and updating the player's group.
+     * Executes the rank-up process, validating costs and updating the player's group.
      *
      * @param player      The player ranking up.
      * @param currentRank The player's current rank.
@@ -152,21 +150,6 @@ public class RankUpManager implements CommandExecutor {
             // Check balance using VaultUnlocked's economy
             if (!economy.has(plugin.getName(), player.getUniqueId(), BigDecimal.valueOf(totalCost))) {
                 player.sendMessage(ChatColor.RED + "You do not have enough money to rank up.");
-                return;
-            }
-
-            // Withdraw the total cost in Dollars
-            EconomyResponse resp = economy.withdraw(
-                    plugin.getName(),
-                    player.getUniqueId(),
-                    "no_world",
-                    BMSEconomyProvider.CURRENCY_DOLLARS,
-                    BigDecimal.valueOf(totalCost)
-            );
-
-            if (!resp.transactionSuccess()) {
-                player.sendMessage(ChatColor.RED + "Failed to deduct cost: " + resp.errorMessage);
-                plugin.getLogger().warning("Withdraw failed for " + player.getName() + ": " + totalCost);
                 return;
             }
         }

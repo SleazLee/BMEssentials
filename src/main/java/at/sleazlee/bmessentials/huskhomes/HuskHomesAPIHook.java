@@ -1,5 +1,6 @@
 package at.sleazlee.bmessentials.huskhomes;
 
+import at.sleazlee.bmessentials.BMEssentials;
 import net.william278.huskhomes.api.HuskHomesAPI;
 import net.william278.huskhomes.position.Position;
 import net.william278.huskhomes.position.World;
@@ -8,6 +9,8 @@ import net.william278.huskhomes.user.OnlineUser;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class HuskHomesAPIHook {
 
@@ -28,7 +31,7 @@ public class HuskHomesAPIHook {
                 .execute();
     }
 
-    public static void timedTeleportPlayer(Player player, double x, double y, double z, float yaw, float pitch, String worldName, String serverName) {
+    public static boolean timedTeleportPlayer(Player player, double x, double y, double z, float yaw, float pitch, String worldName, String serverName) {
         HuskHomesAPI huskHomesAPI = HuskHomesAPI.getInstance();
         OnlineUser onlineUser = huskHomesAPI.adaptUser(player);
 
@@ -44,10 +47,26 @@ public class HuskHomesAPIHook {
                     .target(position)
                     .toTimedTeleport()
                     .execute();
+            return true;
         } catch (TeleportationException e) {
-            e.printStackTrace();
-            // Optionally, send a message to the player about the failure
+            TeleportationException.Type type = e.getType();
+            Level level = switch (type) {
+                case WARMUP_ALREADY_MOVING, ALREADY_WARMING_UP -> Level.FINE;
+                default -> Level.WARNING;
+            };
+
+            Logger logger = BMEssentials.getInstance().getLogger();
+            if (logger.isLoggable(level)) {
+                logger.log(
+                        level,
+                        "Failed to start HuskHomes timed teleport for {0}: {1}",
+                        new Object[]{player.getName(), type.name()}
+                );
+            }
+
+            // Let HuskHomes notify the player about what went wrong.
             e.displayMessage(onlineUser);
+            return false;
         }
     }
 
