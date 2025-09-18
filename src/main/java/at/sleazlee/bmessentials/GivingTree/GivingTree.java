@@ -69,8 +69,8 @@ public class GivingTree implements CommandExecutor, Listener {
         if (world == null) {
             throw new IllegalStateException("World 'world' not found");
         }
-        this.chestLocation1 = new Location(world, 205, 66, 244);
-        this.chestLocation2 = new Location(world, 205, 66, 243);
+        this.chestLocation1 = new Location(world, 198, 66, 241);
+        this.chestLocation2 = new Location(world, 198, 66, 240);
         plugin.getDataFolder().mkdirs();
         this.dataFile = new File(plugin.getDataFolder(), "GivingTree.yml");
 
