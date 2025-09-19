@@ -164,9 +164,13 @@ Systems:
     Enabled: true
     GivingTree:
       SuccessMessages:
-        - '<green>Yeah! You got it!</green>'
+        - '<#4D6624>Take it… Safe travels to you…</#4D6624>'
+        - '<#4D6624>It’s yours… Good luck to you…</#4D6624>'
+        - '<#4D6624>You’re welcome… Use it well…</#4D6624>'
       FailureMessages:
-        - '<#ff3300>Oops! Too late...</#ff3300>'
+        - '<#384A1B>…Too slow…</#384A1B>'
+        - '<#384A1B>… It’s for someone else…</#384A1B>'
+        - '<#384A1B>… Not this time…</#384A1B>'
 
   # Allows applying unsafe enchantment books to items using anvils.
   CombineSystem:
