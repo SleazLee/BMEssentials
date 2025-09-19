@@ -162,6 +162,11 @@ Systems:
   # Enables the Giving Tree system.
   Containers:
     Enabled: true
+    GivingTree:
+      SuccessMessages:
+        - '<green>Yeah! You got it!</green>'
+      FailureMessages:
+        - '<#ff3300>Oops! Too late...</#ff3300>'
 
   # Allows applying unsafe enchantment books to items using anvils.
   CombineSystem:

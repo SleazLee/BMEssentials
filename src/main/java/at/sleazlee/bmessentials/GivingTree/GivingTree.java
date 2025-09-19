@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * GivingTree system.
@@ -48,6 +49,10 @@ public class GivingTree implements CommandExecutor, Listener {
 
     private static final String DONATE_TITLE = ChatColor.DARK_GRAY + "Donations";
     private static final String TREE_TITLE = ChatColor.DARK_GRAY + "The Giving Tree";
+    private static final String SUCCESS_MESSAGES_PATH = "Systems.Containers.GivingTree.SuccessMessages";
+    private static final String FAILURE_MESSAGES_PATH = "Systems.Containers.GivingTree.FailureMessages";
+    private static final String DEFAULT_SUCCESS_MESSAGE = "<green>Yeah! You got it!</green>";
+    private static final String DEFAULT_FAILURE_MESSAGE = "<#ff3300>Oops! Too late...</#ff3300>";
 
     private final Plugin plugin;
     private final Deque<ItemStack> donationQueue = new ConcurrentLinkedDeque<>();
@@ -60,6 +65,8 @@ public class GivingTree implements CommandExecutor, Listener {
     private final Location chestLocation2;
     private final File dataFile;
     private final MiniMessage mini = MiniMessage.miniMessage();
+    private final List<String> successMessages;
+    private final List<String> failureMessages;
 
     public GivingTree(Plugin plugin) {
         this.plugin = plugin;
@@ -73,6 +80,9 @@ public class GivingTree implements CommandExecutor, Listener {
         this.chestLocation2 = new Location(world, 198, 66, 240);
         plugin.getDataFolder().mkdirs();
         this.dataFile = new File(plugin.getDataFolder(), "GivingTree.yml");
+
+        this.successMessages = loadMessages(SUCCESS_MESSAGES_PATH, DEFAULT_SUCCESS_MESSAGE);
+        this.failureMessages = loadMessages(FAILURE_MESSAGES_PATH, DEFAULT_FAILURE_MESSAGE);
 
         this.treeInventory = Bukkit.createInventory(null, 54, TREE_TITLE);
         this.ready = false;
@@ -173,7 +183,7 @@ public class GivingTree implements CommandExecutor, Listener {
 
         String idStr = getItemId(current);
         if (idStr == null) {
-            player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
+            sendFailureMessage(player);
             return;
         }
 
@@ -181,12 +191,12 @@ public class GivingTree implements CommandExecutor, Listener {
         try {
             id = UUID.fromString(idStr);
         } catch (IllegalArgumentException e) {
-            player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
+            sendFailureMessage(player);
             return;
         }
 
         if (!claim(id)) {
-            player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
+            sendFailureMessage(player);
             return;
         }
 
@@ -197,7 +207,7 @@ public class GivingTree implements CommandExecutor, Listener {
 
         if (!removeFromTree(id)) {
             claimed.remove(id);
-            player.sendActionBar(mini.deserialize("<#ff3300>Oops! Too late...</#ff3300>"));
+            sendFailureMessage(player);
             return;
         }
 
@@ -205,7 +215,7 @@ public class GivingTree implements CommandExecutor, Listener {
         ItemStack toGive = current.clone();
         clearId(toGive);
         player.getInventory().addItem(toGive);
-        player.sendActionBar(mini.deserialize("<green>Yeah! You got it!</green>"));
+        sendSuccessMessage(player);
     }
 
     /**
@@ -422,5 +432,35 @@ public class GivingTree implements CommandExecutor, Listener {
             }
         }
         return false;
+    }
+
+    private List<String> loadMessages(String path, String defaultMessage) {
+        List<String> configured = plugin.getConfig().getStringList(path);
+        List<String> messages = new ArrayList<>();
+        for (String message : configured) {
+            if (message != null && !message.isBlank()) {
+                messages.add(message);
+            }
+        }
+        if (messages.isEmpty()) {
+            messages.add(defaultMessage);
+        }
+        return messages;
+    }
+
+    private void sendFailureMessage(Player player) {
+        sendRandomActionBar(player, failureMessages);
+    }
+
+    private void sendSuccessMessage(Player player) {
+        sendRandomActionBar(player, successMessages);
+    }
+
+    private void sendRandomActionBar(Player player, List<String> messages) {
+        if (messages.isEmpty()) {
+            return;
+        }
+        String rawMessage = messages.get(ThreadLocalRandom.current().nextInt(messages.size()));
+        player.sendActionBar(mini.deserialize(rawMessage));
     }
 }
