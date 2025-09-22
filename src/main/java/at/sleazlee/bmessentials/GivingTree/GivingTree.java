@@ -205,15 +205,14 @@ public class GivingTree implements CommandExecutor, Listener {
             return;
         }
 
-        if (!removeFromTree(id)) {
+        ItemStack toGive = removeFromTree(id);
+        if (toGive == null) {
             claimed.remove(id);
             sendFailureMessage(player);
             return;
         }
 
         event.setCurrentItem(null);
-        ItemStack toGive = current.clone();
-        clearId(toGive);
         player.getInventory().addItem(toGive);
         sendSuccessMessage(player);
     }
@@ -391,10 +390,27 @@ public class GivingTree implements CommandExecutor, Listener {
     }
 
     private void clearId(ItemStack item) {
+        clearId(item, null);
+    }
+
+    private void clearId(ItemStack item, UUID expected) {
+        if (item == null) {
+            return;
+        }
         ItemMeta meta = item.getItemMeta();
         if (meta == null) {
             return;
         }
+
+        String stored = meta.getPersistentDataContainer().get(itemKey, PersistentDataType.STRING);
+        if (stored == null) {
+            return;
+        }
+
+        if (expected != null && !stored.equals(expected.toString())) {
+            return;
+        }
+
         meta.getPersistentDataContainer().remove(itemKey);
         item.setItemMeta(meta);
     }
@@ -407,15 +423,14 @@ public class GivingTree implements CommandExecutor, Listener {
         return added;
     }
 
-    private boolean removeFromTree(UUID id) {
+    private ItemStack removeFromTree(UUID id) {
         if (treeInventory == null) {
-            return false;
+            return null;
         }
 
-        ItemStack[] contents = treeInventory.getContents();
-        for (int i = 0; i < contents.length; i++) {
-            ItemStack item = contents[i];
-            if (item == null) {
+        for (int slot = 0; slot < treeInventory.getSize(); slot++) {
+            ItemStack item = treeInventory.getItem(slot);
+            if (item == null || item.getType() == Material.AIR) {
                 continue;
             }
             String other = getItemId(item);
@@ -424,14 +439,16 @@ public class GivingTree implements CommandExecutor, Listener {
             }
             try {
                 if (UUID.fromString(other).equals(id)) {
-                    treeInventory.setItem(i, null);
+                    ItemStack result = item.clone();
+                    clearId(result, id);
+                    treeInventory.setItem(slot, null);
                     saveData();
-                    return true;
+                    return result;
                 }
             } catch (IllegalArgumentException ignored) {
             }
         }
-        return false;
+        return null;
     }
 
     private List<String> loadMessages(String path, String defaultMessage) {
