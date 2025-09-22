@@ -37,6 +37,7 @@ public class VoteManager {
     }
 
     private final Set<UUID> votedPlayers = new HashSet<>();
+    private final Set<UUID> eligibleVoters = new HashSet<>();
     private static boolean voteInProgress = false;
     private int yesVotes = 0;
     private int noVotes = 0;
@@ -45,7 +46,6 @@ public class VoteManager {
     private BossBar bossBar;
     private Scheduler.Task actionBarTask;
     private Scheduler.Task scheduledVoteEndTask;
-    private int totalPlayersAtVoteStart;
     private Player voteInitiator; // Tracks vote initiator
 
     private final BMEssentials plugin;
@@ -107,10 +107,14 @@ public class VoteManager {
         yesVotes = 0;
         noVotes = 0;
         votedPlayers.clear();
-        // Only count online players that are not AFK.
-        totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
-                .filter(p -> !AfkManager.getInstance().isAfk(p))
-                .count();
+        eligibleVoters.clear();
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            if (AfkManager.getInstance().isAfk(online)) {
+                online.sendMessage(ChatColor.RED + "You were AFK when the vote began. Become active to participate.");
+            } else {
+                eligibleVoters.add(online.getUniqueId());
+            }
+        }
         voteInitiator = initiator;
 
         String capitalizedOption = StringUtils.capitalize(voteOption);
@@ -129,7 +133,7 @@ public class VoteManager {
         castVote(initiator, true);
 
         // If only one non-AFK player is online, finalize immediately.
-        if (totalPlayersAtVoteStart <= 1) {
+        if (eligibleVoters.size() <= 1) {
             finalizeVote(false);
             return true;
         }
@@ -157,7 +161,17 @@ public class VoteManager {
             return;
         }
 
-        if (votedPlayers.contains(player.getUniqueId())) {
+        UUID playerId = player.getUniqueId();
+
+        if (!eligibleVoters.contains(playerId)) {
+            handlePlayerJoin(player);
+            if (!eligibleVoters.contains(playerId)) {
+                player.sendMessage(ChatColor.RED + "You must be active to participate in this vote.");
+                return;
+            }
+        }
+
+        if (votedPlayers.contains(playerId)) {
             String messageText = "<color:#ff3300><bold>Vot</bold> <red>You have already voted this round!";
             Component message = MiniMessage.miniMessage().deserialize(messageText);
             player.sendMessage(message);
@@ -170,18 +184,14 @@ public class VoteManager {
             noVotes++;
         }
 
-        votedPlayers.add(player.getUniqueId());
+        votedPlayers.add(playerId);
 
         String messageText = "<yellow><bold>Vot</bold> <gray>Your vote has been recorded!";
         Component message = MiniMessage.miniMessage().deserialize(messageText);
         player.sendMessage(message);
 
         updateVoteProgress();
-
-        // Finalize if all eligible (non-AFK) players have voted.
-        if (votedPlayers.size() >= totalPlayersAtVoteStart) {
-            finalizeVote(false);
-        }
+        evaluateVoteState();
     }
 
     /**
@@ -244,6 +254,7 @@ public class VoteManager {
             }, 120L);
         }
 
+        eligibleVoters.clear();
         votedPlayers.clear();
     }
 
@@ -344,8 +355,14 @@ public class VoteManager {
      */
     private void updateVoteProgress() {
         int progressBars = 14;
-        double yesPercentage = yesVotes / (double) totalPlayersAtVoteStart;
-        double noPercentage = noVotes / (double) totalPlayersAtVoteStart;
+        int eligibleCount = eligibleVoters.size();
+        double yesPercentage = 0.0;
+        double noPercentage = 0.0;
+
+        if (eligibleCount > 0) {
+            yesPercentage = yesVotes / (double) eligibleCount;
+            noPercentage = noVotes / (double) eligibleCount;
+        }
 
         int yesBars = (int) Math.round(yesPercentage * progressBars);
         int noBars = (int) Math.round(noPercentage * progressBars);
@@ -376,6 +393,40 @@ public class VoteManager {
                 online.sendActionBar(Component.text(actionBarMessage));
             }
         }, 0L, 20L);
+    }
+
+    /**
+     * Determines whether the vote can end early because the outcome is already decided.
+     * The vote will conclude if one side can no longer lose or win regardless of the
+     * remaining uncast votes, or if every eligible player has voted.
+     */
+    private void evaluateVoteState() {
+        if (!voteInProgress) {
+            return;
+        }
+
+        int eligibleCount = eligibleVoters.size();
+
+        if (eligibleCount <= 0) {
+            return;
+        }
+
+        int votesCast = votedPlayers.size();
+        int remainingVotes = Math.max(0, eligibleCount - votesCast);
+
+        if (yesVotes > noVotes + remainingVotes) {
+            finalizeVote(false);
+            return;
+        }
+
+        if (noVotes >= yesVotes + remainingVotes) {
+            finalizeVote(false);
+            return;
+        }
+
+        if (votesCast >= eligibleCount) {
+            finalizeVote(false);
+        }
     }
 
     /**
@@ -447,7 +498,7 @@ public class VoteManager {
     /**
      * Displays the vote prompt to all non-AFK players with clickable text.
      */
-    private void displayVotePrompt() {
+    private Component createVotePromptMessage() {
         String messageText = "<gray>Click to vote: "
                 + "<click:run_command:/vot yes><hover:show_text:'<green>Click to vote Yes!'>"
                 + "<green><bold>Yes</bold></hover></click> "
@@ -455,7 +506,11 @@ public class VoteManager {
                 + "<click:run_command:/vot no><hover:show_text:'<color:#ff3300>Click to vote No!'>"
                 + "<color:#ff3300><bold>No</bold></hover></click>";
 
-        Component message = MiniMessage.miniMessage().deserialize(messageText);
+        return MiniMessage.miniMessage().deserialize(messageText);
+    }
+
+    private void displayVotePrompt() {
+        Component message = createVotePromptMessage();
 
         for (Player online : Bukkit.getOnlinePlayers()) {
             // Only send the prompt to players who are not AFK and not the initiator.
@@ -471,14 +526,24 @@ public class VoteManager {
      * @param player the player who joined or became active
      */
     public void handlePlayerJoin(Player player) {
-        if (voteInProgress && bossBar != null) {
-            // Only add players who are active.
-            if (!AfkManager.getInstance().isAfk(player)) {
-                player.showBossBar(bossBar);
-                totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
-                        .filter(p -> !AfkManager.getInstance().isAfk(p))
-                        .count();
-                updateVoteProgress();
+        if (!voteInProgress || bossBar == null) {
+            return;
+        }
+
+        player.showBossBar(bossBar);
+
+        if (AfkManager.getInstance().isAfk(player)) {
+            player.sendMessage(ChatColor.RED + "You are currently AFK and cannot vote. Become active to participate.");
+            return;
+        }
+
+        UUID playerId = player.getUniqueId();
+        boolean added = eligibleVoters.add(playerId);
+        if (added) {
+            updateVoteProgress();
+            evaluateVoteState();
+            if (!player.equals(voteInitiator)) {
+                player.sendMessage(createVotePromptMessage());
             }
         }
     }
@@ -491,13 +556,16 @@ public class VoteManager {
     public void handlePlayerQuit(Player player) {
         if (voteInProgress && bossBar != null) {
             player.hideBossBar(bossBar);
-            votedPlayers.remove(player.getUniqueId());
-            totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
-                    .filter(p -> !AfkManager.getInstance().isAfk(p))
-                    .count();
-            updateVoteProgress();
-            if (totalPlayersAtVoteStart == 0) {
+            UUID playerId = player.getUniqueId();
+            votedPlayers.remove(playerId);
+            boolean removed = eligibleVoters.remove(playerId);
+            if (removed) {
+                updateVoteProgress();
+            }
+            if (eligibleVoters.isEmpty()) {
                 finalizeVote(true);
+            } else {
+                evaluateVoteState();
             }
         }
     }
@@ -510,11 +578,12 @@ public class VoteManager {
      */
     public void handlePlayerAfk(Player player) {
         if (voteInProgress && bossBar != null) {
-            if (!votedPlayers.contains(player.getUniqueId())) {
-                totalPlayersAtVoteStart = (int) Bukkit.getOnlinePlayers().stream()
-                        .filter(p -> !AfkManager.getInstance().isAfk(p))
-                        .count();
-                updateVoteProgress();
+            UUID playerId = player.getUniqueId();
+            if (!votedPlayers.contains(playerId)) {
+                if (eligibleVoters.remove(playerId)) {
+                    updateVoteProgress();
+                }
+                evaluateVoteState();
             }
         }
     }
