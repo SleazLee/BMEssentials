@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -21,8 +20,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.configuration.file.YamlConfiguration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -58,7 +55,6 @@ public class GivingTree implements CommandExecutor, Listener {
     private final Deque<ItemStack> donationQueue = new ConcurrentLinkedDeque<>();
     private Inventory treeInventory;
     private boolean ready;
-    private final NamespacedKey itemKey;
     private final Set<UUID> claimed = ConcurrentHashMap.newKeySet();
     private final Set<UUID> disposeOnly = ConcurrentHashMap.newKeySet();
     private final Location chestLocation1;
@@ -67,11 +63,10 @@ public class GivingTree implements CommandExecutor, Listener {
     private final MiniMessage mini = MiniMessage.miniMessage();
     private final List<String> successMessages;
     private final List<String> failureMessages;
+    private final UUID[] slotIds;
 
     public GivingTree(Plugin plugin) {
         this.plugin = plugin;
-        this.itemKey = new NamespacedKey(plugin, "givingtree-id");
-
         org.bukkit.World world = Bukkit.getWorld("world");
         if (world == null) {
             throw new IllegalStateException("World 'world' not found");
@@ -85,6 +80,7 @@ public class GivingTree implements CommandExecutor, Listener {
         this.failureMessages = loadMessages(FAILURE_MESSAGES_PATH, DEFAULT_FAILURE_MESSAGE);
 
         this.treeInventory = Bukkit.createInventory(null, 54, TREE_TITLE);
+        this.slotIds = new UUID[treeInventory.getSize()];
         this.ready = false;
 
         loadData(() -> {
@@ -181,16 +177,14 @@ public class GivingTree implements CommandExecutor, Listener {
 
         Player player = (Player) event.getWhoClicked();
 
-        String idStr = getItemId(current);
-        if (idStr == null) {
+        int slot = event.getSlot();
+        if (slot < 0 || slot >= slotIds.length) {
             sendFailureMessage(player);
             return;
         }
 
-        UUID id;
-        try {
-            id = UUID.fromString(idStr);
-        } catch (IllegalArgumentException e) {
+        UUID id = slotIds[slot];
+        if (id == null) {
             sendFailureMessage(player);
             return;
         }
@@ -205,15 +199,14 @@ public class GivingTree implements CommandExecutor, Listener {
             return;
         }
 
-        if (!removeFromTree(id)) {
+        ItemStack toGive = removeFromTree(slot, id);
+        if (toGive == null) {
             claimed.remove(id);
             sendFailureMessage(player);
             return;
         }
 
         event.setCurrentItem(null);
-        ItemStack toGive = current.clone();
-        clearId(toGive);
         player.getInventory().addItem(toGive);
         sendSuccessMessage(player);
     }
@@ -256,15 +249,7 @@ public class GivingTree implements CommandExecutor, Listener {
             return;
         }
 
-        ItemStack[] master = treeInventory.getContents();
-        for (int i = 0; i < master.length; i++) {
-            ItemStack item = master[i];
-            if (item != null && getItemId(item) == null) {
-                assignId(item);
-                master[i] = item;
-            }
-        }
-        treeInventory.setContents(master);
+        syncSlotIdsWithContents();
 
         player.openInventory(treeInventory);
     }
@@ -306,6 +291,7 @@ public class GivingTree implements CommandExecutor, Listener {
             Scheduler.run(() -> {
                 if (treeInventory != null && finalChestItems != null) {
                     treeInventory.setContents(finalChestItems);
+                    syncSlotIdsWithContents();
                 }
                 if (!queueItems.isEmpty()) {
                     donationQueue.addAll(queueItems);
@@ -356,47 +342,35 @@ public class GivingTree implements CommandExecutor, Listener {
             return;
         }
 
-        assignId(next);
         ItemStack[] contents = treeInventory.getContents();
         List<ItemStack> items = new ArrayList<>();
-        for (ItemStack item : contents) {
+        List<UUID> ids = new ArrayList<>();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack item = contents[i];
             if (item != null && item.getType() != Material.AIR) {
                 items.add(item);
+                ids.add(slotIds[i]);
             }
         }
+
         ItemStack[] newContents = new ItemStack[treeInventory.getSize()];
+        UUID[] newIds = new UUID[slotIds.length];
         newContents[0] = next;
-        for (int i = 0; i < Math.min(items.size(), newContents.length - 1); i++) {
+        newIds[0] = UUID.randomUUID();
+
+        int limit = Math.min(items.size(), newContents.length - 1);
+        for (int i = 0; i < limit; i++) {
             newContents[i + 1] = items.get(i);
+            UUID existingId = ids.get(i);
+            if (existingId == null) {
+                existingId = UUID.randomUUID();
+            }
+            newIds[i + 1] = existingId;
         }
+
         treeInventory.setContents(newContents);
+        System.arraycopy(newIds, 0, slotIds, 0, slotIds.length);
         saveData();
-    }
-
-    private void assignId(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return;
-        }
-        meta.getPersistentDataContainer().set(itemKey, PersistentDataType.STRING, UUID.randomUUID().toString());
-        item.setItemMeta(meta);
-    }
-
-    private String getItemId(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return null;
-        }
-        return meta.getPersistentDataContainer().get(itemKey, PersistentDataType.STRING);
-    }
-
-    private void clearId(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return;
-        }
-        meta.getPersistentDataContainer().remove(itemKey);
-        item.setItemMeta(meta);
     }
 
     private boolean claim(UUID id) {
@@ -407,31 +381,45 @@ public class GivingTree implements CommandExecutor, Listener {
         return added;
     }
 
-    private boolean removeFromTree(UUID id) {
+    private ItemStack removeFromTree(int slot, UUID expectedId) {
         if (treeInventory == null) {
-            return false;
+            return null;
+        }
+        if (slot < 0 || slot >= treeInventory.getSize()) {
+            return null;
         }
 
+        UUID currentId = slotIds[slot];
+        if (currentId == null || !currentId.equals(expectedId)) {
+            return null;
+        }
+
+        ItemStack item = treeInventory.getItem(slot);
+        if (item == null || item.getType() == Material.AIR) {
+            slotIds[slot] = null;
+            return null;
+        }
+
+        ItemStack result = item.clone();
+        treeInventory.setItem(slot, null);
+        slotIds[slot] = null;
+        saveData();
+        return result;
+    }
+
+    private void syncSlotIdsWithContents() {
+        if (treeInventory == null) {
+            return;
+        }
         ItemStack[] contents = treeInventory.getContents();
         for (int i = 0; i < contents.length; i++) {
             ItemStack item = contents[i];
-            if (item == null) {
-                continue;
-            }
-            String other = getItemId(item);
-            if (other == null) {
-                continue;
-            }
-            try {
-                if (UUID.fromString(other).equals(id)) {
-                    treeInventory.setItem(i, null);
-                    saveData();
-                    return true;
-                }
-            } catch (IllegalArgumentException ignored) {
+            if (item == null || item.getType() == Material.AIR) {
+                slotIds[i] = null;
+            } else if (slotIds[i] == null) {
+                slotIds[i] = UUID.randomUUID();
             }
         }
-        return false;
     }
 
     private List<String> loadMessages(String path, String defaultMessage) {
