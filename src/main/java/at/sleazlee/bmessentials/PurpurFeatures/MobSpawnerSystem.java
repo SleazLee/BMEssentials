@@ -10,25 +10,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MobSpawnerSystem implements Listener {
 
-    private static final int SPAWN_RANGE_INCREASE = 10;
-
     // Key used to store the mob type in the spawner item’s PersistentDataContainer
     private final NamespacedKey spawnerKey;
-    // Key used to ensure the spawner range increase is only applied once per block.
-    private final NamespacedKey spawnerRangeKey;
 
     public MobSpawnerSystem(JavaPlugin plugin) {
         this.spawnerKey = new NamespacedKey(plugin, "spawner-type");
-        this.spawnerRangeKey = new NamespacedKey(plugin, "spawner-range");
     }
 
     // Handle breaking spawners with a silk touch enchanted pickaxe.
@@ -107,31 +100,5 @@ public class MobSpawnerSystem implements Listener {
                 event.getPlayer().sendMessage("Error: Invalid mob type stored in spawner item: " + mobTypeName);
             }
         }
-    }
-
-    @EventHandler
-    public void onSpawnerSpawn(SpawnerSpawnEvent event) {
-        CreatureSpawner spawner = event.getSpawner();
-        if (extendSpawnerRange(spawner)) {
-            spawner.update();
-        }
-    }
-
-    private boolean extendSpawnerRange(CreatureSpawner spawner) {
-        PersistentDataContainer container = spawner.getPersistentDataContainer();
-        Integer storedRange = container.get(spawnerRangeKey, PersistentDataType.INTEGER);
-
-        if (storedRange != null) {
-            if (spawner.getSpawnRange() != storedRange) {
-                spawner.setSpawnRange(storedRange);
-                return true;
-            }
-            return false;
-        }
-
-        int newRange = spawner.getSpawnRange() + SPAWN_RANGE_INCREASE;
-        spawner.setSpawnRange(newRange);
-        container.set(spawnerRangeKey, PersistentDataType.INTEGER, newRange);
-        return true;
     }
 }
