@@ -42,6 +42,15 @@
 - **Player Shops** – Rentable shop regions with `/bms` management commands.
 - **Combine System** – Allows unsafe enchantment books to be applied via anvils.
 
+### Vote streak rewards
+- Every vote now updates a persistent streak (with a 36-hour grace window) plus a lifetime counter stored in the dedicated `player_vote_data` table (`vote_streak_current`, `vote_streak_best`, `vote_last_timestamp`, `vote_total`, `vote_cycle_progress`, `vote_streak_last_increment`). Existing installs automatically migrate any legacy columns that previously lived on `playerdata`.
+- Streak progress only advances after four votes have been logged and at least 18 hours have passed since the previous increment, keeping the cadence in step with the network’s vote sites while protecting players from short delays. Extra votes still grant tokens/VotePoints but do not jump the streak multiple times in a single day.
+- Higher streaks gradually shift altar token odds—by day 30 the mix lands at roughly 35 % Healing Springs, 40 % Wishing-Well and 25 % Obelisk.
+- Vote Points are guaranteed on every vote, with the streak raising the chance for bonus points until day 30+ effectively awards at least two.
+- PlaceholderAPI keys: `%bme_totalvotes%`, `%bme_currentvotestreak%`, and `%bme_bestvotestreak%` pull the stored counters.
+- Players can run `/vote streak` in-game to view their current streak, progress to the next increment, the remaining cooldown, and the token odds that apply to their next votes.
+- `%bme_totalvotes%` exposes the new lifetime counter through PlaceholderAPI so you can show the number of votes a player has ever cast.
+
 ## Installation
 1. Build the plugin with Maven or download the compiled jar.
 2. Place the jar in your server's `plugins` folder.

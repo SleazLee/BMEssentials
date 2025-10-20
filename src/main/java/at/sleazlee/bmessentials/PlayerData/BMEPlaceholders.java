@@ -19,6 +19,7 @@ import java.util.Date;
  * - %bme_centeredname%: The centered name of the player.
  * - %bme_chunkinfo%: The version or region name where the player is located.
  * - %bme_tps%: Provides tps info depending on if folia is enabled.
+ * - %bme_totalvotes%: Lifetime number of votes recorded for the player.
  */
 public class BMEPlaceholders extends PlaceholderExpansion {
 
@@ -100,6 +101,22 @@ public class BMEPlaceholders extends PlaceholderExpansion {
             Date date = new Date(joinDate);
             SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy ha z");
             return sdf.format(date);
+        }
+
+        // Handle the %bme_totalvotes% placeholder
+        if (identifier.equals("totalvotes")) {
+            int totalVotes = plugin.getPlayerDataDBManager().getTotalVotes(uuid);
+            return String.valueOf(totalVotes);
+        }
+
+        if (identifier.equals("currentvotestreak")) {
+            int streak = plugin.getPlayerDataDBManager().getCurrentStreak(uuid);
+            return String.valueOf(streak);
+        }
+
+        if (identifier.equals("bestvotestreak")) {
+            int best = plugin.getPlayerDataDBManager().getBestStreak(uuid);
+            return String.valueOf(best);
         }
 
         // Handle the %bme_chunkinfo% placeholder

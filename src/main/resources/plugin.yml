@@ -104,6 +104,10 @@ commands:
     description: Sends a testvote to the player given.
     usage: /adminvote <player>
 
+  vote:
+    description: Shows information about your vote streak.
+    usage: /vote streak
+
   map:
     description: Toggle your BlueMap visibility
     usage: /map <toggle|show|hide>

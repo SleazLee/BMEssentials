@@ -57,6 +57,7 @@ import at.sleazlee.bmessentials.vot.PlayerEventListener;
 import at.sleazlee.bmessentials.vot.VotTabCompleter;
 import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.votesystem.BMVote;
+import at.sleazlee.bmessentials.votesystem.VoteStreakCommand;
 import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
 import at.sleazlee.bmessentials.playerutils.InvseeCommand;
@@ -303,12 +304,18 @@ public class BMEssentials extends JavaPlugin {
             // Add the system enabled message.
             getServer().getConsoleSender().sendMessage(ChatColor.WHITE + " - Enabled Vote Systems");
 
+            BMVote voteSystem = new BMVote(this);
+
             // Register BMVote as the listener for incoming plugin messages on the "bmessentials:vote" channel.
-            this.getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:vote", new BMVote(this));
+            this.getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:vote", voteSystem);
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:vote");
 
-            this.getCommand("adminvote").setExecutor(new BMVote(this));
+            this.getCommand("adminvote").setExecutor(voteSystem);
             this.getCommand("adminvote").setTabCompleter(new TestVoteTabCompleter());
+
+            VoteStreakCommand voteStreakCommand = new VoteStreakCommand(this);
+            this.getCommand("vote").setExecutor(voteStreakCommand);
+            this.getCommand("vote").setTabCompleter(voteStreakCommand);
         }
 
         // Wild System
