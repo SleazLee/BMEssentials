@@ -9,10 +9,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.time.Instant;
 
 public class DatabaseManager {
 	private static HikariDataSource dataSource;
@@ -78,12 +80,12 @@ public class DatabaseManager {
 	// NonCommon Methods
 
 	// Create Tables for the Banning/Muting System:
-	public void createDatabaseTables() throws SQLException {
-		String createPunishmentsTable = "CREATE TABLE IF NOT EXISTS punishments ("
-				+ "uuid VARCHAR(36) PRIMARY KEY,"
-				+ "spam INT DEFAULT 0,"
-				+ "language INT DEFAULT 0,"
-				+ "harassment INT DEFAULT 0,"
+        public void createDatabaseTables() throws SQLException {
+                String createPunishmentsTable = "CREATE TABLE IF NOT EXISTS punishments ("
+                                + "uuid VARCHAR(36) PRIMARY KEY,"
+                                + "spam INT DEFAULT 0,"
+                                + "language INT DEFAULT 0,"
+                                + "harassment INT DEFAULT 0,"
 				+ "toxicity INT DEFAULT 0,"
 				+ "advertising INT DEFAULT 0,"
 				+ "greifing INT DEFAULT 0,"
@@ -98,23 +100,81 @@ public class DatabaseManager {
 				+ "RoleInTown VARCHAR(10) NOT NULL"
 				+ ");";
 		String createBonusTownsTable = "CREATE TABLE IF NOT EXISTS bonus_towns ("
-				+ "TownName VARCHAR(16) NOT NULL PRIMARY KEY,"
-				+ "CurrentFullBonus INT NOT NULL,"
-				+ "MayorUUID VARCHAR(36) NOT NULL"
-				+ ");";
-		try (Connection connection = getConnection();
-			 PreparedStatement statement = connection.prepareStatement(createPunishmentsTable)) {
-			statement.execute();
-		}
-		try (Connection connection = getConnection();
+                                + "TownName VARCHAR(16) NOT NULL PRIMARY KEY,"
+                                + "CurrentFullBonus INT NOT NULL,"
+                                + "MayorUUID VARCHAR(36) NOT NULL"
+                                + ");";
+                // Tracks the daily vote streak system so altar rewards can scale over time.
+                String createVoteStreaksTable = "CREATE TABLE IF NOT EXISTS vote_streaks ("
+                                + "uuid VARCHAR(36) NOT NULL PRIMARY KEY,"
+                                + "current_streak INT NOT NULL,"
+                                + "best_streak INT NOT NULL,"
+                                + "last_vote_at DATETIME NULL"
+                                + ");";
+                try (Connection connection = getConnection();
+                         PreparedStatement statement = connection.prepareStatement(createPunishmentsTable)) {
+                        statement.execute();
+                }
+                try (Connection connection = getConnection();
 			 PreparedStatement statement = connection.prepareStatement(createBonusPlayersTable)) {
 			statement.execute();
 		}
 		try (Connection connection = getConnection();
 			 PreparedStatement statement = connection.prepareStatement(createBonusTownsTable)) {
 			statement.execute();
-		}
-	}
+                }
+                try (Connection connection = getConnection();
+                         PreparedStatement statement = connection.prepareStatement(createVoteStreaksTable)) {
+                        statement.execute();
+                }
+        }
+
+        public static void asyncGetVoteStreak(BMEssentials plugin, UUID uuid, Consumer<VoteStreakData> callback) {
+                Scheduler.runAsync(() -> {
+                        try (Connection connection = getConnection();
+                                 PreparedStatement statement = connection.prepareStatement(
+                                                 "SELECT current_streak, best_streak, last_vote_at FROM vote_streaks WHERE uuid = ?")) {
+                                statement.setString(1, uuid.toString());
+                                ResultSet resultSet = statement.executeQuery();
+                                VoteStreakData data;
+                                if (resultSet.next()) {
+                                        int current = resultSet.getInt("current_streak");
+                                        int best = resultSet.getInt("best_streak");
+                                        Timestamp lastVote = resultSet.getTimestamp("last_vote_at");
+                                        Instant last = lastVote == null ? null : lastVote.toInstant();
+                                        data = new VoteStreakData(current, best, last);
+                                } else {
+                                        data = new VoteStreakData(0, 0, null);
+                                }
+                                VoteStreakData finalData = data;
+                                Scheduler.run(() -> callback.accept(finalData));
+                        } catch (SQLException e) {
+                                e.printStackTrace();
+                                Scheduler.run(() -> callback.accept(new VoteStreakData(0, 0, null)));
+                        }
+                });
+        }
+
+        public static void asyncUpsertVoteStreak(BMEssentials plugin, UUID uuid, int currentStreak, int bestStreak, Instant lastVoteAt) {
+                Scheduler.runAsync(() -> {
+                        try (Connection connection = getConnection();
+                                 PreparedStatement statement = connection.prepareStatement(
+                                                 "INSERT INTO vote_streaks (uuid, current_streak, best_streak, last_vote_at) VALUES (?, ?, ?, ?) "
+                                                                 + "ON DUPLICATE KEY UPDATE current_streak = VALUES(current_streak), "
+                                                                 + "best_streak = VALUES(best_streak), last_vote_at = VALUES(last_vote_at)")) {
+                                statement.setString(1, uuid.toString());
+                                statement.setInt(2, currentStreak);
+                                statement.setInt(3, bestStreak);
+                                statement.setTimestamp(4, lastVoteAt == null ? null : Timestamp.from(lastVoteAt));
+                                statement.execute();
+                        } catch (SQLException e) {
+                                e.printStackTrace();
+                        }
+                });
+        }
+
+        public record VoteStreakData(int currentStreak, int bestStreak, Instant lastVoteAt) {
+        }
 
 	// Start of Punishment Methods
 

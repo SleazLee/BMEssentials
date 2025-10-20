@@ -3,6 +3,7 @@ package at.sleazlee.bmessentials.PlayerData;
 import at.sleazlee.bmessentials.BMEssentials;
 import java.io.File;
 import java.sql.*;
+import java.time.Instant;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +15,18 @@ import java.util.Map;
  * for player-related information including join dates and currency balances.
  */
 public class PlayerDatabaseManager {
+    private static final String TABLE_NAME = "playerdata";
+    private static final String VOTE_TABLE_NAME = "player_vote_data";
+    private static final String COLUMN_STREAK_CURRENT = "vote_streak_current";
+    private static final String COLUMN_STREAK_BEST = "vote_streak_best";
+    private static final String COLUMN_LAST_VOTE_AT = "vote_last_timestamp";
+    private static final String COLUMN_TOTAL_VOTES = "vote_total";
+    private static final String COLUMN_VOTE_PROGRESS = "vote_cycle_progress";
+    private static final String COLUMN_LAST_STREAK_INCREMENT = "vote_streak_last_increment";
+
     private BMEssentials plugin;
     private Connection connection;
+    private final Object dbLock = new Object();
 
     /**
      * Constructs a new PlayerDatabaseManager instance.
@@ -56,19 +67,81 @@ public class PlayerDatabaseManager {
                - votepoints: Player's vote points (default 0.0)
             */
             try (PreparedStatement statement = connection.prepareStatement(
-                    "CREATE TABLE IF NOT EXISTS playerdata (" +
-                            "uuid TEXT PRIMARY KEY," +          // Primary key ensures unique players
-                            "joinDate INTEGER," +               // Stored as milliseconds since epoch
-                            "dollars REAL DEFAULT 0.0," +       // REAL type for decimal values
-                            "votepoints REAL DEFAULT 0.0" +     // Default values set for new players
+                    "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" +
+                            "uuid TEXT PRIMARY KEY," +
+                            "joinDate INTEGER," +
+                            "dollars REAL DEFAULT 0.0," +
+                            "votepoints REAL DEFAULT 0.0" +
                             ")")) {
                 statement.executeUpdate();
             }
+
+            /* Create the vote data table with streak and lifetime statistics. Keeping vote metadata in a
+               dedicated table makes it easier to evolve the streak system without touching the legacy
+               player currency schema. */
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "CREATE TABLE IF NOT EXISTS " + VOTE_TABLE_NAME + " (" +
+                            "uuid TEXT PRIMARY KEY," +
+                            COLUMN_STREAK_CURRENT + " INTEGER DEFAULT 0," +
+                            COLUMN_STREAK_BEST + " INTEGER DEFAULT 0," +
+                            COLUMN_LAST_VOTE_AT + " INTEGER DEFAULT 0," +
+                            COLUMN_TOTAL_VOTES + " INTEGER DEFAULT 0," +
+                            COLUMN_VOTE_PROGRESS + " INTEGER DEFAULT 0," +
+                            COLUMN_LAST_STREAK_INCREMENT + " INTEGER DEFAULT 0" +
+                            ")")) {
+                statement.executeUpdate();
+            }
+
+            ensureColumn(VOTE_TABLE_NAME, COLUMN_STREAK_CURRENT, "INTEGER", "0");
+            ensureColumn(VOTE_TABLE_NAME, COLUMN_STREAK_BEST, "INTEGER", "0");
+            ensureColumn(VOTE_TABLE_NAME, COLUMN_LAST_VOTE_AT, "INTEGER", "0");
+            ensureColumn(VOTE_TABLE_NAME, COLUMN_TOTAL_VOTES, "INTEGER", "0");
+            ensureColumn(VOTE_TABLE_NAME, COLUMN_VOTE_PROGRESS, "INTEGER", "0");
+            ensureColumn(VOTE_TABLE_NAME, COLUMN_LAST_STREAK_INCREMENT, "INTEGER", "0");
+
+            migrateLegacyVoteColumns();
 
         } catch (Exception e) {
             plugin.getLogger().severe("Failed to initialize database: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void ensureColumn(String table, String column, String type, String defaultValue) throws SQLException {
+        if (columnExists(table, column)) {
+            return;
+        }
+
+        StringBuilder sql = new StringBuilder("ALTER TABLE ").append(table)
+                .append(" ADD COLUMN ").append(column).append(' ').append(type);
+        if (defaultValue != null) {
+            sql.append(" DEFAULT ").append(defaultValue);
+        }
+
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(sql.toString());
+        }
+
+        if (defaultValue != null) {
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate("UPDATE " + table +
+                        " SET " + column + " = " + defaultValue +
+                        " WHERE " + column + " IS NULL");
+            }
+        }
+    }
+
+    private boolean columnExists(String table, String column) throws SQLException {
+        try (Statement statement = connection.createStatement();
+             ResultSet rs = statement.executeQuery("PRAGMA table_info(" + table + ")")) {
+            while (rs.next()) {
+                String name = rs.getString("name");
+                if (name != null && name.equalsIgnoreCase(column)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -95,7 +168,7 @@ public class PlayerDatabaseManager {
     public boolean hasPlayerData(String uuid) {
         // Using try-with-resources to auto-close resources
         try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT 1 FROM playerdata WHERE uuid = ?")) {  // '1' is optimized for existence check
+                "SELECT 1 FROM " + TABLE_NAME + " WHERE uuid = ?")) {  // '1' is optimized for existence check
             statement.setString(1, uuid);  // Set first parameter to UUID
             try (ResultSet rs = statement.executeQuery()) {
                 return rs.next();  // Returns true if at least one row exists
@@ -114,7 +187,7 @@ public class PlayerDatabaseManager {
      */
     public void insertPlayerData(String uuid, long joinDate) {
         // Parameterized query prevents SQL injection
-        String sql = "INSERT INTO playerdata (uuid, joinDate) VALUES (?, ?)";
+        String sql = "INSERT INTO " + TABLE_NAME + " (uuid, joinDate) VALUES (?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, uuid);      // Set UUID parameter
@@ -132,7 +205,7 @@ public class PlayerDatabaseManager {
      * @return Join date as milliseconds since epoch, or -1 if not found
      */
     public long getJoinDate(String uuid) {
-        String sql = "SELECT joinDate FROM playerdata WHERE uuid = ?";
+        String sql = "SELECT joinDate FROM " + TABLE_NAME + " WHERE uuid = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, uuid);
@@ -195,7 +268,7 @@ public class PlayerDatabaseManager {
      * @return Current balance value
      */
     private double getCurrencyBalance(String uuid, String currencyColumn) {
-        String sql = "SELECT " + currencyColumn + " FROM playerdata WHERE uuid = ?";
+        String sql = "SELECT " + currencyColumn + " FROM " + TABLE_NAME + " WHERE uuid = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, uuid);
@@ -218,7 +291,7 @@ public class PlayerDatabaseManager {
      * @param amount         New balance value
      */
     private void updateCurrencyBalance(String uuid, String currencyColumn, double amount) {
-        String sql = "UPDATE playerdata SET " + currencyColumn + " = ? WHERE uuid = ?";
+        String sql = "UPDATE " + TABLE_NAME + " SET " + currencyColumn + " = ? WHERE uuid = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setDouble(1, amount);   // Set balance value
@@ -238,7 +311,7 @@ public class PlayerDatabaseManager {
      */
     public List<Map.Entry<String, Double>> getTopBalances(String currencyColumn, int limit) {
         List<Map.Entry<String, Double>> results = new ArrayList<>();
-        String sql = "SELECT uuid, " + currencyColumn + " FROM playerdata ORDER BY " + currencyColumn + " DESC LIMIT ?";
+        String sql = "SELECT uuid, " + currencyColumn + " FROM " + TABLE_NAME + " ORDER BY " + currencyColumn + " DESC LIMIT ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, limit);  // Set LIMIT parameter
@@ -264,5 +337,170 @@ public class PlayerDatabaseManager {
      */
     public Connection getConnection() {
         return connection;
+    }
+
+    /**
+     * Holds vote streak metadata for a player. The streak values are stored alongside the
+     * player's total vote count so the vote system can gradually ramp up rewards while still
+     * reporting lifetime votes for PlaceholderAPI. The progress counter tracks how many votes
+     * have been recorded since the last streak increment (capped at four).
+     */
+    public record VoteData(int currentStreak, int bestStreak, long lastVoteAtMillis, int totalVotes,
+                           int votesTowardsNextIncrement, long lastStreakIncrementMillis) {
+        public Instant lastVoteAt() {
+            return lastVoteAtMillis > 0 ? Instant.ofEpochMilli(lastVoteAtMillis) : null;
+        }
+
+        public Instant lastStreakIncrementAt() {
+            return lastStreakIncrementMillis > 0 ? Instant.ofEpochMilli(lastStreakIncrementMillis) : null;
+        }
+    }
+
+    /**
+     * Retrieves the current vote metadata for the supplied player, creating a default row if needed.
+     * This method is synchronized so it can be safely invoked from async vote handlers.
+     */
+    public VoteData getVoteData(String uuid) {
+        synchronized (dbLock) {
+            ensurePlayerRow(uuid);
+            ensureVoteRow(uuid);
+            String sql = "SELECT " + COLUMN_STREAK_CURRENT + ", " + COLUMN_STREAK_BEST + ", " + COLUMN_LAST_VOTE_AT + ", " + COLUMN_TOTAL_VOTES +
+                    ", " + COLUMN_VOTE_PROGRESS + ", " + COLUMN_LAST_STREAK_INCREMENT +
+                    " FROM " + VOTE_TABLE_NAME + " WHERE uuid = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, uuid);
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        int current = rs.getInt(COLUMN_STREAK_CURRENT);
+                        int best = rs.getInt(COLUMN_STREAK_BEST);
+                        long lastVote = rs.getLong(COLUMN_LAST_VOTE_AT);
+                        if (rs.wasNull()) {
+                            lastVote = 0;
+                        }
+                        int total = rs.getInt(COLUMN_TOTAL_VOTES);
+                        int cycleProgress = rs.getInt(COLUMN_VOTE_PROGRESS);
+                        long lastIncrement = rs.getLong(COLUMN_LAST_STREAK_INCREMENT);
+                        if (rs.wasNull()) {
+                            lastIncrement = 0;
+                        }
+                        return new VoteData(current, best, lastVote, total, cycleProgress, lastIncrement);
+                    }
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Error retrieving vote metadata: " + e.getMessage());
+            }
+
+            return new VoteData(0, 0, 0, 0, 0, 0);
+        }
+    }
+
+    /**
+     * Updates the stored vote metadata for the supplied player.
+     */
+    public void updateVoteData(String uuid,
+                               int currentStreak,
+                               int bestStreak,
+                               long lastVoteAtMillis,
+                               int totalVotes,
+                               int votesTowardsNextIncrement,
+                               long lastStreakIncrementMillis) {
+        synchronized (dbLock) {
+            ensurePlayerRow(uuid);
+            ensureVoteRow(uuid);
+            String sql = "UPDATE " + VOTE_TABLE_NAME +
+                    " SET " + COLUMN_STREAK_CURRENT + " = ?, " +
+                    COLUMN_STREAK_BEST + " = ?, " +
+                    COLUMN_LAST_VOTE_AT + " = ?, " +
+                    COLUMN_TOTAL_VOTES + " = ?, " +
+                    COLUMN_VOTE_PROGRESS + " = ?, " +
+                    COLUMN_LAST_STREAK_INCREMENT + " = ? WHERE uuid = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, currentStreak);
+                statement.setInt(2, bestStreak);
+                statement.setLong(3, lastVoteAtMillis);
+                statement.setInt(4, totalVotes);
+                statement.setInt(5, votesTowardsNextIncrement);
+                statement.setLong(6, lastStreakIncrementMillis);
+                statement.setString(7, uuid);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                plugin.getLogger().severe("Error updating vote metadata: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Convenience method for PlaceholderAPI usage – reads only the lifetime vote count.
+     */
+    public int getTotalVotes(String uuid) {
+        return getVoteData(uuid).totalVotes();
+    }
+
+    /**
+     * Convenience accessor for PlaceholderAPI.
+     */
+    public int getCurrentStreak(String uuid) {
+        return getVoteData(uuid).currentStreak();
+    }
+
+    /**
+     * Convenience accessor for PlaceholderAPI.
+     */
+    public int getBestStreak(String uuid) {
+        return getVoteData(uuid).bestStreak();
+    }
+
+    private void ensurePlayerRow(String uuid) {
+        String sql = "INSERT OR IGNORE INTO " + TABLE_NAME + " (uuid, joinDate) VALUES (?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, uuid);
+            statement.setLong(2, System.currentTimeMillis());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error ensuring player row: " + e.getMessage());
+        }
+    }
+
+    private void ensureVoteRow(String uuid) {
+        String sql = "INSERT OR IGNORE INTO " + VOTE_TABLE_NAME + " (uuid) VALUES (?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, uuid);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().severe("Error ensuring vote data row: " + e.getMessage());
+        }
+    }
+
+    private void migrateLegacyVoteColumns() {
+        try {
+            if (!columnExists(TABLE_NAME, COLUMN_STREAK_CURRENT)
+                    || !columnExists(TABLE_NAME, COLUMN_STREAK_BEST)
+                    || !columnExists(TABLE_NAME, COLUMN_LAST_VOTE_AT)
+                    || !columnExists(TABLE_NAME, COLUMN_TOTAL_VOTES)
+                    || !columnExists(TABLE_NAME, COLUMN_VOTE_PROGRESS)
+                    || !columnExists(TABLE_NAME, COLUMN_LAST_STREAK_INCREMENT)) {
+                return;
+            }
+
+            String sql = "INSERT OR IGNORE INTO " + VOTE_TABLE_NAME + " (uuid, " +
+                    COLUMN_STREAK_CURRENT + ", " + COLUMN_STREAK_BEST + ", " + COLUMN_LAST_VOTE_AT + ", " +
+                    COLUMN_TOTAL_VOTES + ", " + COLUMN_VOTE_PROGRESS + ", " + COLUMN_LAST_STREAK_INCREMENT + ") " +
+                    "SELECT uuid, " +
+                    "COALESCE(" + COLUMN_STREAK_CURRENT + ", 0), " +
+                    "COALESCE(" + COLUMN_STREAK_BEST + ", 0), " +
+                    "COALESCE(" + COLUMN_LAST_VOTE_AT + ", 0), " +
+                    "COALESCE(" + COLUMN_TOTAL_VOTES + ", 0), " +
+                    "COALESCE(" + COLUMN_VOTE_PROGRESS + ", 0), " +
+                    "COALESCE(" + COLUMN_LAST_STREAK_INCREMENT + ", 0) " +
+                    "FROM " + TABLE_NAME;
+
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(sql);
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().warning("Failed to migrate legacy vote columns: " + e.getMessage());
+        }
     }
 }

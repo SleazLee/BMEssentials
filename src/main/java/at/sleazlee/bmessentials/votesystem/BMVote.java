@@ -3,9 +3,9 @@ package at.sleazlee.bmessentials.votesystem;
 import at.sleazlee.bmessentials.BMEssentials;
 import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.art.Art;
+import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
+import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager.VoteData;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.type.Slab;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -27,6 +27,7 @@ import java.util.UUID;
 public class BMVote implements CommandExecutor, PluginMessageListener {
 
     private final BMEssentials plugin;
+    private final VoteRewardCalculator rewardCalculator = new VoteRewardCalculator();
 
     /**
      * Constructs a new BMVote instance.
@@ -139,105 +140,130 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
      * @param uuidString the player's UUID as a string.
      */
     public void givePrizeByUUID(String uuidString) {
-        Player target = Bukkit.getPlayer(UUID.fromString(uuidString));
+        UUID uuid = UUID.fromString(uuidString);
+        Player target = Bukkit.getPlayer(uuid);
         if (target == null) {
             // Player is offline or not found.
             return;
         }
-        givePrize(target.getName());
-    }
-
-    /**
-     * Randomly selects a reward key.
-     *
-     * @return a string representing the reward key.
-     */
-    public String randomKey() {
-        double randomValue = Math.random();
-
-        if (randomValue < 0.15) {
-            // 15% chance, obelisk
-            return "obelisk";
-        } else if (randomValue < 0.45) {
-            // 30% chance, wishingwell
-            return "wishingwell";
-        } else if (randomValue < 0.85) {
-            // 40% chance, healingsprings
-            return "healingsprings";
-        } else {
-            // 15% chance, Nothing
-            return "nothing";
-        }
+        awardVote(target);
     }
 
     public void givePrize(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
 
-        // Check that the player is not null (i.e., they're online)
         if (player != null) {
-            // Get a console command sender
-            ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-
-            // Give the player their random reward
-            String commandOne = "";
-            String commandTwo = "";
-            String hexCode = "#0dc6ff";
-
-            switch (randomKey()) {
-                case "obelisk":
-                    player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§C§A§6§5§0§0 §lObelisk§7§l Token§f!");
-                    commandOne = "si give obeliskkey 1 " + playerName + " true";
-                    commandTwo = "eco give " + playerName + " 1 VotePoints";
-                    hexCode = "#CA6500";
-                    break;
-                case "wishingwell":
-                    player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§3§2§C§A§F§C §lWishing-Well§7§l Token§f!");
-                    commandOne = "si give wishingwellkey 1 " + playerName + " true";
-                    commandTwo = "eco give " + playerName + " 1 VotePoints";
-                    hexCode = "#32CAFC";
-                    break;
-                case "healingsprings":
-                    player.sendMessage("§d§lVote §fYou just received §e1 VP§f & a§x§3§2§C§A§6§5 §lHealing Springs§7§l Token§f!");
-                    commandOne = "si give healingspringskey 1 " + playerName + " true";
-                    commandTwo = "eco give " + playerName + " 1 VotePoints";
-                    hexCode = "#32CA65";
-                    break;
-                default:
-                    player.sendMessage("§d§lVote §fYou just received §e2 VPs§f!");
-                    commandOne = "none";
-                    commandTwo = "eco give " + playerName + " 2 VotePoints";
-                    hexCode = "#AAAAAA";
-                    break;
-            }
-
-
-            // Execute the commands
-            if (!commandOne.equals("none")) {
-                String finalCommandOne = commandOne;
-                Scheduler.run(() -> Bukkit.dispatchCommand(console, finalCommandOne));
-            }
-            String finalCommandTwo = commandTwo;
-            Scheduler.run(() -> Bukkit.dispatchCommand(console, finalCommandTwo));
-
-            // Play a sound and spawn particles
-            if (player != null) {
-                Location location = player.getLocation();
-
-                // play the vote sound
-                player.getWorld().playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
-
-                // spawn a particle
-                spawnFallingParticleSphere(player, hexCode);
-
-            }
-
-
-
-
-
+            awardVote(player);
         } else {
-            // If the player is offline, you could log a message to the console or handle it in some other way
             System.out.println("Player " + playerName + " is currently offline. Prize could not be given.");
+        }
+    }
+
+    /**
+     * Pulls the player's vote metadata asynchronously, calculates their reward, then schedules the
+     * visual/audio feedback back on the main thread. The heavy lifting is delegated to
+     * {@link VoteRewardCalculator} so the odds are self-contained and easy to tweak.
+     */
+    private void awardVote(Player player) {
+        UUID uuid = player.getUniqueId();
+        Scheduler.runAsync(() -> {
+            PlayerDatabaseManager database = plugin.getPlayerDataDBManager();
+            if (database == null) {
+                plugin.getLogger().warning("Vote reward skipped because the player data database was unavailable.");
+                return;
+            }
+
+            VoteData data = database.getVoteData(uuid.toString());
+            Instant now = Instant.now();
+
+            // The calculator encapsulates how streak length modifies token odds and vote point bonuses.
+            VoteRewardCalculator.Reward reward = rewardCalculator.calculate(
+                    data.currentStreak(),
+                    data.bestStreak(),
+                    data.lastVoteAt(),
+                    data.lastStreakIncrementAt(),
+                    data.votesTowardsNextIncrement(),
+                    data.totalVotes(),
+                    now);
+
+            database.updateVoteData(
+                    uuid.toString(),
+                    reward.currentStreak(),
+                    reward.bestStreak(),
+                    reward.lastVoteAt().toEpochMilli(),
+                    reward.totalVotes(),
+                    reward.votesTowardsNextIncrement(),
+                    reward.lastStreakIncrementAt() != null ? reward.lastStreakIncrementAt().toEpochMilli() : 0);
+
+            Scheduler.run(() -> deliverReward(uuid, reward));
+        });
+    }
+
+    private void deliverReward(UUID uuid, VoteRewardCalculator.Reward reward) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) {
+            return;
+        }
+        ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+        String playerName = player.getName();
+
+        TokenPresentation presentation = TokenPresentation.from(reward.token());
+
+        String votePointMessage = reward.votePoints() == 1 ? "§e1 VP" : "§e" + reward.votePoints() + " VPs";
+        String streakDetails;
+        if (reward.previousStreak() != reward.currentStreak()) {
+            streakDetails = String.format("§7(§b%d§7 → §b%d§7)", reward.previousStreak(), reward.currentStreak());
+        } else {
+            streakDetails = String.format("§7[§b%d§7/§b%d§7]",
+                    reward.votesTowardsNextIncrement(),
+                    VoteRewardCalculator.VOTES_PER_INCREMENT);
+        }
+
+        player.sendMessage(String.format("§d§lVote §7Streak §b%d %s §f| %s §f& a%s§7§l Token§f!",
+                reward.currentStreak(),
+                streakDetails,
+                votePointMessage,
+                presentation.displayName));
+
+        if (reward.streakIncremented()) {
+            player.sendMessage(String.format("§aYou kept your streak alive! You're now on §b%d§a days.",
+                    reward.currentStreak()));
+        }
+
+        Scheduler.run(() -> Bukkit.dispatchCommand(console,
+                String.format("si give %skey 1 %s true", presentation.commandId, playerName)));
+        Scheduler.run(() -> Bukkit.dispatchCommand(console,
+                String.format("eco give %s %d VotePoints", playerName, reward.votePoints())));
+
+        Location location = player.getLocation();
+        player.getWorld().playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
+        spawnFallingParticleSphere(player, presentation.particleHex);
+    }
+
+    private enum TokenPresentation {
+        HEALING(VoteRewardCalculator.Token.HEALING, "§x§3§2§C§A§6§5 §lHealing Springs", "healingsprings", "#32CA65"),
+        WISHING(VoteRewardCalculator.Token.WISHING, "§x§3§2§C§A§F§C §lWishing-Well", "wishingwell", "#32CAFC"),
+        OBELISK(VoteRewardCalculator.Token.OBELISK, "§x§C§A§6§5§0§0 §lObelisk", "obelisk", "#CA6500");
+
+        private final VoteRewardCalculator.Token token;
+        private final String displayName;
+        private final String commandId;
+        private final String particleHex;
+
+        TokenPresentation(VoteRewardCalculator.Token token, String displayName, String commandId, String particleHex) {
+            this.token = token;
+            this.displayName = displayName;
+            this.commandId = commandId;
+            this.particleHex = particleHex;
+        }
+
+        static TokenPresentation from(VoteRewardCalculator.Token token) {
+            for (TokenPresentation presentation : values()) {
+                if (presentation.token == token) {
+                    return presentation;
+                }
+            }
+            return HEALING;
         }
     }
 
