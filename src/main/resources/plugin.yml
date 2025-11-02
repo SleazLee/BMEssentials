@@ -134,12 +134,6 @@ commands:
     description: Unmutes a player.
     usage: /unmute <player>
 
-  warnban:
-    description: Sends a formatted warning message to a player.
-    usage: /warnban <player> <message>
-    permission: bm.staff.warnban
-    permission-message: '&cYou do not have permission to use this command.'
-
   donation:
     description: Give a selected player the selected donation package.
     usage: /donation <player> <package>
