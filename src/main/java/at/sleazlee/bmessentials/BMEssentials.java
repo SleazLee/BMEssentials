@@ -36,7 +36,6 @@ import at.sleazlee.bmessentials.PlayerData.PlayerJoinListener;
 import at.sleazlee.bmessentials.Punish.AutoBanCommand;
 import at.sleazlee.bmessentials.Punish.UnMuteCommand;
 import at.sleazlee.bmessentials.Punish.VelocityMutePlayer;
-import at.sleazlee.bmessentials.Punish.WarnBanCommand;
 import at.sleazlee.bmessentials.PurpurFeatures.*;
 import at.sleazlee.bmessentials.SpawnSystems.FirstJoinCommand;
 import at.sleazlee.bmessentials.SimplePortals.SimplePortals;
@@ -435,7 +434,6 @@ public class BMEssentials extends JavaPlugin {
             // Register the commands used for punishing players
             getCommand("autoban").setExecutor(new AutoBanCommand(this));
             getCommand("unmute").setExecutor(new UnMuteCommand());
-            getCommand("warnban").setExecutor(new WarnBanCommand());
 
             // Plugin messaging: send autoban requests to Velocity and receive mute commands
             getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:autoban");
