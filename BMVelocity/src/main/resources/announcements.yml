@@ -1,0 +1,54 @@
+announcements:
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gradient:#00ffff:#4e5b5b>JUMP INTO THE PIT!</gradient>"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Remember to <click:run_command:'/vote'><hover:show_text:'<light_purple>Click to run /vote</light_purple>'><light_purple>/vote</light_purple></hover></click> and <click:run_command:'/rankup'><hover:show_text:'<light_purple>Click to run /rankup</light_purple>'><light_purple>/rankup</light_purple></hover></click>"
+    rarity: 20
+  - text: "<dark_gray>[<color:#7289da>Discord</color>]<dark_gray> <gray>Join our discord here: <click:open_url:'https://discord.gg/NGx7DzFZAE'><hover:show_text:'<color:#7289da>Click to open!</color>'><color:#7289da><bold>Link</bold></color></hover></click>"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Use <click:run_command:'/ranks'><hover:show_text:'<light_purple>Click to run /ranks</light_purple>'><light_purple>/ranks</light_purple></hover></click> to see info about all rank unlocks!"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Use <click:run_command:'/help lands'><hover:show_text:'<green>Click to run /lands help</green>'><green>/help lands</green></hover></click> to start your own claim!"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Try <click:run_command:'/help'><hover:show_text:'<gold>Click to run /help</gold>'><gold>/help</gold></hover></click> to learn more about the server’s features!"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Sell your <aqua>diamonds</aqua> at <click:run_command:'/spawn'><hover:show_text:'<dark_aqua>Click to run /spawn</dark_aqua>'><dark_aqua>/spawn</dark_aqua></hover></click> for <green>$10 each</green><gray>!"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Change the time or weather with <click:run_command:'/vot'><hover:show_text:'<light_purple>Click to run /vot</light_purple>'><light_purple>/vot</light_purple></hover></click>"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<gray> Try and find all three <dark_purple>Vote Altars <gray>at /Spawn!"
+    rarity: 20
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Don't forget to <gradient:#00FF00:#158715>s t r e t c h</gradient>"
+    rarity: 20
+
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Want to make more <green>$$$<gray>? Open up a <green>Player Shop <gray>at /Spawn!"
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Use your <green>VotePoints<gray>! <click:run_command:'/voteshop'><hover:show_text:'<gray>Click to teleport to the VoteShop.</gray>'><gray>/voteshop</gray></hover></click>"
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<red> Mob Heads <gray>have a chance to drop from <dark_red>kills<gray>!"
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<gray> Use a <light_purple>PetNet <gray>to capture and transport mobs! <dark_gray>Buy at /VoteShop!"
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>] <gray>Focus on raising your <click:run_command:'/mcstats'><hover:show_text:'<gold>Click to run /mcstats</gold>'><gold>/mcstats</gold></hover></click>! "
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Check out the server’s maps at <click:open_url:'https://blockminer.net/map/'><hover:show_text:'<aqua>Click to open website!</aqua>'><aqua><italic>blockminer.net/map/</italic></aqua></hover></click><gray>."
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>You can hover on people's <green>names</green> & rank in chat to see useful info!"
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Plop a squat with <click:run_command:'/sit'><hover:show_text:'<gold>Click to run /sit</gold>'><gold>/sit</gold></hover></click><gray>!"
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Communication is key! <click:suggest_command:'/party'><hover:show_text:'<light_purple>Click to copy /party</light_purple>'><light_purple>/party</light_purple></hover></click> <click:suggest_command:'/msg'><hover:show_text:'<gold>Click to copy /msg</gold>'><gold>/msg /r</gold></hover></click>"
+    rarity: 10
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Use <click:suggest_command:'/sethome'><hover:show_text:'<green>Click to copy /sethome</green>'><green>/sethome</green></hover></click> to save a teleport to your base!"
+    rarity: 10
+  - text: "<dark_gray>[<gray>HINT</gray>]<dark_gray> <gray>Type <click:run_command:'/sethome'><hover:show_text:'<gold>Click to run /chestsort</gold>'><gold>/chestsort</gold></hover></click> to enable automatic chest sorting."
+    rarity: 10
+
+
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Remember not to build anything permanent in the <light_purple>End</light_purple>! This realm may be <italic>reset</italic> from time to time."
+    rarity: 5
+  - text: "<dark_gray><italic>[<dark_purple><italic>Null</italic></dark_purple>]</italic><dark_gray> <gray><italic>I’ve heard talk of a mysterious maze...</italic>"
+    rarity: 5
+  - text: "<dark_gray>[<gold>TIP</gold>]<dark_gray> <gray>Once you've helped someone, they will like you. Some may even follow your orders!"
+    rarity: 5
+  - text: "<dark_gray>[<light_purple>Feature</light_purple>]<dark_gray> <gray>Don't forget to <white><italic>Silk Touch</italic></white> your <red>Spawners</red>!"
+    rarity: 5

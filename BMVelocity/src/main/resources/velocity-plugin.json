@@ -1,0 +1,14 @@
+{
+  "id": "bmvelocity",
+  "name": "BMVelocity",
+  "version": "2.0",
+  "description": "Velocity Plugin used with BMEssentials for the Blockminer network.",
+  "authors": ["Sleazlee"],
+  "dependencies": [
+    {
+      "id": "floodgate",
+      "optional": false
+    }
+  ],
+  "main": "at.sleazlee.bmvelocity.BMVelocity"
+}
