@@ -75,7 +75,7 @@ public class BMVelocity {
             server.getConsoleCommandSource().sendMessage(miniMessage.deserialize("<white>  - SQLite connection established"));
 //            logger.info("SQLite connection established!");
             databaseManager.createPunishmentsTable();
-            databaseManager.createPendingVotesTable();
+            databaseManager.createVoteDataTable();
             databaseManager.createPendingDonationsTable();
         } catch (Exception e) {
             logger.error("Failed to initialize database: " + e.getMessage(), e);
