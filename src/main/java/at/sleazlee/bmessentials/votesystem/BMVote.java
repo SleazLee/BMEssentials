@@ -5,13 +5,9 @@ import at.sleazlee.bmessentials.Scheduler;
 import at.sleazlee.bmessentials.art.Art;
 import com.google.gson.Gson;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -22,7 +18,9 @@ import java.util.UUID;
 /**
  * Receives Velocity vote rewards and executes them on the Spigot server.
  */
-public class BMVote implements CommandExecutor, PluginMessageListener {
+public class BMVote implements PluginMessageListener {
+
+    private static final Gson GSON = new Gson();
 
     private static final Gson GSON = new Gson();
 
@@ -30,12 +28,6 @@ public class BMVote implements CommandExecutor, PluginMessageListener {
 
     public BMVote(BMEssentials plugin) {
         this.plugin = plugin;
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        sender.sendMessage(ChatColor.RED + "Vote rewards are now handled by the proxy. Use the live vote system to test.");
-        return true;
     }
 
     @Override

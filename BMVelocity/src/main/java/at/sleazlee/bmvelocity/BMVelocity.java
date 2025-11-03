@@ -4,6 +4,7 @@ import at.sleazlee.bmvelocity.AnnouncementSystem.AnnouncementSystem;
 import at.sleazlee.bmvelocity.DonationSystem.DonationSystem;
 import at.sleazlee.bmvelocity.PunishSystem.AutoBanListener;
 import at.sleazlee.bmvelocity.VTell.VTellListener;
+import at.sleazlee.bmvelocity.VoteSystem.AdminVoteCommand;
 import at.sleazlee.bmvelocity.VoteSystem.VoteEvent;
 import at.sleazlee.bmvelocity.art.Art;
 import at.sleazlee.bmvelocity.crypto.AESEncryptor;
@@ -85,6 +86,11 @@ public class BMVelocity {
         server.getCommandManager().register(
                 server.getCommandManager().metaBuilder("punish").build(),
                 new at.sleazlee.bmvelocity.PunishSystem.PunishCommand(this)
+        );
+
+        server.getCommandManager().register(
+                server.getCommandManager().metaBuilder("adminvote").build(),
+                new AdminVoteCommand(this)
         );
 
         // 3) Register incoming plugin channels
