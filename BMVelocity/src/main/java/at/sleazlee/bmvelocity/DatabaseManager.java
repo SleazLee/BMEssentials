@@ -26,6 +26,7 @@ public class DatabaseManager {
     private static final Gson GSON = new Gson();
     private static final Type REWARD_LIST_TYPE = new TypeToken<List<QueuedReward>>() {
     }.getType();
+    private static final String DEFAULT_PENDING_STATE = "'{\"rewards\":[],\"lastIncrement\":0}'";
 
     private HikariDataSource dataSource;
     private final BMVelocity plugin;
@@ -139,7 +140,7 @@ public class DatabaseManager {
                 "uuid TEXT PRIMARY KEY," +
                 "current_streak INTEGER NOT NULL DEFAULT 0," +
                 "last_vote INTEGER NOT NULL DEFAULT 0," +
-                "pending_rewards TEXT NOT NULL DEFAULT '[]'," +
+                "pending_rewards TEXT NOT NULL DEFAULT " + DEFAULT_PENDING_STATE + "," +
                 "lifetime_votes INTEGER NOT NULL DEFAULT 0" +
                 ");";
         try (Connection connection = getConnection();
@@ -173,11 +174,11 @@ public class DatabaseManager {
 
             try (PreparedStatement insert = connection.prepareStatement(
                     "INSERT INTO vote_data (uuid, current_streak, last_vote, pending_rewards, lifetime_votes) " +
-                            "VALUES (?, 0, 0, '[]', 0)")) {
+                            "VALUES (?, 0, 0, " + DEFAULT_PENDING_STATE + ", 0)")) {
                 insert.setString(1, uuid.toString());
                 insert.execute();
             }
-            return new VoteData(uuid, 0, 0L, new ArrayList<>(), 0);
+            return new VoteData(uuid, 0, 0L, 0L, new ArrayList<>(), 0);
         }
     }
 
@@ -190,7 +191,7 @@ public class DatabaseManager {
                      "UPDATE vote_data SET current_streak = ?, last_vote = ?, pending_rewards = ?, lifetime_votes = ? WHERE uuid = ?")) {
             statement.setInt(1, data.getCurrentStreak());
             statement.setLong(2, data.getLastVote());
-            statement.setString(3, serializeRewards(data.getPendingRewards()));
+            statement.setString(3, serializePendingState(data.getPendingRewards(), data.getLastStreakIncrement()));
             statement.setInt(4, data.getLifetimeVotes());
             statement.setString(5, data.getUuid().toString());
             statement.executeUpdate();
@@ -200,12 +201,12 @@ public class DatabaseManager {
     /**
      * Updates only the pending reward queue for the player.
      */
-    public void updatePendingRewards(UUID uuid, List<QueuedReward> rewards) throws SQLException {
+    public void updatePendingRewards(VoteData data) throws SQLException {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(
                      "UPDATE vote_data SET pending_rewards = ? WHERE uuid = ?")) {
-            statement.setString(1, serializeRewards(rewards));
-            statement.setString(2, uuid.toString());
+            statement.setString(1, serializePendingState(data.getPendingRewards(), data.getLastStreakIncrement()));
+            statement.setString(2, data.getUuid().toString());
             statement.executeUpdate();
         }
     }
@@ -311,8 +312,8 @@ public class DatabaseManager {
                 long lastVote = rs.getLong("last_vote");
                 String pending = rs.getString("pending_rewards");
                 int lifetimeVotes = rs.getInt("lifetime_votes");
-                List<QueuedReward> rewards = deserializeRewards(pending);
-                return new VoteData(uuid, currentStreak, lastVote, rewards, lifetimeVotes);
+                PendingState state = deserializePendingState(pending);
+                return new VoteData(uuid, currentStreak, lastVote, state.lastIncrement, state.rewards, lifetimeVotes);
             }
         }
     }
@@ -329,7 +330,7 @@ public class DatabaseManager {
                     String uuid = rs.getString("uuid");
                     try (PreparedStatement insert = connection.prepareStatement(
                             "INSERT INTO vote_data (uuid, current_streak, last_vote, pending_rewards, lifetime_votes) " +
-                                    "VALUES (?, 0, 0, '[]', 0) ON CONFLICT(uuid) DO NOTHING")) {
+                                    "VALUES (?, 0, 0, " + DEFAULT_PENDING_STATE + ", 0) ON CONFLICT(uuid) DO NOTHING")) {
                         insert.setString(1, uuid);
                         insert.execute();
                     }
@@ -350,22 +351,49 @@ public class DatabaseManager {
         }
     }
 
-    private String serializeRewards(List<QueuedReward> rewards) {
-        if (rewards == null || rewards.isEmpty()) {
-            return "[]";
-        }
-        return GSON.toJson(rewards, REWARD_LIST_TYPE);
+    private String serializePendingState(List<QueuedReward> rewards, long lastIncrement) {
+        PendingState state = new PendingState();
+        state.rewards = rewards == null ? new ArrayList<>() : new ArrayList<>(rewards);
+        state.lastIncrement = lastIncrement;
+        return GSON.toJson(state);
     }
 
-    private List<QueuedReward> deserializeRewards(String json) {
+    private PendingState deserializePendingState(String json) {
+        PendingState state = new PendingState();
+        state.rewards = new ArrayList<>();
+        state.lastIncrement = 0L;
+
         if (json == null || json.isBlank()) {
-            return new ArrayList<>();
+            return state;
         }
-        List<QueuedReward> rewards = GSON.fromJson(json, REWARD_LIST_TYPE);
-        if (rewards == null) {
-            return new ArrayList<>();
+
+        String trimmed = json.trim();
+        try {
+            if (trimmed.startsWith("{")) {
+                PendingState parsed = GSON.fromJson(trimmed, PendingState.class);
+                if (parsed != null) {
+                    if (parsed.rewards != null) {
+                        state.rewards.addAll(parsed.rewards);
+                    }
+                    if (parsed.lastIncrement != null) {
+                        state.lastIncrement = parsed.lastIncrement;
+                    }
+                }
+            } else if (trimmed.startsWith("[")) {
+                List<QueuedReward> rewards = GSON.fromJson(trimmed, REWARD_LIST_TYPE);
+                if (rewards != null) {
+                    state.rewards.addAll(rewards);
+                }
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warn("Failed to parse pending reward payload '{}': {}", json, e.getMessage());
         }
-        return new ArrayList<>(rewards);
+        return state;
+    }
+
+    private static class PendingState {
+        List<QueuedReward> rewards;
+        Long lastIncrement;
     }
 
     /**

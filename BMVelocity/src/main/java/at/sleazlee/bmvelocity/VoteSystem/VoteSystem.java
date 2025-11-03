@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class VoteSystem {
 
     private static final Duration STREAK_GRACE = Duration.ofHours(36);
+    private static final Duration STREAK_MIN_INTERVAL = Duration.ofHours(18);
     private static final int STREAK_CAP = 30;
     private static final MinecraftChannelIdentifier VOTE_CHANNEL = MinecraftChannelIdentifier.create("bmessentials", "vote");
 
@@ -58,15 +59,38 @@ public class VoteSystem {
             long now = System.currentTimeMillis();
 
             int previousStreak = data.getCurrentStreak();
-            long lastVote = data.getLastVote();
-            boolean withinGrace = previousStreak > 0 && lastVote > 0 && (now - lastVote) <= STREAK_GRACE.toMillis();
+            long storedLastVote = data.getLastVote();
+            long lastStreakIncrement = data.getLastStreakIncrement();
+            if (lastStreakIncrement <= 0 && storedLastVote > 0) {
+                lastStreakIncrement = storedLastVote;
+            }
 
-            int newStreak = withinGrace ? Math.min(previousStreak + 1, STREAK_CAP) : 1;
-            data.setCurrentStreak(newStreak);
             data.setLastVote(now);
             data.setLifetimeVotes(data.getLifetimeVotes() + 1);
 
-            boolean streakIncremented = withinGrace && previousStreak > 0;
+            boolean streakIncremented = false;
+            int newStreak;
+            if (previousStreak <= 0 || lastStreakIncrement <= 0) {
+                newStreak = 1;
+                data.setLastStreakIncrement(now);
+            } else {
+                long sinceLastIncrement = now - lastStreakIncrement;
+                if (sinceLastIncrement > STREAK_GRACE.toMillis()) {
+                    newStreak = 1;
+                    data.setLastStreakIncrement(now);
+                } else if (sinceLastIncrement >= STREAK_MIN_INTERVAL.toMillis()) {
+                    newStreak = Math.min(previousStreak + 1, STREAK_CAP);
+                    if (newStreak != previousStreak) {
+                        streakIncremented = true;
+                    }
+                    data.setLastStreakIncrement(now);
+                } else {
+                    newStreak = previousStreak;
+                }
+            }
+
+            data.setCurrentStreak(newStreak);
+
             QueuedReward reward = rewardCalculator.createReward(newStreak, data.getLifetimeVotes(), streakIncremented);
 
             boolean delivered = deliverImmediateReward(uuid, reward);
@@ -80,7 +104,7 @@ public class VoteSystem {
                 schedulePendingDelivery(uuid, 2, TimeUnit.SECONDS);
             }
 
-            if (reward.streak() >= 4) {
+            if (reward.streakIncremented() && reward.streak() >= 4) {
                 announceStreak(playerName, reward.streak());
             }
         } catch (SQLException e) {
@@ -124,7 +148,8 @@ public class VoteSystem {
             QueuedReward reward = queue.remove(0);
             boolean sent = sendRewardPayload(connection, uuid, reward);
             if (sent) {
-                plugin.getDatabaseManager().updatePendingRewards(uuid, queue);
+                data.setPendingRewards(queue);
+                plugin.getDatabaseManager().updatePendingRewards(data);
                 if (queue.isEmpty()) {
                     delivering.remove(uuid);
                 } else {
@@ -133,7 +158,8 @@ public class VoteSystem {
                 }
             } else {
                 queue.add(0, reward);
-                plugin.getDatabaseManager().updatePendingRewards(uuid, queue);
+                data.setPendingRewards(queue);
+                plugin.getDatabaseManager().updatePendingRewards(data);
                 delivering.remove(uuid);
                 schedulePendingDelivery(uuid, 2, TimeUnit.SECONDS);
             }

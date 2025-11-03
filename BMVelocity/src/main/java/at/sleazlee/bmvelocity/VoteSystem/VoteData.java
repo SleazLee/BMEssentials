@@ -11,13 +11,15 @@ public class VoteData {
     private final UUID uuid;
     private int currentStreak;
     private long lastVote;
+    private long lastStreakIncrement;
     private List<QueuedReward> pendingRewards;
     private int lifetimeVotes;
 
-    public VoteData(UUID uuid, int currentStreak, long lastVote, List<QueuedReward> pendingRewards, int lifetimeVotes) {
+    public VoteData(UUID uuid, int currentStreak, long lastVote, long lastStreakIncrement, List<QueuedReward> pendingRewards, int lifetimeVotes) {
         this.uuid = uuid;
         this.currentStreak = currentStreak;
         this.lastVote = lastVote;
+        this.lastStreakIncrement = lastStreakIncrement;
         this.pendingRewards = pendingRewards == null ? new ArrayList<>() : new ArrayList<>(pendingRewards);
         this.lifetimeVotes = lifetimeVotes;
     }
@@ -40,6 +42,14 @@ public class VoteData {
 
     public void setLastVote(long lastVote) {
         this.lastVote = lastVote;
+    }
+
+    public long getLastStreakIncrement() {
+        return lastStreakIncrement;
+    }
+
+    public void setLastStreakIncrement(long lastStreakIncrement) {
+        this.lastStreakIncrement = lastStreakIncrement;
     }
 
     public List<QueuedReward> getPendingRewards() {

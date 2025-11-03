@@ -22,8 +22,6 @@ public class BMVote implements PluginMessageListener {
 
     private static final Gson GSON = new Gson();
 
-    private static final Gson GSON = new Gson();
-
     private final BMEssentials plugin;
 
     public BMVote(BMEssentials plugin) {
