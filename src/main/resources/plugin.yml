@@ -100,10 +100,6 @@ commands:
     description: Sends a message to all players on the network.
     usage: /vtell
 
-  adminvote:
-    description: Sends a testvote to the player given.
-    usage: /adminvote <player>
-
   map:
     description: Toggle your BlueMap visibility
     usage: /map <toggle|show|hide>

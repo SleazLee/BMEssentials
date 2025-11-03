@@ -21,7 +21,7 @@
 - **Player Data & Economy** – MySQL backed data storage with PlaceholderAPI expansions and Vault compatible economy commands (`/pay`, `/bal`, `/eco`).
 - **Rank Up System** – Configurable requirements for progressing through ranks.
 - **TPShop** – Simple teleport shop command with tab completion.
-- **Vote & Vot Systems** – Cross-server vote handling and in‑game weather/time votes.
+- **Vote & Vot Systems** – Cross-server vote handling and in‑game weather/time votes. Vote streaks and reward selection now live on the Velocity proxy so offline votes are preserved and delivered one-by-one when the player next joins.
 - **Wild Teleport** – Safe random teleportation around the world.
 - **Spawn Systems** – Healing springs, wishing well, obelisk and first join messages.
 - **Common Commands** – `/playtime`, `/lag`, `/bmdiscord` and server restart utilities.
@@ -41,6 +41,12 @@
 - **Simple Portals** – WorldGuard flags that send players to the wild, healing springs or warps.
 - **Player Shops** – Rentable shop regions with `/bms` management commands.
 - **Combine System** – Allows unsafe enchantment books to be applied via anvils.
+
+## Vote System Architecture
+- Vote streaks, reward selection, and offline reward queues are handled by the Velocity proxy (`BMVelocity`).
+- The proxy stores pre-determined rewards for offline voters and delivers them the next time the player connects, one reward at a time.
+- The Spigot plugin (`BMEssentials`) simply executes the reward that Velocity sends—no additional database columns or PlaceholderAPI values are required on Spigot.
+- Token odds gradually interpolate from 55/30/15 on day one to roughly 35/40/25 by day 30, rather than relying on hard-coded daily tables.
 
 ## Installation
 1. Build the plugin with Maven or download the compiled jar.
