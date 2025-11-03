@@ -56,7 +56,6 @@ import at.sleazlee.bmessentials.vot.PlayerEventListener;
 import at.sleazlee.bmessentials.vot.VotTabCompleter;
 import at.sleazlee.bmessentials.vot.VoteCommand;
 import at.sleazlee.bmessentials.votesystem.BMVote;
-import at.sleazlee.bmessentials.votesystem.TestVoteTabCompleter;
 import at.sleazlee.bmessentials.wild.*;
 import at.sleazlee.bmessentials.playerutils.InvseeCommand;
 import at.sleazlee.bmessentials.playerutils.InvseeTabCompleter;
@@ -306,8 +305,6 @@ public class BMEssentials extends JavaPlugin {
             this.getServer().getMessenger().registerIncomingPluginChannel(this, "bmessentials:vote", new BMVote(this));
             this.getServer().getMessenger().registerOutgoingPluginChannel(this, "bmessentials:vote");
 
-            this.getCommand("adminvote").setExecutor(new BMVote(this));
-            this.getCommand("adminvote").setTabCompleter(new TestVoteTabCompleter());
         }
 
         // Wild System
