@@ -94,7 +94,7 @@ public class BMVote implements PluginMessageListener {
             base.append("s");
         }
         if (descriptor != null) {
-            base.append("§f & ").append(descriptor.display());
+            base.append("§f &").append(descriptor.display());
         } else {
             base.append("§f!");
         }
@@ -106,10 +106,7 @@ public class BMVote implements PluginMessageListener {
             } else {
                 player.sendMessage("§d§lVote §fYour streak has been reset to §e" + reward.streak() + "§f day" + (reward.streak() == 1 ? "" : "s") + ".");
             }
-        } else {
-            player.sendMessage("§d§lVote §fThanks for voting!");
         }
-        player.sendMessage("§7Lifetime votes: §e" + reward.lifetime());
     }
 
     private void playCelebration(Player player, String hexCode) {
