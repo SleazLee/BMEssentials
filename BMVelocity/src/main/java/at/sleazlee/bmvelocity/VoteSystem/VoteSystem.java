@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit;
 public class VoteSystem {
 
     private static final Duration STREAK_GRACE = Duration.ofHours(36);
-    private static final Duration STREAK_MIN_INTERVAL = Duration.ofHours(18);
+    private static final Duration STREAK_WINDOW = Duration.ofHours(18);
+    private static final int VOTES_PER_INCREMENT = 4;
     private static final int STREAK_CAP = 30;
     private static final MinecraftChannelIdentifier VOTE_CHANNEL = MinecraftChannelIdentifier.create("bmessentials", "vote");
 
@@ -58,38 +59,50 @@ public class VoteSystem {
             VoteData data = plugin.getDatabaseManager().loadOrCreateVoteData(uuid);
             long now = System.currentTimeMillis();
 
-            int previousStreak = data.getCurrentStreak();
-            long storedLastVote = data.getLastVote();
-            long lastStreakIncrement = data.getLastStreakIncrement();
-            if (lastStreakIncrement <= 0 && storedLastVote > 0) {
-                lastStreakIncrement = storedLastVote;
-            }
+            int previousStreak = Math.max(data.getCurrentStreak(), 0);
+            long lastVote = data.getLastVote();
+            int votesTowardNext = Math.max(data.getVotesSinceIncrement(), 0);
+            long windowStart = data.getStreakWindowStart();
 
             data.setLastVote(now);
             data.setLifetimeVotes(data.getLifetimeVotes() + 1);
 
+            int newStreak = previousStreak <= 0 ? 1 : previousStreak;
             boolean streakIncremented = false;
-            int newStreak;
-            if (previousStreak <= 0 || lastStreakIncrement <= 0) {
+
+            if (lastVote > 0 && now - lastVote > STREAK_GRACE.toMillis()) {
                 newStreak = 1;
-                data.setLastStreakIncrement(now);
+                votesTowardNext = 1;
+                windowStart = now;
             } else {
-                long sinceLastIncrement = now - lastStreakIncrement;
-                if (sinceLastIncrement > STREAK_GRACE.toMillis()) {
-                    newStreak = 1;
-                    data.setLastStreakIncrement(now);
-                } else if (sinceLastIncrement >= STREAK_MIN_INTERVAL.toMillis()) {
-                    newStreak = Math.min(previousStreak + 1, STREAK_CAP);
-                    if (newStreak != previousStreak) {
-                        streakIncremented = true;
-                    }
-                    data.setLastStreakIncrement(now);
+                if (votesTowardNext <= 0 || windowStart <= 0) {
+                    votesTowardNext = 1;
+                    windowStart = now;
+                } else if (now - windowStart > STREAK_WINDOW.toMillis()) {
+                    votesTowardNext = 1;
+                    windowStart = now;
                 } else {
-                    newStreak = previousStreak;
+                    votesTowardNext += 1;
+                }
+
+                if (votesTowardNext >= VOTES_PER_INCREMENT) {
+                    int incremented = Math.min(newStreak + 1, STREAK_CAP);
+                    if (incremented > newStreak) {
+                        newStreak = incremented;
+                        streakIncremented = true;
+                        data.setLastStreakIncrement(now);
+                    }
+                    votesTowardNext = 0;
+                    windowStart = 0L;
                 }
             }
 
             data.setCurrentStreak(newStreak);
+            data.setVotesSinceIncrement(votesTowardNext);
+            data.setStreakWindowStart(windowStart);
+            if (!streakIncremented && newStreak == 1) {
+                data.setLastStreakIncrement(0L);
+            }
 
             QueuedReward reward = rewardCalculator.createReward(newStreak, data.getLifetimeVotes(), streakIncremented);
 
@@ -104,7 +117,7 @@ public class VoteSystem {
                 schedulePendingDelivery(uuid, 2, TimeUnit.SECONDS);
             }
 
-            if (reward.streakIncremented() && reward.streak() >= 4) {
+            if (reward.streakIncremented() && reward.streak() > 1) {
                 announceStreak(playerName, reward.streak());
             }
         } catch (SQLException e) {

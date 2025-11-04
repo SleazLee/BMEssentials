@@ -14,14 +14,20 @@ public class VoteData {
     private long lastStreakIncrement;
     private List<QueuedReward> pendingRewards;
     private int lifetimeVotes;
+    private int votesSinceIncrement;
+    private long streakWindowStart;
 
-    public VoteData(UUID uuid, int currentStreak, long lastVote, long lastStreakIncrement, List<QueuedReward> pendingRewards, int lifetimeVotes) {
+    public VoteData(UUID uuid, int currentStreak, long lastVote, long lastStreakIncrement,
+                    List<QueuedReward> pendingRewards, int lifetimeVotes,
+                    int votesSinceIncrement, long streakWindowStart) {
         this.uuid = uuid;
         this.currentStreak = currentStreak;
         this.lastVote = lastVote;
         this.lastStreakIncrement = lastStreakIncrement;
         this.pendingRewards = pendingRewards == null ? new ArrayList<>() : new ArrayList<>(pendingRewards);
         this.lifetimeVotes = lifetimeVotes;
+        this.votesSinceIncrement = votesSinceIncrement;
+        this.streakWindowStart = streakWindowStart;
     }
 
     public UUID getUuid() {
@@ -66,5 +72,21 @@ public class VoteData {
 
     public void setLifetimeVotes(int lifetimeVotes) {
         this.lifetimeVotes = lifetimeVotes;
+    }
+
+    public int getVotesSinceIncrement() {
+        return votesSinceIncrement;
+    }
+
+    public void setVotesSinceIncrement(int votesSinceIncrement) {
+        this.votesSinceIncrement = votesSinceIncrement;
+    }
+
+    public long getStreakWindowStart() {
+        return streakWindowStart;
+    }
+
+    public void setStreakWindowStart(long streakWindowStart) {
+        this.streakWindowStart = streakWindowStart;
     }
 }

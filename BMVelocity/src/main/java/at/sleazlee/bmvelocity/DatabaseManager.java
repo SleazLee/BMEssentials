@@ -26,7 +26,7 @@ public class DatabaseManager {
     private static final Gson GSON = new Gson();
     private static final Type REWARD_LIST_TYPE = new TypeToken<List<QueuedReward>>() {
     }.getType();
-    private static final String DEFAULT_PENDING_STATE = "'{\"rewards\":[],\"lastIncrement\":0}'";
+    private static final String DEFAULT_PENDING_STATE = "'{\"rewards\":[],\"lastIncrement\":0,\"votesTowardNext\":0,\"windowStart\":0}'";
 
     private HikariDataSource dataSource;
     private final BMVelocity plugin;
@@ -178,7 +178,7 @@ public class DatabaseManager {
                 insert.setString(1, uuid.toString());
                 insert.execute();
             }
-            return new VoteData(uuid, 0, 0L, 0L, new ArrayList<>(), 0);
+            return new VoteData(uuid, 0, 0L, 0L, new ArrayList<>(), 0, 0, 0L);
         }
     }
 
@@ -191,7 +191,8 @@ public class DatabaseManager {
                      "UPDATE vote_data SET current_streak = ?, last_vote = ?, pending_rewards = ?, lifetime_votes = ? WHERE uuid = ?")) {
             statement.setInt(1, data.getCurrentStreak());
             statement.setLong(2, data.getLastVote());
-            statement.setString(3, serializePendingState(data.getPendingRewards(), data.getLastStreakIncrement()));
+            statement.setString(3, serializePendingState(data.getPendingRewards(), data.getLastStreakIncrement(),
+                    data.getVotesSinceIncrement(), data.getStreakWindowStart()));
             statement.setInt(4, data.getLifetimeVotes());
             statement.setString(5, data.getUuid().toString());
             statement.executeUpdate();
@@ -205,7 +206,8 @@ public class DatabaseManager {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(
                      "UPDATE vote_data SET pending_rewards = ? WHERE uuid = ?")) {
-            statement.setString(1, serializePendingState(data.getPendingRewards(), data.getLastStreakIncrement()));
+            statement.setString(1, serializePendingState(data.getPendingRewards(), data.getLastStreakIncrement(),
+                    data.getVotesSinceIncrement(), data.getStreakWindowStart()));
             statement.setString(2, data.getUuid().toString());
             statement.executeUpdate();
         }
@@ -313,7 +315,8 @@ public class DatabaseManager {
                 String pending = rs.getString("pending_rewards");
                 int lifetimeVotes = rs.getInt("lifetime_votes");
                 PendingState state = deserializePendingState(pending);
-                return new VoteData(uuid, currentStreak, lastVote, state.lastIncrement, state.rewards, lifetimeVotes);
+                return new VoteData(uuid, currentStreak, lastVote, state.lastIncrement, state.rewards, lifetimeVotes,
+                        state.votesTowardNext, state.windowStart);
             }
         }
     }
@@ -351,10 +354,13 @@ public class DatabaseManager {
         }
     }
 
-    private String serializePendingState(List<QueuedReward> rewards, long lastIncrement) {
+    private String serializePendingState(List<QueuedReward> rewards, long lastIncrement,
+                                         int votesTowardNext, long windowStart) {
         PendingState state = new PendingState();
         state.rewards = rewards == null ? new ArrayList<>() : new ArrayList<>(rewards);
         state.lastIncrement = lastIncrement;
+        state.votesTowardNext = votesTowardNext;
+        state.windowStart = windowStart;
         return GSON.toJson(state);
     }
 
@@ -362,6 +368,8 @@ public class DatabaseManager {
         PendingState state = new PendingState();
         state.rewards = new ArrayList<>();
         state.lastIncrement = 0L;
+        state.votesTowardNext = 0;
+        state.windowStart = 0L;
 
         if (json == null || json.isBlank()) {
             return state;
@@ -377,6 +385,12 @@ public class DatabaseManager {
                     }
                     if (parsed.lastIncrement != null) {
                         state.lastIncrement = parsed.lastIncrement;
+                    }
+                    if (parsed.votesTowardNext != null) {
+                        state.votesTowardNext = parsed.votesTowardNext;
+                    }
+                    if (parsed.windowStart != null) {
+                        state.windowStart = parsed.windowStart;
                     }
                 }
             } else if (trimmed.startsWith("[")) {
@@ -394,6 +408,8 @@ public class DatabaseManager {
     private static class PendingState {
         List<QueuedReward> rewards;
         Long lastIncrement;
+        Integer votesTowardNext;
+        Long windowStart;
     }
 
     /**
