@@ -103,8 +103,6 @@ public class BMVote implements PluginMessageListener {
         if (reward.streak() > 1) {
             if (reward.streakIncremented()) {
                 player.sendMessage("§d§lVote §fYou are on a §e" + reward.streak() + "§f day streak!");
-            } else {
-                player.sendMessage("§d§lVote §fYour streak has been reset to §e" + reward.streak() + "§f day" + (reward.streak() == 1 ? "" : "s") + ".");
             }
         }
     }
