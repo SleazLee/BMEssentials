@@ -12,6 +12,7 @@ import at.sleazlee.bmessentials.PlayerData.PlayerDatabaseManager;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Minimal Economy implementation for VaultUnlocked,
@@ -508,21 +509,49 @@ public class BMSEconomyProvider implements Economy {
     @Override
     public @NotNull List<String> accountsOwnedBy(@NotNull String pluginName,
                                                  @NotNull UUID accountID) {
-        // Shared accounts are not supported
-        return Collections.emptyList();
+        return accountsWithOwnerOf(pluginName, accountID)
+                .stream()
+                .map(UUID::toString)
+                .collect(Collectors.toList());
     }
 
     @Override
     public @NotNull List<String> accountsMemberOf(@NotNull String pluginName,
                                                   @NotNull UUID accountID) {
-        // Shared accounts are not supported
-        return Collections.emptyList();
+        return accountsWithMembershipTo(pluginName, accountID)
+                .stream()
+                .map(UUID::toString)
+                .collect(Collectors.toList());
     }
 
     @Override
     public @NotNull List<String> accountsAccessTo(@NotNull String pluginName,
                                                   @NotNull UUID accountID,
                                                   @NotNull AccountPermission... permissions) {
+        return accountsWithAccessTo(pluginName, accountID, permissions)
+                .stream()
+                .map(UUID::toString)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public @NotNull List<UUID> accountsWithOwnerOf(@NotNull String pluginName,
+                                                   @NotNull UUID accountID) {
+        // Shared accounts are not supported
+        return Collections.emptyList();
+    }
+
+    @Override
+    public @NotNull List<UUID> accountsWithMembershipTo(@NotNull String pluginName,
+                                                        @NotNull UUID accountID) {
+        // Shared accounts are not supported
+        return Collections.emptyList();
+    }
+
+    @Override
+    public @NotNull List<UUID> accountsWithAccessTo(@NotNull String pluginName,
+                                                    @NotNull UUID accountID,
+                                                    @NotNull AccountPermission... permissions) {
         // Shared accounts are not supported
         return Collections.emptyList();
     }
